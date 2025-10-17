@@ -1,0 +1,530 @@
+{
+  "$ref": "#/definitions/PhosphorJsonData",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": {
+    "JsonCommand": {
+      "additionalProperties": false,
+      "properties": {
+        "action": {
+          "anyOf": [
+            {
+              "additionalProperties": false,
+              "properties": {
+                "target": {
+                  "type": "string"
+                },
+                "type": {
+                  "enum": [
+                    "alert",
+                    "dialog"
+                  ],
+                  "type": "string"
+                }
+              },
+              "required": [
+                "type",
+                "target"
+              ],
+              "type": "object"
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "target": {
+                  "type": "string"
+                },
+                "type": {
+                  "const": "link",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "type",
+                "target"
+              ],
+              "type": "object"
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "target": {
+                  "type": "string"
+                },
+                "type": {
+                  "const": "toggle",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "type",
+                "target"
+              ],
+              "type": "object"
+            }
+          ]
+        },
+        "command": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            }
+          ]
+        }
+      },
+      "required": [
+        "command",
+        "action"
+      ],
+      "type": "object"
+    },
+    "JsonToggleState": {
+      "additionalProperties": false,
+      "properties": {
+        "active": {
+          "type": "boolean"
+        },
+        "delayMs": {
+          "type": "number"
+        },
+        "delayText": {
+          "type": "string"
+        },
+        "text": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "text",
+        "active"
+      ],
+      "type": "object"
+    },
+    "LinkTarget": {
+      "additionalProperties": false,
+      "properties": {
+        "shiftKey": {
+          "type": "boolean"
+        },
+        "target": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "target",
+        "type",
+        "shiftKey"
+      ],
+      "type": "object"
+    },
+    "PhosphorDialogType": {
+      "enum": [
+        "alert",
+        "dialog",
+        "confirm"
+      ],
+      "type": "string"
+    },
+    "PhosphorJsonData": {
+      "additionalProperties": false,
+      "properties": {
+        "config": {
+          "additionalProperties": false,
+          "properties": {
+            "footer": {
+              "type": "string"
+            },
+            "maxWidth": {
+              "type": "number"
+            },
+            "minWidth": {
+              "type": "number"
+            },
+            "name": {
+              "type": "string"
+            },
+            "speed": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "name",
+            "speed",
+            "minWidth"
+          ],
+          "type": "object"
+        },
+        "dialogs": {
+          "items": {
+            "$ref": "#/definitions/PhosphorJsonDialog"
+          },
+          "type": "array"
+        },
+        "metadata": {
+          "additionalProperties": false,
+          "properties": {
+            "author": {
+              "type": "string"
+            },
+            "comment": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "description",
+            "author",
+            "comment"
+          ],
+          "type": "object"
+        },
+        "screens": {
+          "items": {
+            "$ref": "#/definitions/PhosphorJsonScreen"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "metadata",
+        "config",
+        "screens",
+        "dialogs"
+      ],
+      "type": "object"
+    },
+    "PhosphorJsonDialog": {
+      "additionalProperties": false,
+      "properties": {
+        "content": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "id": {
+          "type": "string"
+        },
+        "type": {
+          "$ref": "#/definitions/PhosphorDialogType"
+        }
+      },
+      "required": [
+        "id",
+        "type",
+        "content"
+      ],
+      "type": "object"
+    },
+    "PhosphorJsonScreen": {
+      "additionalProperties": false,
+      "properties": {
+        "content": {
+          "items": {
+            "$ref": "#/definitions/PhosphorScreenJsonContent"
+          },
+          "type": "array"
+        },
+        "id": {
+          "type": "string"
+        },
+        "type": {
+          "$ref": "#/definitions/PhosphorScreenType"
+        }
+      },
+      "required": [
+        "type"
+      ],
+      "type": "object"
+    },
+    "PhosphorScreenJsonContent": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "properties": {
+            "type": {
+              "const": "void",
+              "type": "string"
+            }
+          },
+          "required": [
+            "type"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "className": {
+              "type": "string"
+            },
+            "id": {
+              "type": "string"
+            },
+            "loadState": {
+              "$ref": "#/definitions/ScreenDataState"
+            },
+            "onLoad": {
+              "type": "boolean"
+            },
+            "target": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "items": {
+                    "$ref": "#/definitions/LinkTarget"
+                  },
+                  "type": "array"
+                }
+              ]
+            },
+            "text": {
+              "type": "string"
+            },
+            "textOpts": {
+              "$ref": "#/definitions/TextOptions"
+            },
+            "type": {
+              "const": "link",
+              "type": "string"
+            }
+          },
+          "required": [
+            "type",
+            "target"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "alt": {
+              "type": "string"
+            },
+            "className": {
+              "type": "string"
+            },
+            "id": {
+              "type": "string"
+            },
+            "loadState": {
+              "$ref": "#/definitions/ScreenDataState"
+            },
+            "onLoad": {
+              "type": "boolean"
+            },
+            "src": {
+              "type": "string"
+            },
+            "type": {
+              "const": "bitmap",
+              "type": "string"
+            }
+          },
+          "required": [
+            "type",
+            "src"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "className": {
+              "type": "string"
+            },
+            "id": {
+              "type": "string"
+            },
+            "loadState": {
+              "$ref": "#/definitions/ScreenDataState"
+            },
+            "onLoad": {
+              "type": "boolean"
+            },
+            "states": {
+              "items": {
+                "$ref": "#/definitions/JsonToggleState"
+              },
+              "type": "array"
+            },
+            "textOpts": {
+              "$ref": "#/definitions/TextOptions"
+            },
+            "type": {
+              "const": "toggle",
+              "type": "string"
+            }
+          },
+          "required": [
+            "type",
+            "states"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "className": {
+              "type": "string"
+            },
+            "commands": {
+              "items": {
+                "$ref": "#/definitions/JsonCommand"
+              },
+              "type": "array"
+            },
+            "id": {
+              "type": "string"
+            },
+            "loadState": {
+              "$ref": "#/definitions/ScreenDataState"
+            },
+            "onLoad": {
+              "type": "boolean"
+            },
+            "prompt": {
+              "type": "string"
+            },
+            "textOpts": {
+              "$ref": "#/definitions/TextOptions"
+            },
+            "type": {
+              "const": "prompt",
+              "type": "string"
+            }
+          },
+          "required": [
+            "type",
+            "commands"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "className": {
+              "type": "string"
+            },
+            "id": {
+              "type": "string"
+            },
+            "loadState": {
+              "$ref": "#/definitions/ScreenDataState"
+            },
+            "onLoad": {
+              "type": "boolean"
+            },
+            "text": {
+              "type": "string"
+            },
+            "textOpts": {
+              "$ref": "#/definitions/TextOptions"
+            },
+            "type": {
+              "const": "text",
+              "type": "string"
+            }
+          },
+          "required": [
+            "type",
+            "text"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "className": {
+              "type": "string"
+            },
+            "duration": {
+              "type": "number"
+            },
+            "id": {
+              "type": "string"
+            },
+            "prompt": {
+              "type": "string"
+            },
+            "textOpts": {
+              "$ref": "#/definitions/TextOptions"
+            },
+            "type": {
+              "const": "countdown",
+              "type": "string"
+            }
+          },
+          "required": [
+            "type",
+            "prompt",
+            "duration"
+          ],
+          "type": "object"
+        }
+      ]
+    },
+    "PhosphorScreenType": {
+      "enum": [
+        "screen",
+        "static"
+      ],
+      "type": "string"
+    },
+    "ScreenDataState": {
+      "enum": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "type": "number"
+    },
+    "TextOptions": {
+      "additionalProperties": false,
+      "properties": {
+        "align": {
+          "enum": [
+            "left",
+            "center",
+            "right"
+          ],
+          "type": "string"
+        },
+        "bigFont": {
+          "type": "string"
+        },
+        "fillWidth": {
+          "type": "boolean"
+        },
+        "isPassword": {
+          "type": "boolean"
+        },
+        "playSound": {
+          "type": "boolean"
+        },
+        "preserveSpacing": {
+          "type": "boolean"
+        },
+        "speed": {
+          "type": "number"
+        }
+      },
+      "type": "object"
+    }
+  }
+}

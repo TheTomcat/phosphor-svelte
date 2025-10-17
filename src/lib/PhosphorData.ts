@@ -1,0 +1,1712 @@
+export enum ScreenDataState {
+	Unloaded = 0,
+	Ready,
+	Active,
+	Done
+}
+
+export type PhosphorDialogType = 'alert' | 'dialog' | 'confirm';
+export type PhosphorScreenType = 'screen' | 'static';
+
+export type TextOptions = {
+	speed?: number; // the delay between characters appearing
+	isPassword?: boolean; // replaces rendered characters with asterisks
+	playSound?: boolean; // whether to play or disable the teletext sound
+	preserveSpacing?: boolean; // renders spaces as &nbsp; to preserve formatting. This disables word-wrapping.
+	bigFont?: string; // use an ascii-art font size for this text block.
+	fillWidth?: boolean; // repeat this text to fill the width of the screen
+	align?: 'left' | 'center' | 'right'; // text alignment
+};
+/////////////////////////// JSON DATA TYPES ///////////////////////////////
+
+export type PhosphorJsonData = {
+	metadata: {
+		description: string;
+		author: string;
+		comment: string;
+	};
+	config: {
+		name: string;
+		speed: number;
+		footer?: string;
+		minWidth: number;
+		maxWidth?: number;
+	};
+	screens: PhosphorJsonScreen[];
+	dialogs: PhosphorJsonDialog[];
+	// variables: PhosphorJsonVariable[];
+};
+
+export type PhosphorJsonVariable = {
+	id: string;
+	type: 'number' | 'boolean' | 'string';
+	default?: number | boolean;
+};
+
+export type PhosphorJsonDialog = {
+	id: string;
+	type: PhosphorDialogType;
+	content: string[];
+};
+
+export type PhosphorJsonScreen = {
+	id?: string;
+	content?: PhosphorScreenJsonContent[];
+	type: PhosphorScreenType;
+};
+
+export type PhosphorScreenJsonContent =
+	| string
+	| VoidData
+	| JsonLink
+	| JsonBitmap
+	| JsonToggle
+	| JsonPrompt
+	| JsonText
+	| JsonCountdown;
+
+type VoidData = {
+	type: 'void';
+	[key: string]: any;
+};
+
+type JsonBitmap = {
+	type: 'bitmap';
+	src: string;
+	alt?: string;
+	className?: string;
+	id?: string;
+	loadState?: ScreenDataState;
+	onLoad?: boolean;
+};
+
+type JsonToggle = {
+	type: 'toggle';
+	states: JsonToggleState[];
+	className?: string;
+	id?: string;
+	loadState?: ScreenDataState;
+	onLoad?: boolean;
+	textOpts?: TextOptions;
+};
+
+export type JsonToggleState = {
+	text: string;
+	active: boolean;
+	delayMs?: number;
+	delayText?: string;
+};
+
+export type JsonCommand = {
+	command: string | string[];
+	action: JsonCommandDialog | JsonCommandLink | JsonCommandToggle; // | JsonCommandVariable;
+};
+
+type JsonPrompt = {
+	type: 'prompt';
+	prompt?: string;
+	className?: string;
+	commands: JsonCommand[];
+	id?: string;
+	loadState?: ScreenDataState;
+	onLoad?: boolean;
+	textOpts?: TextOptions;
+};
+
+type JsonLink = {
+	type: 'link';
+	text?: string;
+	className?: string;
+	target: string | LinkTarget[];
+	id?: string;
+	loadState?: ScreenDataState;
+	onLoad?: boolean;
+	textOpts?: TextOptions;
+};
+
+type JsonCommandDialog = {
+	type: 'alert' | 'dialog';
+	target: string;
+};
+type JsonCommandLink = {
+	type: 'link';
+	target: string;
+};
+type JsonCommandToggle = {
+	type: 'toggle';
+	target: string;
+};
+type JsonCommandVariable = {
+	type: 'variable';
+	target: string;
+	context: {
+		action: 'set' | 'toggle' | 'increment' | 'decrement';
+		value?: number | boolean | string;
+	};
+};
+
+type JsonText = {
+	type: 'text';
+	text: string;
+	id?: string;
+	loadState?: ScreenDataState;
+	onLoad?: boolean;
+	className?: string;
+	textOpts?: TextOptions;
+};
+
+type JsonCountdown = {
+	type: 'countdown';
+	prompt: string;
+	duration: number;
+	className?: string;
+	id?: string;
+	textOpts?: TextOptions;
+};
+
+/////////////////////////// PARSED DATA TYPES ///////////////////////////////
+
+export type PhosphorData = {
+	config: {
+		name: string;
+		author: string;
+		comment: string;
+	};
+	screens: PhosphorScreen[];
+	dialogs: PhosphorDialog[];
+};
+
+export type PhosphorDialog = {
+	id: string;
+	type: PhosphorDialogType;
+	content: string[];
+};
+
+export type PhosphorScreen = BasePhosphorScreen | PhosphorStaticScreen;
+
+type BasePhosphorScreen = {
+	id: string;
+	type: 'screen';
+	content: PhosphorScreenContent[];
+};
+
+type PhosphorStaticScreen = {
+	id: string;
+	type: 'static';
+	content: PhosphorScreenContent[];
+};
+
+export type PhosphorScreenContent =
+	| Link
+	| PhosphorBitmap
+	| PhosphorToggle
+	| PhosphorPrompt
+	| PhosphorText
+	| PhosphorCountdown;
+
+export type PhosphorBitmap = {
+	type: 'bitmap';
+	src: string;
+	alt?: string;
+	className?: string;
+	id: string;
+	loadState: ScreenDataState;
+	onLoad?: boolean;
+};
+
+export type PhosphorToggle = {
+	type: 'toggle';
+	states: {
+		text: string;
+		active: boolean;
+	}[];
+	className?: string;
+	id: string;
+	loadState: ScreenDataState;
+	onLoad?: boolean;
+	// speed: number;
+	textOpts?: TextOptions;
+};
+
+export type Command = {
+	command: string;
+	action: CommandLink | CommandDialog | CommandToggle;
+};
+
+type CommandLink = {
+	type: 'link';
+	target: string;
+};
+type CommandDialog = {
+	type: 'alert' | 'dialog';
+	target: string;
+	// id: string;
+	// content: string[];
+};
+type CommandToggle = {
+	type: 'toggle';
+	target: string;
+};
+
+export type PhosphorPrompt = {
+	type: 'prompt';
+	prompt: string;
+	className: string;
+	commands: Command[];
+	id: string;
+	loadState: ScreenDataState;
+	onLoad?: boolean;
+	// speed: number;
+	// isPassword: boolean;
+	textOpts?: TextOptions;
+};
+
+export type Link = {
+	type: 'link';
+	text?: string;
+	className?: string;
+	target: string | LinkTarget[];
+	id: string;
+	loadState: ScreenDataState;
+	onLoad?: boolean;
+	// speed: number;
+	textOpts?: TextOptions;
+};
+
+export type LinkTarget = { target: string; type: string; shiftKey: boolean };
+
+export type Dialog = {
+	type: 'alert' | 'dialog';
+	id: string;
+	content: string[];
+};
+
+export type PhosphorText = {
+	type: 'text';
+	text: string;
+	id: string;
+	loadState: ScreenDataState;
+	onLoad?: boolean;
+	className?: string;
+	// speed: number;
+	textOpts?: TextOptions;
+};
+
+export type PhosphorCountdown = {
+	type: 'countdown';
+	id: string;
+	prompt: string;
+	loadState: ScreenDataState;
+	onLoad?: boolean;
+	duration: number;
+	className?: string;
+	textOpts?: TextOptions;
+};
+
+let d: PhosphorJsonData = {
+	metadata: {
+		description: 'The Haunting of Ypsilon-14 JSON data',
+		author: '@redhg, @tom',
+		comment:
+			"Phosphor content file for the 'Haunting of Ypsilon-14' module for the Mothership tabletop roleplaying game. Visit https://redhg.com/ypsilon14/ to see the compiled application."
+	},
+	config: {
+		name: 'YPSILON-14',
+		speed: 5,
+		footer: '(c) 2154 Nishikawa Heavy Industries Ltd. All rights reserved.',
+		minWidth: 60
+	},
+	screens: [
+		{
+			id: 'screen0',
+			type: 'screen',
+			content: [
+				{
+					type: 'link',
+					target: 'lifesupport',
+					text: '=',
+					textOpts: {
+						fillWidth: true
+					}
+				},
+
+				{ type: 'text', textOpts: { speed: 2, preserveSpacing: false }, text: '' },
+				{
+					type: 'text',
+					textOpts: { speed: 2, preserveSpacing: true },
+					text: '      _   ___________ __  ________ __ ___ _       _____'
+				},
+				{
+					type: 'text',
+					textOpts: { speed: 2, preserveSpacing: true },
+					text: '     \/ | \/ \/  _\/ ___\/\/ \/ \/ \/  _\/ \/\/_\/\/   | |     \/ \/   |'
+				},
+				{
+					type: 'text',
+					textOpts: { speed: 2, preserveSpacing: true },
+					text: '    \/  |\/ \/\/ \/ \\__ \\\/ \/_\/ \/\/ \/\/ ,<  \/ \/| | | \/| \/ \/ \/| |'
+				},
+				{
+					type: 'text',
+					textOpts: { speed: 2, preserveSpacing: true },
+					text: '   \/ \/|  \/\/ \/ ___\/ \/ __  \/\/ \/\/ \/| |\/ ___ | |\/ |\/ \/ ___ |'
+				},
+				{
+					type: 'text',
+					textOpts: { speed: 2, preserveSpacing: true },
+					text: '  \/_\/ |_\/___\/\/____\/_\/ \/_\/___\/_\/ |_\/_\/  |_|__\/|__\/_\/  |_|'
+				},
+				{ type: 'text', textOpts: { speed: 2, preserveSpacing: true }, text: '' },
+				{ type: 'text', textOpts: { speed: 2, preserveSpacing: true, fillWidth: true }, text: '=' },
+				'',
+				' NISHIKAWA HEAVY INDUSTRIES LTD (R) 2176',
+				' HEURISTICALLY ENCRYPTED REAL-TIME OPERATING SYSTEM (R)',
+				'',
+				'===============================================================',
+				'',
+				' H.E.R.O.S. TERMINAL v4.22.7',
+				' YOU ARE CONNECTED TO < SERVER 26 > < YPSILON-14 STATION >',
+				' SYSTEM ADMINISTRATOR INTEGRATED MESSAGE SYSTEM: [ ACTIVE ]',
+				' SYSTEM ADMINISTRATOR (SYSADM): YUTA NAKAMURA',
+				'',
+				'===============================================================',
+				'',
+				' (C) 2154 NISHIKAWA HEAVY INDUSTRIES LTD. ALL RIGHTS RESERVED.',
+				'',
+				{
+					text: '> Type ACCEPT to agree with EULA & log in',
+					type: 'link',
+					target: 'menu'
+				},
+				'',
+				{
+					type: 'prompt',
+					commands: [
+						{
+							command: ['accept', 'login'],
+							action: {
+								type: 'link',
+								target: 'menu'
+							}
+						},
+						{
+							command: 'next',
+							action: {
+								type: 'link',
+								target: 'screen0'
+							}
+						}
+					]
+				}
+			]
+		},
+		{
+			id: 'eulanotaccept',
+			type: 'screen',
+			content: [
+				'===============================================================',
+				'',
+				' EULA NOT ACCEPTED.',
+				'',
+				{
+					type: 'text',
+					text: 'ACCESS TO THIS TERMINAL IS RESTRICTED TO AUTHORIZED PERSONNEL ONLY. UNAUTHORIZED ACCESS OR USE IS A VIOLATION OF COMPANY POLICY #271-A-i. ALL ACTIVITIES ARE LOGGED AND MONITORED. IF YOU DO NOT AGREE TO THE TERMS OF THE END USER LICENSE AGREEMENT',
+					textOpts: { preserveSpacing: false }
+				},
+				'',
+				' PLEASE DISCONNECT IMMEDIATELY.',
+				'',
+				'===============================================================',
+				''
+			]
+		},
+		{
+			id: 'menu',
+			type: 'screen',
+			content: [
+				'===============================',
+				'',
+				'  YPSILON-14 Control Terminal  ',
+				'          Main Menu',
+				'',
+				'===============================',
+				'',
+				'Please make a selection from the following options',
+				'',
+				{
+					text: '> [ STATION MAP ]',
+					type: 'link',
+					target: 'map'
+				},
+				{
+					text: '> [ DIAGNOSTICS ]',
+					type: 'link',
+					target: 'diagnostics'
+				},
+				{
+					text: '> [ SCHEDULE ]',
+					type: 'link',
+					target: 'schedule'
+				},
+				{
+					text: '> [ ROSTER ]',
+					type: 'link',
+					target: 'roster'
+				},
+				{
+					text: '> [ COMMS ]',
+					type: 'link',
+					target: 'comms'
+				},
+				{
+					text: '> [ CONTROLS ]',
+					type: 'link',
+					target: 'controls'
+				},
+				'',
+				{
+					text: '< QUIT',
+					type: 'link',
+					target: 'screen0'
+				},
+				'',
+				{
+					type: 'prompt',
+					commands: [
+						{
+							command: ['map', 'station map'],
+							action: {
+								type: 'link',
+								target: 'map'
+							}
+						},
+						{
+							command: ['diagnostics'],
+							action: {
+								type: 'link',
+								target: 'diagnostics'
+							}
+						},
+						{
+							command: 'schedule',
+							action: {
+								type: 'link',
+								target: 'schedule'
+							}
+						},
+						{
+							command: 'roster',
+							action: {
+								type: 'link',
+								target: 'roster'
+							}
+						},
+						{
+							command: 'comms',
+							action: {
+								type: 'link',
+								target: 'comms'
+							}
+						},
+						{
+							command: 'controls',
+							action: {
+								type: 'link',
+								target: 'controls'
+							}
+						},
+						{
+							command: ['quit', 'exit', 'logout', 'back'],
+							action: {
+								type: 'link',
+								target: 'screen0'
+							}
+						}
+					]
+				}
+			]
+		},
+		{
+			id: 'map',
+			type: 'screen',
+			content: [
+				'Station Map',
+				'===========',
+				'',
+				{
+					type: 'bitmap',
+					src: 'https://i.imgur.com/htHuumj.png',
+					className: 'lighten'
+				},
+				'',
+				{
+					text: '> [ SAVE ]',
+					type: 'link',
+					target: [
+						{
+							target: 'saveimage',
+							type: 'dialog',
+							shiftKey: true
+						}
+					]
+				},
+				'',
+				{
+					text: '< BACK',
+					type: 'link',
+					target: 'menu'
+				},
+				'',
+				{
+					type: 'prompt',
+					commands: [
+						{
+							command: 'back',
+							action: {
+								type: 'link',
+								target: 'menu'
+							}
+						},
+						{
+							command: 'save',
+							action: {
+								type: 'dialog',
+								target: 'saveimage'
+							}
+						}
+					]
+				}
+			]
+		},
+		{
+			id: 'diagnostics',
+			type: 'screen',
+			content: [
+				{
+					type: 'text',
+					text: 'Diagnostics',
+					onLoad: false
+				},
+				'===========',
+				'',
+				'Checking life support:',
+				{
+					type: 'text',
+					text: '................',
+					textOpts: { speed: 100 }
+				},
+				{
+					text: '[OK]',
+					className: 'ok',
+					type: 'text'
+				},
+				'',
+				'Checking main systems:',
+				{
+					type: 'text',
+					text: '................',
+					textOpts: { speed: 100 }
+				},
+				{
+					text: '[OK]',
+					className: 'ok',
+					type: 'text'
+				},
+				'',
+				{
+					text: 'WARNING: Airflow 82.4%. Check crew quarters vents for blockage.',
+					className: 'alert',
+					type: 'text'
+				},
+				{
+					text: 'WARNING: Shower #5 non-functional as of 1 day(s).',
+					className: 'alert',
+					type: 'text'
+				},
+				'',
+				{
+					text: 'NOTICE: Air filters replaced 455 day(s) ago.',
+					className: 'warn',
+					type: 'text'
+				},
+				{
+					text: 'NOTICE: Mineshaft lift maintained 455 day(s) ago.',
+					className: 'warn',
+					type: 'text'
+				},
+
+				'',
+				'===========',
+				'',
+				'SUMMARY:',
+				'All systems operating within acceptable parameters.',
+				'',
+				'===========',
+				'',
+				{
+					type: 'prompt',
+					commands: [
+						{
+							command: 'back',
+							action: {
+								type: 'link',
+								target: 'menu'
+							}
+						}
+					]
+				}
+			]
+		},
+		{
+			id: 'schedule',
+			type: 'screen',
+			content: [
+				'Schedule',
+				'========',
+				'',
+				'Docking bay activity (past 6 months):',
+				'',
+				'2366-06-12.0633 - Bay 2 : Arrive :: Tempest',
+				'2366-04-29.0834 - Bay 1 : Arrive :: Heracles',
+				'2366-03-02.1223 - Bay 2 : Depart :: Key Largo',
+				'2366-02-20.1604 - Bay 2 : Arrive :: Key Largo',
+				'',
+				'======',
+				'',
+				{
+					type: 'prompt',
+					commands: [
+						{
+							command: 'back',
+							action: {
+								type: 'link',
+								target: 'menu'
+							}
+						}
+					]
+				}
+			]
+		},
+		{
+			id: 'roster',
+			type: 'screen',
+			content: [
+				'Roster',
+				'======',
+				'',
+				'01. VERHOEVEN, Sonya     :: Admin',
+				'02. SINGH, Ashraf        :: Breaker',
+				'03. DE BEERS, Dana       :: Lead drill',
+				'04. CHATZKEL, Jerome     :: Asst. drill',
+				'05. TOBIN, Rosa          :: Engineer',
+				'06. RADIMIR, Mikhail     :: Lead Engineer',
+				'07. KANTARO, Kenji       :: Loader',
+				'08. BOWE, Morgan         :: Loader',
+				'09. NEKTARIOS, Ri        :: Loader',
+				'10. n/a',
+				'',
+				'======',
+				'',
+				{
+					type: 'prompt',
+					commands: [
+						{
+							command: 'back',
+							action: {
+								type: 'link',
+								target: 'menu'
+							}
+						}
+					]
+				}
+			]
+		},
+		{
+			id: 'comms',
+			type: 'screen',
+			content: [
+				'COMMS',
+				'=====',
+				'',
+				'2 vessels detected in proximity.',
+				'',
+				{
+					text: '> HAIL TEMPEST',
+					target: 'hailtempest',
+					type: 'link'
+				},
+				{
+					text: '> HAIL HERECLES',
+					target: 'hailherecles',
+					type: 'link'
+				},
+				'',
+				'======',
+				'',
+				{
+					type: 'prompt',
+					commands: [
+						{
+							command: 'back',
+							action: {
+								type: 'link',
+								target: 'menu'
+							}
+						},
+						{
+							command: ['hail tempest', 'tempest'],
+							action: {
+								type: 'link',
+								target: 'hailtempest'
+							}
+						},
+						{
+							command: ['hail herecles', 'herecles'],
+							action: {
+								type: 'link',
+								target: 'hailherecles'
+							}
+						}
+					]
+				}
+			]
+		},
+		{
+			id: 'hailtempest',
+			type: 'screen',
+			content: [
+				'Transmitting',
+				'============',
+				'',
+				{
+					type: 'text',
+					text: '..........................................',
+					textOpts: { speed: 100 }
+				},
+				{
+					type: 'text',
+					text: '..........................................',
+					textOpts: { speed: 100 }
+				},
+				'',
+				{
+					type: 'text',
+					text: 'COMMUNICATION CHANNEL OPENED',
+					className: 'ok blink'
+				},
+
+				'',
+				'======',
+				'',
+				{
+					text: '< CLOSE CHANNEL',
+					target: 'comms',
+					type: 'link'
+				},
+				'',
+				{
+					type: 'prompt',
+					commands: [
+						{
+							command: 'send .+',
+							action: {
+								type: 'dialog',
+								target: 'messengeSent'
+							}
+						},
+						{
+							command: ['close', 'close channel', 'back'],
+							action: {
+								type: 'link',
+								target: 'comms'
+							}
+						}
+					]
+				}
+			]
+		},
+		{
+			id: 'hailherecles',
+			type: 'screen',
+			content: [
+				'Transmitting',
+				'============',
+				'',
+				{
+					type: 'text',
+					text: '..........................................',
+					textOpts: { speed: 100 }
+				},
+				{
+					type: 'text',
+					text: '..........................................',
+					textOpts: { speed: 100 }
+				},
+				'',
+				{
+					type: 'text',
+					className: 'alert blink',
+					text: 'NO RESPONSE'
+				},
+				'',
+				'======',
+				'',
+				{
+					text: '< BACK',
+					target: 'comms',
+					type: 'link'
+				},
+				'',
+				{
+					type: 'prompt',
+					commands: [
+						{
+							command: ['close', 'close channel', 'back'],
+							action: {
+								type: 'link',
+								target: 'comms'
+							}
+						}
+					]
+				}
+			]
+		},
+		{
+			id: 'controls',
+			type: 'screen',
+			content: [
+				'Controls',
+				'========',
+				'',
+				'[A] :: Administrator access only',
+				'Any unauthorised access will be logged and reported.',
+				'',
+				{
+					text: '> SHOWERS',
+					target: 'showers',
+					type: 'link'
+				},
+				{
+					text: '> HYDROPONICS LAB',
+					target: 'greenhouse',
+					type: 'link'
+				},
+				{
+					text: '> [A] :: AIRLOCKS',
+					type: 'link',
+					target: [
+						{
+							target: 'lockedDialog',
+							type: 'dialog',
+							shiftKey: true
+						},
+						{
+							target: 'airlocks',
+							type: 'link',
+							shiftKey: false
+						}
+					]
+				},
+				{
+					text: '> [A] :: SYSTEM',
+					type: 'link',
+					target: [
+						{
+							target: 'lockedDialog',
+							type: 'dialog',
+							shiftKey: true
+						},
+						{
+							target: 'system',
+							type: 'link',
+							shiftKey: false
+						}
+					]
+				},
+				'',
+				{
+					text: '> [A] :: LOGIN',
+					type: 'link',
+					target: 'loginscreen'
+				},
+				'',
+				{
+					text: '< BACK',
+					target: 'menu',
+					type: 'link'
+				},
+				'',
+				{
+					type: 'prompt',
+					commands: [
+						{
+							command: 'back',
+							action: {
+								type: 'link',
+								target: 'menu'
+							}
+						},
+						{
+							command: 'showers',
+							action: {
+								type: 'link',
+								target: 'showers'
+							}
+						},
+						{
+							command: ['hydroponics lab', 'lab', 'hydroponics'],
+							action: {
+								type: 'link',
+								target: 'greenhouse'
+							}
+						},
+						{
+							command: ['airlocks', 'airlock'],
+							action: {
+								type: 'dialog',
+								target: 'lockedDialog'
+							}
+						},
+						{
+							command: ['system'],
+							action: {
+								type: 'dialog',
+								target: 'lockedDialog'
+							}
+						},
+						{
+							command: ['login'],
+							action: {
+								type: 'link',
+								target: 'loginscreen'
+							}
+						}
+					]
+				}
+			]
+		},
+		{
+			id: 'loginscreen',
+			type: 'screen',
+			content: [
+				'Admin Login',
+				'===========',
+				'',
+				'Enter password below, or BACK to return.',
+				'',
+				{
+					text: '< BACK',
+					target: 'controls',
+					type: 'link'
+				},
+				'',
+				{
+					type: 'prompt',
+					prompt: 'PASSWORD: ',
+					textOpts: { isPassword: true },
+					commands: [
+						{
+							command: 'password',
+							action: {
+								type: 'link',
+								target: 'controlsadmin'
+							}
+						},
+						{
+							command: 'back',
+							action: {
+								type: 'link',
+								target: 'controls'
+							}
+						},
+						{
+							command: '.+',
+							action: {
+								type: 'link',
+								target: 'controls'
+							}
+						}
+					]
+				}
+			]
+		},
+		{
+			id: 'controlsadmin',
+			type: 'screen',
+			content: [
+				'Controls',
+				'========',
+				'',
+				'Welome, A$#FTGe --lglgadgvbvvsd',
+				'',
+				{
+					text: '> SHOWERS',
+					target: 'showers',
+					type: 'link'
+				},
+				{
+					text: '> HYDROPONICS LAB',
+					target: 'greenhouse',
+					type: 'link'
+				},
+				{
+					text: '> [A] :: AIRLOCKS',
+					type: 'link',
+					target: 'airlocks'
+				},
+				{
+					text: '> [A] :: SYSTEM',
+					type: 'link',
+					target: 'system'
+				},
+				'',
+				{
+					text: '< BACK',
+					target: 'menu',
+					type: 'link'
+				},
+				'',
+				{
+					type: 'prompt',
+					commands: [
+						{
+							command: 'back',
+							action: {
+								type: 'link',
+								target: 'menu'
+							}
+						},
+						{
+							command: 'showers',
+							action: {
+								type: 'link',
+								target: 'showers'
+							}
+						},
+						{
+							command: ['hydroponics lab', 'lab', 'hydroponics'],
+							action: {
+								type: 'link',
+								target: 'greenhouse'
+							}
+						},
+						{
+							command: ['airlocks', 'airlock'],
+							action: {
+								type: 'link',
+								target: 'airlocks'
+							}
+						},
+						{
+							command: ['system'],
+							action: {
+								type: 'link',
+								target: 'system'
+							}
+						},
+						{
+							command: ['login'],
+							action: {
+								type: 'link',
+								target: 'loginscreen'
+							}
+						}
+					]
+				}
+			]
+		},
+		{
+			id: 'airlocks',
+			type: 'screen',
+			content: [
+				'Airlocks',
+				'========',
+				'',
+				{
+					type: 'link',
+					text: '> DOCKING BAY 1 :: LOCKED — ERROR',
+					className: 'alert',
+					target: [
+						{
+							target: 'airlockError',
+							type: 'dialog',
+							shiftKey: false
+						}
+					]
+				},
+				{
+					type: 'toggle',
+					id: 'airlock2',
+					states: [
+						{
+							text: '> DOCKING BAY 2 :: UNLOCKED',
+							active: true
+						},
+						{
+							text: '> DOCKING BAY 2 :: LOCKED',
+							active: false
+						}
+					]
+				},
+				'',
+				'======',
+				'',
+				{
+					text: '< BACK',
+					target: 'controlsadmin',
+					type: 'link'
+				},
+				'',
+				{
+					type: 'prompt',
+					commands: [
+						{
+							command: 'back',
+							action: {
+								type: 'link',
+								target: 'controlsadmin'
+							}
+						},
+						{
+							command: [
+								'dockingbay1',
+								'docking bay 1',
+								'lock docking bay 1',
+								'unlock docking bay 1',
+								'airlock1',
+								'airlock 1',
+								'lock airlock 1',
+								'unlock airlock 1'
+							],
+							action: {
+								type: 'dialog',
+								target: 'airlockError'
+							}
+						},
+						{
+							command: [
+								'dockingbay2',
+								'docking bay 2',
+								'lock docking bay 2',
+								'unlock docking bay 2',
+								'airlock2',
+								'airlock 2',
+								'lock airlock 2',
+								'unlock airlock 2'
+							],
+							action: {
+								type: 'toggle',
+								target: 'airlock2'
+							}
+						}
+					]
+				}
+			]
+		},
+		{
+			id: 'showers',
+			type: 'screen',
+			content: [
+				'Showers',
+				'=======',
+				'',
+				{
+					id: 'shower1',
+					type: 'toggle',
+					states: [
+						{
+							text: '> SHOWER 1 :: OFF',
+							active: true
+						},
+						{
+							text: '> SHOWER 1 :: ON',
+							active: false
+						}
+					]
+				},
+				{
+					id: 'shower2',
+					type: 'toggle',
+					states: [
+						{
+							text: '> SHOWER 2 :: OFF',
+							active: true
+						},
+						{
+							text: '> SHOWER 2 :: ON',
+							active: false
+						}
+					]
+				},
+				{
+					id: 'shower3',
+					type: 'toggle',
+					states: [
+						{
+							text: '> SHOWER 3 :: OFF',
+							active: true
+						},
+						{
+							text: '> SHOWER 3 :: ON',
+							active: false
+						}
+					]
+				},
+				{
+					id: 'shower4',
+					type: 'toggle',
+					states: [
+						{
+							text: '> SHOWER 4 :: OFF',
+							active: true
+						},
+						{
+							text: '> SHOWER 4 :: ON',
+							active: false
+						}
+					]
+				},
+				{
+					type: 'text',
+					className: 'alert',
+					text: '> SHOWER 5 :: MALFUNCTIONING'
+				},
+				{
+					id: 'shower6',
+					type: 'toggle',
+					states: [
+						{
+							text: '> SHOWER 6 :: OFF',
+							active: true
+						},
+						{
+							text: '> SHOWER 6 :: ON',
+							active: false
+						}
+					]
+				},
+				'',
+				'======',
+				'',
+				{
+					text: '< BACK',
+					target: 'controls',
+					type: 'link'
+				},
+				'',
+				'======',
+				'',
+				{
+					type: 'prompt',
+					commands: [
+						{
+							command: 'back',
+							action: {
+								type: 'link',
+								target: 'controls'
+							}
+						},
+						{
+							command: ['shower 1'],
+							action: {
+								type: 'toggle',
+								target: 'shower1'
+							}
+						},
+						{
+							command: ['shower 2'],
+							action: {
+								type: 'toggle',
+								target: 'shower2'
+							}
+						},
+						{
+							command: ['shower 3'],
+							action: {
+								type: 'toggle',
+								target: 'shower3'
+							}
+						},
+						{
+							command: ['shower 4'],
+							action: {
+								type: 'toggle',
+								target: 'shower4'
+							}
+						},
+						{
+							command: ['shower 6'],
+							action: {
+								type: 'toggle',
+								target: 'shower6'
+							}
+						}
+					]
+				}
+			]
+		},
+		{
+			id: 'greenhouse',
+			type: 'screen',
+			content: [
+				'Hydroponics Lab',
+				'===============',
+				'',
+				{
+					type: 'toggle',
+					id: 'mist',
+					states: [
+						{
+							text: '> MIST HYDRATION SYSTEM :: OFF',
+							active: true
+						},
+						{
+							text: '> MIST HYDRATION SYSTEM :: ON',
+							active: false
+						}
+					]
+				},
+				'',
+				'======',
+				'',
+				{
+					text: '< BACK',
+					target: 'controls',
+					type: 'link'
+				},
+				'',
+				{
+					type: 'prompt',
+					commands: [
+						{
+							command: 'back',
+							action: {
+								type: 'link',
+								target: 'controls'
+							}
+						},
+						{
+							command: ['mist hydration system', 'mist'],
+							action: {
+								type: 'toggle',
+								target: 'greenhouse'
+							}
+						}
+					]
+				}
+			]
+		},
+		{
+			id: 'system',
+			type: 'screen',
+			content: [
+				'System',
+				'======',
+				'',
+				{
+					text: '> LIFE SUPPORT',
+					target: 'lifesupport',
+					type: 'link'
+				},
+				{
+					text: '> SELF-DESTRUCT',
+					target: 'selfdestruct',
+					type: 'link'
+				},
+				'',
+				'======',
+				'',
+				{
+					text: '< BACK',
+					target: 'controlsadmin',
+					type: 'link'
+				},
+				'',
+				{
+					type: 'prompt',
+					commands: [
+						{
+							command: 'back',
+							action: {
+								type: 'link',
+								target: 'controlsadmin'
+							}
+						},
+						{
+							command: ['lifesupport', 'life support'],
+							action: {
+								type: 'link',
+								target: 'lifesupport'
+							}
+						},
+						{
+							command: ['selfdestruct', 'self destruct'],
+							action: {
+								type: 'link',
+								target: 'selfdestruct'
+							}
+						}
+					]
+				}
+			]
+		},
+		{
+			id: 'lifesupport',
+			type: 'screen',
+			content: [
+				'Life Support',
+				'============',
+				'',
+				{
+					type: 'text',
+					className: 'alert',
+					text: 'WARNING!'
+				},
+				{
+					type: 'text',
+					className: 'alert',
+					text: 'Disabling life support without the proper authorisation or without'
+				},
+				{
+					type: 'text',
+					className: 'alert',
+					text: 'following the appropriate safety protocols is in direct violation'
+				},
+				{
+					type: 'text',
+					className: 'alert',
+					text: 'of company policy #2778-A.'
+				},
+				'',
+				{
+					type: 'text',
+					className: 'alert',
+					text: 'NISHIKAWA DYNAMICS assumes no responsibilities or liabilities resulting'
+				},
+				{
+					type: 'text',
+					className: 'alert',
+					text: 'from the improper use of this feature.'
+				},
+				'',
+				{
+					type: 'toggle',
+					id: 'lifesupport',
+					states: [
+						{
+							text: '> LIFE SUPPORT :: ENABLED',
+							active: true,
+							delayMs: 5000,
+							delayText: '> DISABLING LIFE SUPPORT SYSTEMS %'
+						},
+						{
+							text: '> LIFE SUPPORT :: DISABLED',
+							active: false,
+							delayMs: 5000,
+							delayText: '> ENABLING LIFE SUPPORT SYSTEMS %'
+						}
+					]
+				},
+				'',
+				'======',
+				'',
+				{
+					text: '< BACK',
+					target: 'system',
+					type: 'link'
+				},
+				'',
+				{
+					type: 'prompt',
+					commands: [
+						{
+							command: 'back',
+							action: {
+								type: 'link',
+								target: 'system'
+							}
+						},
+						{
+							command: ['toggle life support', 'life support', 'toggle lifesupport', 'lifesupport'],
+							action: {
+								type: 'toggle',
+								target: 'lifesupport'
+							}
+						}
+					]
+				}
+			]
+		},
+		{
+			id: 'selfdestruct',
+			type: 'screen',
+			content: [
+				'Self-Destruct',
+				'=============',
+				'',
+				{
+					type: 'text',
+					className: 'alert',
+					text: 'WARNING!'
+				},
+				{
+					type: 'text',
+					className: 'alert',
+					text: 'Destruction of corporate property is a violation of company policy #2778-A.'
+				},
+				{
+					type: 'text',
+					className: 'alert',
+					text: 'NISHIKAWA DYNAMICS assumes no responsibilities or liabilities resulting'
+				},
+				{
+					type: 'text',
+					className: 'alert',
+					text: 'from the improper use of this feature.'
+				},
+				'',
+				{
+					text: '> ACTIVATE SELF-DESTRUCT',
+					target: 'activateselfdestruct',
+					type: 'link'
+				},
+				'',
+				'======',
+				'',
+				{
+					text: '< BACK',
+					target: 'system',
+					type: 'link'
+				},
+				'',
+				{
+					type: 'prompt',
+					commands: [
+						{
+							command: 'back',
+							action: {
+								type: 'link',
+								target: 'system'
+							}
+						},
+						{
+							command: [
+								'activate self-destruct',
+								'activate self destruct',
+								'self-destruct',
+								'self destruct'
+							],
+							action: {
+								type: 'link',
+								target: 'activateselfdestruct'
+							}
+						}
+					]
+				}
+			]
+		},
+		{
+			id: 'activateselfdestruct',
+			type: 'screen',
+			content: [
+				'Activate Self-Destruct',
+				'======================',
+				'',
+				{
+					type: 'text',
+					className: 'alert',
+					text: 'THIS WILL INITIATE A 10-MINUTE STATION SELF-DESTRUCT SEQUENCE.'
+				},
+				'',
+				{
+					type: 'text',
+					className: 'alert',
+					text: 'THIS CANNOT BE UNDONE.'
+				},
+				'',
+				{
+					type: 'prompt',
+					prompt: "TYPE 'OK' TO BEGIN COUNTDOWN: ",
+					className: 'alert cursor',
+					commands: [
+						{
+							command: 'ok',
+							action: {
+								type: 'link',
+								target: 'evacuate'
+							}
+						},
+						{
+							command: '.+',
+							action: {
+								type: 'link',
+								target: 'selfdestruct'
+							}
+						}
+					]
+				},
+				'',
+				'======',
+				'',
+				{
+					text: '< BACK',
+					target: 'selfdestruct',
+					type: 'link'
+				}
+			]
+		},
+		{
+			id: 'evacuate',
+			type: 'screen',
+			content: [
+				{
+					type: 'text',
+					className: 'alert',
+					text: 'SELF-DESTRUCT SEQUENCE INITIATED.'
+				},
+				{
+					type: 'text',
+					className: 'alert',
+					text: 'PLEASE EVACUATE AS SOON AS POSSIBLE.'
+				},
+				'',
+				{
+					type: 'countdown',
+					className: 'alert blink',
+					prompt: 'T-MINUS ',
+					duration: 600
+				}
+			]
+		}
+	],
+	dialogs: [
+		{
+			id: 'lockedDialog',
+			type: 'alert',
+			content: ['Error! Authorization required.']
+		},
+		{
+			id: 'airlockError',
+			type: 'alert',
+			content: [
+				'ERROR! Lock override in effect.',
+				'',
+				'Cannot unlock remotely. Manual intervention required.'
+			]
+		},
+		{
+			id: 'saveimage',
+			type: 'alert',
+			content: [
+				'ACTION: Success',
+				'',
+				'A copy of the station map is available via the data tablet.'
+			]
+		},
+		{
+			id: 'messengeSent',
+			type: 'alert',
+			content: ['ACTION: Success', '', 'Messege sent successfully.']
+		}
+	]
+};

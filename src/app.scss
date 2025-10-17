@@ -1,0 +1,67 @@
+@import 'tailwindcss';
+@import '$lib/assets/fonts';
+@import '$lib/assets/colours';
+
+html,
+body {
+	font-family: $font-family;
+	font-size: $fontsize;
+	line-height: $lineheight;
+	color: rgb(var(--foreground)); //$foreground;
+
+	user-select: none;
+	text-shadow: var(--foreground-glow); //$foreground-glow;
+
+	height: 100%;
+	margin: 0;
+}
+
+body {
+	margin: 0;
+	background: rgb(var(--background)); //$background;
+	background-image: var(--background-gradient); //$background-gradient;
+	background-attachment: fixed;
+	height: 100%;
+}
+
+.phosphor {
+	padding: $lineheight;
+}
+
+.alert {
+	color: rgb(var(--alert)); //$alert;
+	text-shadow: var(--alert-glow); //$alert-glow;
+
+	& > span.cursor {
+		color: rgb(var(--alert)); //$alert;
+		background-color: rgb(var(--alert) / 0.75); //rgba($alert, 0.75);
+	}
+}
+.warn {
+	color: rgb(var(--warn)); //$warn;
+	text-shadow: var(--warn-glow); //$warn-glow;
+
+	& > span.cursor {
+		color: rgb(var(--warn)); //$warn;
+		background-color: rgb(var(--warn) / 0.75); //rgba($warn, 0.75);
+	}
+}
+.ok {
+	color: rgb(var(--ok)); //$ok;
+	text-shadow: var(--ok-glow); //$ok-glow;
+
+	& > span.cursor {
+		color: rgb(var(--ok)); //$ok;
+		background-color: rgb(var(--ok) / 0.75); //rgba($ok, 0.75);
+	}
+}
+.invert {
+	color: rgb(var(--background)); //$background;
+	background-color: rgb(var(--foreground)); //$foreground;
+	text-shadow: var(--background-glow); //$background-glow;
+
+	& > span.cursor {
+		color: rgb(var(--foreground)); //$foreground;
+		background-color: rgb(var(--foreground) / 0.75); //rgba($foreground, 0.75);
+	}
+}
