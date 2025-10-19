@@ -126,7 +126,14 @@
 		<button onclick={nextTheme}>Theme</button>
 		<button onclick={gotoApp}>Goto App</button>
 	</div>
-	<div><a href={'/src/lib/assets/jsonschema.json'}>Download the JSONSchema reference</a></div>
+	<div class="row smaller">
+		<div>
+			<a href={'/src/lib/assets/jsonschema.json'}>Download the JSONSchema reference.</a>
+		</div>
+		<div>
+			<a href={'/src/lib/assets/ypsilon14.json'}>Download my ypsilon14.json file</a>
+		</div>
+	</div>
 </div>
 {#if modalVisible}
 	<section class="__modal__">
@@ -155,11 +162,13 @@
 
 	.row {
 		display: flex;
-
 		flex-direction: row;
 		justify-content: space-around;
 		gap: 2em;
 		align-items: center;
+	}
+	.smaller {
+		font-size: smaller;
 	}
 	button {
 		border: 1px solid;
