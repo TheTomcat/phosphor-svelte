@@ -2,13 +2,13 @@
 import { browser } from '$app/environment';
 import type { JsonCommandVariable, PhosphorVariableType } from '$lib/PhosphorData';
 
-export let vars: Record<string, PhosphorVariableType> = $state({}); // global KV store
+export const vars: Record<string, PhosphorVariableType> = $state({}); // global KV store
 
 export function getVar<T extends PhosphorVariableType = PhosphorVariableType>(
 	name: string,
 	fallback?: T
 ): T {
-	return (name in vars ? (vars as any)[name] : (fallback as any)) as T;
+	return (name in vars ? vars[name] : fallback) as T;
 }
 
 export function setVar(name: string, value: PhosphorVariableType) {
@@ -24,7 +24,7 @@ export function toggleVar(name: string) {
 		vars[name] = true; // sensible default
 	} else {
 		// non-boolean toggle: treat truthy → false, falsy → true
-		vars[name] = !Boolean(cur);
+		vars[name] = !cur;
 	}
 }
 

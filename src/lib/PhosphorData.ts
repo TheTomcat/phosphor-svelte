@@ -100,8 +100,10 @@ export type JsonToggleState = {
 
 export type JsonCommand = {
 	command: string | string[];
-	action: JsonCommandDialog | JsonCommandLink | JsonCommandToggle | JsonCommandVariable;
+	action: JsonAction | JsonAction[];
 };
+
+type JsonAction = JsonCommandDialog | JsonCommandLink | JsonCommandToggle | JsonCommandVariable;
 
 type JsonPrompt = {
 	type: 'prompt';
@@ -144,6 +146,13 @@ export type JsonCommandVariable = {
 		action: 'set' | 'toggle' | 'increment' | 'decrement';
 		value?: PhosphorVariableType;
 	};
+};
+
+type JsonCommandConditional = {
+	type: 'condition';
+	condition: string; // How to implement?
+	true: JsonAction;
+	false: JsonAction;
 };
 
 type JsonText = {
@@ -231,9 +240,9 @@ export type PhosphorToggle = {
 
 export type Command = {
 	command: string;
-	action: CommandLink | CommandDialog | CommandToggle | CommandVariable;
+	action: Action | Action[];
 };
-
+export type Action = CommandLink | CommandDialog | CommandToggle | CommandVariable;
 type CommandLink = {
 	type: 'link';
 	target: string;
@@ -241,9 +250,8 @@ type CommandLink = {
 type CommandDialog = {
 	type: 'alert' | 'dialog';
 	target: string;
-	// id: string;
-	// content: string[];
 };
+
 type CommandToggle = {
 	type: 'toggle';
 	target: string;
@@ -266,8 +274,6 @@ export type PhosphorPrompt = {
 	id: string;
 	loadState: ScreenDataState;
 	onLoad?: boolean;
-	// speed: number;
-	// isPassword: boolean;
 	textOpts?: TextOptions;
 };
 
@@ -279,7 +285,6 @@ export type Link = {
 	id: string;
 	loadState: ScreenDataState;
 	onLoad?: boolean;
-	// speed: number;
 	textOpts?: TextOptions;
 };
 
@@ -298,7 +303,6 @@ export type PhosphorText = {
 	loadState: ScreenDataState;
 	onLoad?: boolean;
 	className?: string;
-	// speed: number;
 	textOpts?: TextOptions;
 };
 

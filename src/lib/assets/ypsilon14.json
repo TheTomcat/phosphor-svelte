@@ -380,7 +380,7 @@
                 "Docking bay activity (past 6 months):",
                 "",
                 "    TIMESTAMP         Bay     Action    Ship",
-                " 1: 2366-06-12.0633 - Bay 2 : Arrive :: XXXXX (DOCKED)",
+                " 1: 2366-06-12.0633 - Bay 2 : Arrive :: {{ship}} (DOCKED)",
                 " 2: 2366-04-29.0834 - Bay 1 : Arrive :: RSV Heracles (DOCKED)",
                 " 3: 2366-02-22.1223 - Bay 2 : Depart :: CTV HORN OV PLENTY",
                 " 4: 2366-02-20.1604 - Bay 2 : Arrive :: CTV HORN OV PLENTY",
@@ -391,7 +391,7 @@
                 " 9: 2365-11-11.1223 - Bay 2 : Depart :: MV VASQUEZ XV",
                 "10: 2365-11-10.1604 - Bay 2 : Arrive :: MV VASQUEZ XV",
                 "",
-                "> MORE...",
+                "> [ MORE ]",
                 "< BACK",
                 "",
                 "======",
@@ -404,6 +404,13 @@
                             "action": {
                                 "type": "link",
                                 "target": "menu"
+                            }
+                        },
+                        {
+                            "command": "more",
+                            "action": {
+                                "type": "dialog",
+                                "target": "nomorerecords"
                             }
                         }
                     ]
@@ -1521,6 +1528,15 @@
                 "ACTION: Success",
                 "",
                 "Messege sent successfully."
+            ]
+        },
+        {
+            "id": "nomorerecords",
+            "type": "alert",
+            "content": [
+                "WARNING",
+                "",
+                "Additional records archived, unavailable."
             ]
         }
     ]

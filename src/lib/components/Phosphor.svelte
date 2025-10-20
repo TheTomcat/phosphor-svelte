@@ -10,6 +10,7 @@
 	import Bitmap from './Bitmap.svelte';
 
 	import type {
+		Action,
 		Command,
 		JsonCommand,
 		LinkTarget,
@@ -356,30 +357,33 @@
 		status = AppStatus.Active;
 		activateScreen();
 	};
-	const handlePromptCommand = (command: string, args: any) => {
-		// console.log('Command: ', command);
-		if (!args || !args.type) {
-			console.error('Something has gone terribly wrong');
-			return;
-		}
-		switch (args.type) {
-			case 'link':
-				args.target && changeScreen(args.target);
-				break;
-			case 'dialog':
-				args.target && toggleDialog(args.target);
-				break;
-			case 'toggle':
-				args.target && toggleToggle(args.target);
-				break;
-			case 'console':
-				console.log('Command executed:', command, args);
-				break;
-			case 'variable':
-				applyVariableCommand(args, command);
-				break;
-			default:
-				console.warn('Unknown command type:', args.type);
+	const handlePromptCommand = (command: string, args: Action | Action[]) => {
+		if (Array.isArray(args)) {
+			// Put sequential logic here.
+		} else {
+			if (!args || !args.type) {
+				console.error('Something has gone terribly wrong');
+				return;
+			}
+			switch (args.type) {
+				case 'link':
+					args.target && changeScreen(args.target);
+					break;
+				case 'dialog':
+					args.target && toggleDialog(args.target);
+					break;
+				case 'toggle':
+					args.target && toggleToggle(args.target);
+					break;
+				// case 'console':
+				// 	console.log('Command executed:', command, args);
+				// 	break;
+				case 'variable':
+					applyVariableCommand(args, command);
+					break;
+				default:
+					console.warn('Unknown command type:', args.type);
+			}
 		}
 	};
 	const handleLinkClick = (target: string | LinkTarget[], shiftKey: boolean) => {
