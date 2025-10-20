@@ -31,6 +31,7 @@
 	import Link from './Link.svelte';
 	import Countdown from './Countdown.svelte';
 	import figlet from 'figlet';
+	import { applyVariableCommand, setVar } from '$lib/phosphorVariables.svelte';
 
 	let { data }: { data: PhosphorJsonData } = $props();
 
@@ -356,6 +357,7 @@
 		activateScreen();
 	};
 	const handlePromptCommand = (command: string, args: any) => {
+		// console.log('Command: ', command);
 		if (!args || !args.type) {
 			console.error('Something has gone terribly wrong');
 			return;
@@ -372,6 +374,9 @@
 				break;
 			case 'console':
 				console.log('Command executed:', command, args);
+				break;
+			case 'variable':
+				applyVariableCommand(args, command);
 				break;
 			default:
 				console.warn('Unknown command type:', args.type);
@@ -428,6 +433,12 @@
 		return parsedDialogs;
 	};
 
+	const parseVariables = () => {
+		data.variables.forEach((v) => {
+			setVar(v.id, v.default);
+		});
+	};
+
 	onMount(() => {
 		setScreenWidth();
 		figlet.defaults({ fontPath: '/src/lib/assets/fonts' });
@@ -435,6 +446,7 @@
 		defaultspeed = data.config.speed || 5;
 		screens = parseScreens();
 		dialogs = parseDialogs();
+		parseVariables();
 		setActiveScreen(0);
 		window.addEventListener('resize', debouncedSetScreenWidth);
 		return () => window.removeEventListener('resize', debouncedSetScreenWidth);

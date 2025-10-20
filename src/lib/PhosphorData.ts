@@ -7,6 +7,7 @@ export enum ScreenDataState {
 
 export type PhosphorDialogType = 'alert' | 'dialog' | 'confirm';
 export type PhosphorScreenType = 'screen' | 'static';
+export type PhosphorVariableType = number | boolean | string;
 
 export type TextOptions = {
 	speed?: number; // the delay between characters appearing
@@ -34,13 +35,13 @@ export type PhosphorJsonData = {
 	};
 	screens: PhosphorJsonScreen[];
 	dialogs: PhosphorJsonDialog[];
-	// variables: PhosphorJsonVariable[];
+	variables: PhosphorJsonVariable[];
 };
 
 export type PhosphorJsonVariable = {
 	id: string;
 	type: 'number' | 'boolean' | 'string';
-	default?: number | boolean;
+	default: PhosphorVariableType;
 };
 
 export type PhosphorJsonDialog = {
@@ -99,7 +100,7 @@ export type JsonToggleState = {
 
 export type JsonCommand = {
 	command: string | string[];
-	action: JsonCommandDialog | JsonCommandLink | JsonCommandToggle; // | JsonCommandVariable;
+	action: JsonCommandDialog | JsonCommandLink | JsonCommandToggle | JsonCommandVariable;
 };
 
 type JsonPrompt = {
@@ -136,12 +137,12 @@ type JsonCommandToggle = {
 	type: 'toggle';
 	target: string;
 };
-type JsonCommandVariable = {
+export type JsonCommandVariable = {
 	type: 'variable';
 	target: string;
 	context: {
 		action: 'set' | 'toggle' | 'increment' | 'decrement';
-		value?: number | boolean | string;
+		value?: PhosphorVariableType;
 	};
 };
 
@@ -230,7 +231,7 @@ export type PhosphorToggle = {
 
 export type Command = {
 	command: string;
-	action: CommandLink | CommandDialog | CommandToggle;
+	action: CommandLink | CommandDialog | CommandToggle | CommandVariable;
 };
 
 type CommandLink = {
@@ -246,6 +247,15 @@ type CommandDialog = {
 type CommandToggle = {
 	type: 'toggle';
 	target: string;
+};
+
+type CommandVariable = {
+	type: 'variable';
+	target: string;
+	context: {
+		action: 'set' | 'toggle' | 'increment' | 'decrement';
+		value?: PhosphorVariableType;
+	};
 };
 
 export type PhosphorPrompt = {
@@ -314,22 +324,31 @@ let d: PhosphorJsonData = {
 		name: 'YPSILON-14',
 		speed: 5,
 		footer: '(c) 2154 Nishikawa Heavy Industries Ltd. All rights reserved.',
-		minWidth: 60
+		minWidth: 60,
+		maxWidth: 60
 	},
+	variables: [
+		{
+			id: 'counter',
+			type: 'number',
+			default: 0
+		}
+	],
 	screens: [
 		{
 			id: 'screen0',
 			type: 'screen',
 			content: [
 				{
-					type: 'link',
-					target: 'lifesupport',
+					type: 'void',
+					target: 'menu',
 					text: '=',
 					textOpts: {
 						fillWidth: true
 					}
 				},
-
+				{ type: 'void', text: 'NISHIKAWA', textOpts: { bigFont: 'slant', preserveSpacing: true } },
+				{ type: 'text', textOpts: { speed: 2, preserveSpacing: true, fillWidth: true }, text: '=' },
 				{ type: 'text', textOpts: { speed: 2, preserveSpacing: false }, text: '' },
 				{
 					type: 'text',
@@ -362,14 +381,14 @@ let d: PhosphorJsonData = {
 				' NISHIKAWA HEAVY INDUSTRIES LTD (R) 2176',
 				' HEURISTICALLY ENCRYPTED REAL-TIME OPERATING SYSTEM (R)',
 				'',
-				'===============================================================',
+				{ type: 'text', text: '=', textOpts: { fillWidth: true } },
 				'',
 				' H.E.R.O.S. TERMINAL v4.22.7',
 				' YOU ARE CONNECTED TO < SERVER 26 > < YPSILON-14 STATION >',
 				' SYSTEM ADMINISTRATOR INTEGRATED MESSAGE SYSTEM: [ ACTIVE ]',
 				' SYSTEM ADMINISTRATOR (SYSADM): YUTA NAKAMURA',
 				'',
-				'===============================================================',
+				{ type: 'text', text: '=', textOpts: { fillWidth: true } },
 				'',
 				' (C) 2154 NISHIKAWA HEAVY INDUSTRIES LTD. ALL RIGHTS RESERVED.',
 				'',
@@ -394,6 +413,16 @@ let d: PhosphorJsonData = {
 							action: {
 								type: 'link',
 								target: 'screen0'
+							}
+						},
+						{
+							command: 'inc',
+							action: {
+								type: 'variable',
+								target: 'counter',
+								context: {
+									action: 'increment'
+								}
 							}
 						}
 					]
@@ -424,12 +453,12 @@ let d: PhosphorJsonData = {
 			id: 'menu',
 			type: 'screen',
 			content: [
-				'===============================',
+				{ type: 'text', textOpts: { fillWidth: true }, text: '=' },
 				'',
-				'  YPSILON-14 Control Terminal  ',
-				'          Main Menu',
+				{ type: 'text', textOpts: { align: 'center' }, text: 'YPSILON-14 Control Terminal' },
+				{ type: 'text', textOpts: { align: 'center' }, text: 'Main Menu' },
 				'',
-				'===============================',
+				{ type: 'text', textOpts: { fillWidth: true }, text: '=' },
 				'',
 				'Please make a selection from the following options',
 				'',
@@ -444,12 +473,12 @@ let d: PhosphorJsonData = {
 					target: 'diagnostics'
 				},
 				{
-					text: '> [ SCHEDULE ]',
+					text: '> [ DOCKING BAY LOG ]',
 					type: 'link',
 					target: 'schedule'
 				},
 				{
-					text: '> [ ROSTER ]',
+					text: '> [ PERSONNELE ]',
 					type: 'link',
 					target: 'roster'
 				},
@@ -661,15 +690,25 @@ let d: PhosphorJsonData = {
 			id: 'schedule',
 			type: 'screen',
 			content: [
-				'Schedule',
-				'========',
+				'DOCKING BAY LOG',
+				'===============',
 				'',
 				'Docking bay activity (past 6 months):',
 				'',
-				'2366-06-12.0633 - Bay 2 : Arrive :: Tempest',
-				'2366-04-29.0834 - Bay 1 : Arrive :: Heracles',
-				'2366-03-02.1223 - Bay 2 : Depart :: Key Largo',
-				'2366-02-20.1604 - Bay 2 : Arrive :: Key Largo',
+				'    TIMESTAMP         Bay     Action    Ship',
+				' 1: 2366-06-12.0633 - Bay 2 : Arrive :: XXXXX (DOCKED)',
+				' 2: 2366-04-29.0834 - Bay 1 : Arrive :: RSV Heracles (DOCKED)',
+				' 3: 2366-02-22.1223 - Bay 2 : Depart :: CTV HORN OV PLENTY',
+				' 4: 2366-02-20.1604 - Bay 2 : Arrive :: CTV HORN OV PLENTY',
+				' 5: 2366-02-01.0633 - Bay 2 : Depart :: MV VASQUEZ XV',
+				' 6: 2366-01-30.0834 - Bay 2 : Arrive :: MV VASQUEZ XV',
+				' 7: 2365-12-22.1223 - Bay 2 : Depart :: CTV HORN OV PLENTY',
+				' 8: 2365-12-20.1604 - Bay 2 : Arrive :: CTV HORN OV PLENTY',
+				' 9: 2365-11-11.1223 - Bay 2 : Depart :: MV VASQUEZ XV',
+				'10: 2365-11-10.1604 - Bay 2 : Arrive :: MV VASQUEZ XV',
+				'',
+				'> MORE...',
+				'< BACK',
 				'',
 				'======',
 				'',
@@ -691,8 +730,8 @@ let d: PhosphorJsonData = {
 			id: 'roster',
 			type: 'screen',
 			content: [
-				'Roster',
-				'======',
+				'PERSONNELE',
+				'==========',
 				'',
 				'01. VERHOEVEN, Sonya     :: Admin',
 				'02. SINGH, Ashraf        :: Breaker',
@@ -708,6 +747,12 @@ let d: PhosphorJsonData = {
 				'======',
 				'',
 				{
+					type: 'link',
+					text: '< BACK',
+					target: 'menu'
+				},
+				'',
+				{
 					type: 'prompt',
 					commands: [
 						{
@@ -715,6 +760,54 @@ let d: PhosphorJsonData = {
 							action: {
 								type: 'link',
 								target: 'menu'
+							}
+						},
+						{
+							command: ['verhoeven', 'sonya', 'personnel 1', 'person 1', '1', '01'],
+							action: {
+								type: 'link',
+								target: 'person1'
+							}
+						}
+					]
+				}
+			]
+		},
+		{
+			id: 'person1',
+			type: 'screen',
+			content: [
+				'PERSONNEL DETAIL',
+				'================',
+				'',
+				'NAME:           Sonya Verhoeven',
+				'ROLE:           Administrator',
+				'AGE:            34',
+				'SPECIALISATION: Station Management',
+				'EMPLOYED SINCE: 2362-11-04',
+				'NOTES:          Experienced in station logistics and personnel management.',
+				'                Known to be strict but fair.',
+				'',
+				'======',
+				{
+					type: 'void',
+					src: 'https://i.imgur.com/ltd9v7C.png',
+					className: 'lighten'
+				},
+				{
+					type: 'link',
+					text: '< BACK',
+					target: 'menu'
+				},
+				'',
+				{
+					type: 'prompt',
+					commands: [
+						{
+							command: 'back',
+							action: {
+								type: 'link',
+								target: 'roster'
 							}
 						}
 					]
@@ -742,6 +835,12 @@ let d: PhosphorJsonData = {
 				},
 				'',
 				'======',
+				'',
+				{
+					type: 'link',
+					text: '< BACK',
+					target: 'menu'
+				},
 				'',
 				{
 					type: 'prompt',

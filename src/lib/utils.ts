@@ -1,5 +1,6 @@
 import figlet from 'figlet';
 import type { TextOptions } from './PhosphorData';
+import { injectVariables } from './phosphorVariables.svelte';
 
 export const debounce = (func: any, delay: number) => {
 	let timer: ReturnType<typeof setTimeout> | null = null;
@@ -86,7 +87,7 @@ export const formatText = (text: string, columns: number, textOpts?: TextOptions
 	// if (textOpts?.preserveSpacing) {
 	// 	return output.join('\n').replace(' ', '&nbsp;');
 	// }
-	return output.join('\n');
+	return injectVariables(output.join('\n'));
 };
 
 const alignText = (text: string, cols: number, align: 'left' | 'center' | 'right'): string => {

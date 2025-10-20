@@ -11,6 +11,23 @@
         "minWidth": 60,
         "maxWidth": 60
     },
+    "variables": [
+		{
+			"id": "counter",
+			"type": "number",
+			"default": 0
+		},
+        {
+            "id": "username",
+            "type": "string",
+            "default": ""
+        },
+        {
+            "id": "ship",
+            "type": "string",
+            "default": "IMV TEMPEST"
+        }
+	],
     "screens": [
         {
             "id": "screen0",
@@ -71,6 +88,26 @@
                                 "type": "link",
                                 "target": "screen0"
                             }
+                        },
+                        {
+                            "command": "inc",
+                            "action": {
+                                "type": "variable",
+                                "target": "counter",
+                                "context": {
+                                    "action": "increment"
+                                }
+                            }
+                        },
+                        {
+                            "command": ".+",
+                            "action": {
+                                "type": "variable",
+                                "target": "username",
+                                "context": {
+                                    "action": "set"
+                                }
+                            }
                         }
                     ]
                 }
@@ -104,7 +141,7 @@
                 "",
                 {"type":"text","textOpts":{"align":"center" },"text":"YPSILON-14 Control Terminal"},
                 {"type":"text","textOpts":{"align":"center" },"text":"Main Menu"},
-                "",
+                "{{username}} ",
                 {"type":"text","textOpts":{"fillWidth": true },"text":"="},
                 "",
                 "Please make a selection from the following options",
@@ -739,13 +776,56 @@
                 "Admin Login",
                 "===========",
                 "",
-                "Enter password below, or BACK to return.",
+                "Enter username below, or BACK to return.",
                 "",
                 {
                     "text": "< BACK",
                     "target": "controls",
                     "type": "link"
                 },
+                "",
+                {
+                    "type": "prompt",
+                    "prompt": "USERNAME: ",
+                    "commands": [
+                        {
+                            "command": " ",
+                            "action": {
+                                "type": "link",
+                                "target": "passwordscreen"
+                            }
+                        }, 
+                        {
+                            "command": "back",
+                            "action": {
+                                "type": "link",
+                                "target": "controls"
+                            }
+                        }, 
+                        {
+                            "command": "[^\\s]+",
+                            "action": {
+                                "type": "variable",
+                                "target": "username",
+                                "context": {
+                                    "action": "set"
+                                }
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "passwordscreen",
+            "type": "screen",
+            "content": [
+                "Admin Login",
+                "===========",
+                "",
+                "Enter password below, or BACK to return.",
+                "",
+                "USERNAME: {{username}}",
                 "",
                 {
                     "type": "prompt",
@@ -784,7 +864,7 @@
                 "Controls",
                 "========",
                 "",
-                "Welome, A$#FTGe --lglgadgvbvvsd",
+                "Welome, {{username}}",
                 "",
                 {
                     "text": "> SHOWERS",

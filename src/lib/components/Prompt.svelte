@@ -46,9 +46,9 @@
 		if (!onCommand) return;
 		const command = matchCommand(value);
 		if (command) {
-			value = '';
-			console.log(command);
+			// console.log(command);
 			onCommand(value, command.action);
+			value = '';
 		} else {
 			invalidCommand = value;
 			value = '';
