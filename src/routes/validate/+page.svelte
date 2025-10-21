@@ -53,16 +53,24 @@
 	function onRenderValue(props) {
 		return renderJSONSchemaEnum(props, schema, schemaDefinitions) || renderValue(props);
 	}
+	type IconDefinition = {
+		icon: [
+			number, // width
+			number, // height
+			string[], // ligatures
+			string, // unicode
+			string | string[] // svgPathData
+		];
+	};
 
 	const onRenderMenu = (
 		items: MenuItem[],
 		context: { mode: 'tree' | 'text' | 'table'; modal: boolean; readOnly: boolean }
 	): MenuItem[] | undefined => {
-		// let saveIcon: IconDefinition =
 		let save: MenuItem = {
 			type: 'button',
 			text: 'Save',
-			// icon: {},
+			// icon: 'fa-save',
 			title: 'Save',
 			onClick: () => {
 				let result = savePhosphorData(content.json);
@@ -78,8 +86,40 @@
 				goto('/app');
 			}
 		};
+		let newFile: MenuItem = {
+			type: 'button',
+			text: 'New',
+			// icon: 'fa-file',
+			title: 'New Phosphor Data',
+			onClick: () => {
+				content = {
+					json: {
+						metadata: {
+							title: '',
+							author: '',
+							comment: '',
+							version: '0.1'
+						},
+						config: {
+							name: '',
+							speed: 2,
+							footer: undefined,
+							minWidth: 60,
+							maxWidth: 60
+						},
+						variables: [],
+						screens: [],
+						dialogs: []
+					}
+				};
+			}
+		};
+
 		return [
-			...items.slice(0, items.length - 1),
+			...items.slice(0, 3),
+			{ type: 'separator' },
+			newFile,
+			...items.slice(3, items.length - 1),
 			{ type: 'separator' },
 			save,
 			{ type: 'separator' },

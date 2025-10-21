@@ -25,17 +25,19 @@
 	<div>Expect bugs. Lots of bugs. And that's not even counting the game!</div>
 	<div class="hcontainer">
 		<div class="button">
-			<a href="/app">Run app with your settings</a>
-		</div>
-		<div class="button">
 			<a href="/validate">Try out this (buggy) editor</a>
 		</div>
 		<div class="button">
 			<a href="/import">Edit Settings. Import JSON or change theme.</a>
 		</div>
 	</div>
-	<div class="button">
-		<a href="/default">Or, use my version.</a>
+	<div class="hcontainer">
+		<div class="button">
+			<a href="/app">Run app with your settings</a>
+		</div>
+		<div class="button">
+			<a href="/default">Or, use my version.</a>
+		</div>
 	</div>
 </div>
 

@@ -5,7 +5,7 @@
 	import { nextTheme, theme } from '$lib/theme.svelte';
 	import Ajv from 'ajv';
 
-	import schema from '$lib/assets/jsonschema.json';
+	// import schema from '../../lib/assets/jsonschema.json';
 	import type { PhosphorJsonData } from '$lib/PhosphorData';
 	import {
 		clearPhosphorData,
@@ -108,8 +108,8 @@
 	<input type="file" accept="application/json" onchange={onChange} bind:this={ref} />
 	{#if metadata}
 		<div>
-			<div>Currently loaded: {metadata.description}</div>
-			<div>by {metadata.author}</div>
+			<div>Currently loaded: {metadata.title}</div>
+			<div>by {metadata.author} v{metadata.version}</div>
 		</div>
 	{:else if errors.length > 0}
 		<div>
@@ -123,6 +123,7 @@
 	{/if}
 	<div class="row">
 		<button onclick={handleDelete}>Delete Data</button>
+		<!-- <button onclick={gotoApp}></button> -->
 		<button onclick={nextTheme}>Theme</button>
 		<button onclick={gotoApp}>Goto App</button>
 	</div>
