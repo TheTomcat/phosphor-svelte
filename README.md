@@ -24,6 +24,34 @@ The data is loaded from your localStorage into the app. You can edit it offline 
 
 This is by no means a completed project. I hope to add all sorts of useless stuff over time. Expect bugs!!!
 
+## Features
+
+## JSON Reference
+
+The minimum format for the JSON schema is:
+
+```json
+{
+    "metadata": {
+        "description": string,
+        "author": string,
+        "commend": string
+    },
+    "config": {
+
+    },
+    "variables": [
+        // Variable definitions
+    ],
+    "screens": [
+        // Screen definitions
+    ],
+    "dialogs": [
+        // Dialog definitions
+    ]
+}
+```
+
 ## Coming soon:
 
 - [ ] Sound effects - partially completed. I have teletext

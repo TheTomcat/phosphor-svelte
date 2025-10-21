@@ -1,11 +1,12 @@
 <script lang="ts">
-	import type { LinkTarget, TextOptions } from '$lib/PhosphorData';
+	import type { Action, LinkAction, LinkTarget, TextOptions } from '$lib/PhosphorData';
 	import { formatText } from '$lib/utils';
 
 	let {
 		text,
 		columns,
-		target,
+		// target,
+		actions,
 		className,
 		onClick,
 		onRendered,
@@ -13,9 +14,10 @@
 	}: {
 		text: string;
 		columns: number;
-		target: string | LinkTarget[];
+		// target: string | LinkTarget[];
+		actions: LinkAction;
 		className?: string;
-		onClick?: (target: string | LinkTarget[], shiftKey: boolean) => void;
+		onClick?: (target: LinkAction, shiftKey: boolean) => void;
 		onRendered?: () => void;
 		textOpts?: TextOptions;
 	} = $props();
@@ -29,13 +31,13 @@
 	const handleTouchEnd = (e: TouchEvent) => {
 		e.preventDefault();
 
-		onClick && onClick(target, !e.shiftKey);
+		onClick && onClick(actions, e.shiftKey);
 
 		touches = 0;
 	};
 	const handleClick = (e: MouseEvent) => {
 		e.preventDefault();
-		onClick && onClick(target, !e.shiftKey);
+		onClick && onClick(actions, e.shiftKey);
 	};
 	const handleRendered = () => {
 		onRendered && onRendered();

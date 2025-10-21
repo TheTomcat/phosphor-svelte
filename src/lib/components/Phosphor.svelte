@@ -13,6 +13,7 @@
 		Action,
 		Command,
 		JsonCommand,
+		LinkAction,
 		LinkTarget,
 		PhosphorData,
 		PhosphorDialog,
@@ -23,6 +24,7 @@
 		PhosphorScreenContent,
 		PhosphorScreenJsonContent,
 		PhosphorToggle,
+		SingleAction,
 		TextOptions
 	} from '$lib/PhosphorData';
 	import Modal from './Modal.svelte';
@@ -32,7 +34,7 @@
 	import Link from './Link.svelte';
 	import Countdown from './Countdown.svelte';
 	import figlet from 'figlet';
-	import { applyVariableCommand, setVar } from '$lib/phosphorVariables.svelte';
+	import { applyVariableCommand, evaluateCondition, setVar } from '$lib/phosphorVariables.svelte';
 
 	let { data }: { data: PhosphorJsonData } = $props();
 
@@ -217,11 +219,33 @@
 					textOpts
 				};
 			case 'link':
+				if (element.target) {
+					if (Array.isArray(element.target)) {
+						const linkTargetBase = (element.target as LinkTarget[]).find(
+							(e) => e.shiftKey === false
+						);
+						const linkTargetShift = (element.target as LinkTarget[]).find(
+							(e) => e.shiftKey === true
+						);
+						element.actions = {};
+						if (linkTargetBase)
+							element.actions.base = { type: linkTargetBase.type, target: linkTargetBase.target };
+						if (linkTargetShift)
+							element.actions.shiftKey = {
+								type: linkTargetShift.type,
+								target: linkTargetShift.target
+							};
+					} else {
+						element.actions = { base: { type: 'link', target: element.target } };
+					}
+				}
+
 				return {
 					id,
 					type: 'link',
 					text: element.text || '',
-					target: element.target || '',
+					// target: element.target || '',
+					actions: element.actions || [],
 					className: element.className || '',
 					loadState: loadState,
 					onLoad,
@@ -298,10 +322,31 @@
 		activeElementId = currentScreen.content[activeIndex + 1].id;
 	};
 
+	// DIALOG MANAGEMENT
+	const closeWaiters = new Set<() => void>();
 	const toggleDialog = (dialogId?: string) => {
 		activeDialogId = dialogId || null;
+		if (activeDialogId === null) {
+			for (const fn of closeWaiters) fn();
+			closeWaiters.clear();
+		}
+	};
+	const awaitDialogClose = (): Promise<void> => {
+		if (activeDialogId === null) return Promise.resolve();
+		return new Promise<void>((resolve) => {
+			const once = () => {
+				closeWaiters.delete(once);
+				resolve();
+			};
+			closeWaiters.add(once);
+		});
+	};
+	const showDialogAndWait = (id: string): Promise<void> => {
+		toggleDialog(id);
+		return awaitDialogClose();
 	};
 
+	// TOGGLE MANAGEMENT
 	const getScreenIndex = (id: string) => screens.findIndex((s) => s.id === id);
 	const toggleToggle = (toggleId: string) => {
 		if (!currentScreen) return;
@@ -338,6 +383,7 @@
 		}
 	};
 
+	// SCREEN MANAGEMENT
 	const unloadScreen = (screenId?: string) => {
 		if (!currentScreen) return;
 		currentScreen.content.forEach((element) => {
@@ -357,37 +403,79 @@
 		status = AppStatus.Active;
 		activateScreen();
 	};
-	const handlePromptCommand = (command: string, args: Action | Action[]) => {
+
+	// COMMAND HANDLING
+	const handlePromptCommand = async (command: string, args: Action) => {
 		if (Array.isArray(args)) {
-			// Put sequential logic here.
+			// Sequential logic
+			await runActionSequential(command, args);
 		} else {
+			console.log(args);
 			if (!args || !args.type) {
 				console.error('Something has gone terribly wrong');
 				return;
 			}
-			switch (args.type) {
-				case 'link':
-					args.target && changeScreen(args.target);
-					break;
-				case 'dialog':
-					args.target && toggleDialog(args.target);
-					break;
-				case 'toggle':
-					args.target && toggleToggle(args.target);
-					break;
-				// case 'console':
-				// 	console.log('Command executed:', command, args);
-				// 	break;
-				case 'variable':
-					applyVariableCommand(args, command);
-					break;
-				default:
-					console.warn('Unknown command type:', args.type);
-			}
+			await runAction(command, args);
 		}
 	};
-	const handleLinkClick = (target: string | LinkTarget[], shiftKey: boolean) => {
+
+	const runAction = async (command: string, action: SingleAction) => {
+		switch (action.type) {
+			case 'link':
+				action.target && changeScreen(action.target);
+				break;
+			case 'dialog':
+				if (action.target) {
+					await showDialogAndWait(action.target);
+				}
+				break;
+			case 'toggle':
+				action.target && toggleToggle(action.target);
+				break;
+			// case 'console':
+			// 	console.log('Command executed:', command, action);
+			// 	break;
+			case 'variable':
+				applyVariableCommand(action, command);
+				break;
+			case 'condition':
+				const pass = evaluateCondition(action.condition);
+				const branch = pass ? action.true : action.false;
+				if (!branch) return;
+				const list = Array.isArray(branch) ? branch : [branch];
+				for (const act of list) {
+					await runAction(command, act);
+				}
+				break;
+			default:
+				console.warn('Unknown command type:', action.type);
+		}
+	};
+
+	const runActionSequential = async (command: string, actions: SingleAction[]) => {
+		for (const action of actions) {
+			await runAction(command, action);
+		}
+	};
+
+	const handleLinkClick = async (action: LinkAction, shiftKey: boolean) => {
 		console.log(shiftKey);
+		console.log($state.snapshot(action));
+		const branch = shiftKey ? action.shiftKey : action.base;
+		if (Array.isArray(branch)) {
+			// Sequential logic
+			await runActionSequential('', branch);
+		} else {
+			console.log(branch);
+			if (!branch || !branch.type) {
+				console.error('Something has gone terribly wrong');
+				return;
+			}
+			await runAction('', branch);
+		}
+	};
+
+	const handleLinkClickOld = (target: string | LinkTarget[], shiftKey: boolean) => {
 		if (!target) return;
 		if (typeof target === 'string') {
 			changeScreen(target);
@@ -524,7 +612,7 @@
 								<Link
 									text={element.text || ''}
 									{columns}
-									target={element.target}
+									actions={element.actions}
 									className={element.className || ''}
 									onClick={handleLinkClick}
 									onRendered={() => setElementState(element.id, ScreenDataState.Done)}
@@ -556,7 +644,11 @@
 									textOpts={element.textOpts ?? {}}
 								/>
 							{:else if element.type === 'toggle'}
-								<Toggle className={element.className || ''} bind:states={element.states} />
+								<Toggle
+									id={element.id}
+									className={element.className || ''}
+									bind:states={element.states}
+								/>
 							{/if}
 							<!-- </div> -->
 						{/if}

@@ -1,6 +1,12 @@
 // src/lib/state/variables.ts
 import { browser } from '$app/environment';
-import type { JsonCommandVariable, PhosphorVariableType } from '$lib/PhosphorData';
+import type {
+	Comparator,
+	Operand,
+	JsonCommandVariable,
+	PhosphorVariableType,
+	Condition
+} from '$lib/PhosphorData';
 
 export const vars: Record<string, PhosphorVariableType> = $state({}); // global KV store
 
@@ -122,4 +128,97 @@ export function injectVariables(text: string, opts: InjectOptions = {}): string 
 	});
 
 	return out.replace(new RegExp(ESC + '\\{\\{', 'g'), '{{');
+}
+
+export function resolveOperand(op: Operand): PhosphorVariableType | undefined {
+	switch (op.type) {
+		case 'variable':
+			return getVar(op.target);
+		case 'value':
+			return op.value;
+		default:
+			return undefined;
+	}
+}
+
+export function evaluateCondition(cond: Condition): boolean {
+	// console.log('Evaluating condition:', $state.snapshot(cond));
+	// if ('and' in cond) cond.and.forEach((c) => console.log(evaluateCondition(c)));
+	if ('and' in cond) return cond.and.every((c) => evaluateCondition(c));
+	if ('or' in cond) return cond.or.some((c) => evaluateCondition(c));
+	if ('not' in cond) return !evaluateCondition(cond.not);
+
+	// simple
+	const left = resolveOperand(cond.left);
+	const right = resolveOperand(cond.right);
+	const result = compareVariables(cond.op, left, right, cond.caseInsensitive);
+	// console.log(`${left} ${cond.op} ${right} => ${result}`);
+	return result;
+}
+
+export function compareVariables(
+	op: Comparator,
+	a: PhosphorVariableType | undefined,
+	b: PhosphorVariableType | undefined,
+	caseInsensitive = false
+): boolean {
+	if (a === undefined || b === undefined) return false;
+	if (caseInsensitive && typeof a === 'string' && typeof b === 'string') {
+		a = a.toLowerCase();
+		b = b.toLowerCase();
+	}
+	switch (op) {
+		case '=':
+			return a === b;
+		case '!=':
+			return a !== b;
+		case '<': {
+			const an = toNumber(a),
+				bn = toNumber(b);
+			return an !== undefined && bn !== undefined && an < bn;
+		}
+		case '<=': {
+			const an = toNumber(a),
+				bn = toNumber(b);
+			return an !== undefined && bn !== undefined && an <= bn;
+		}
+		case '>': {
+			const an = toNumber(a),
+				bn = toNumber(b);
+			return an !== undefined && bn !== undefined && an > bn;
+		}
+		case '>=': {
+			const an = toNumber(a),
+				bn = toNumber(b);
+			return an !== undefined && bn !== undefined && an >= bn;
+		}
+		case 'contains': {
+			if (typeof a === 'string') return String(a).includes(String(b ?? ''));
+			// if (Array.isArray(a)) return a.includes(b as any);
+			return false;
+		}
+		case 'not contains': {
+			if (typeof a === 'string') return !String(a).includes(String(b ?? ''));
+			// if (Array.isArray(a)) return !a.includes(b as any);
+			return false;
+		}
+		case 'startswith': {
+			if (typeof a === 'string') return String(a).startsWith(String(b ?? ''));
+			// if (Array.isArray(a)) return a.includes(b as any);
+			return false;
+		}
+		case 'endswith': {
+			if (typeof a === 'string') return String(a).endsWith(String(b ?? ''));
+			// if (Array.isArray(a)) return a.includes(b as any);
+			return false;
+		}
+		default:
+			return false;
+	}
+}
+
+function toNumber(value: PhosphorVariableType): number | undefined {
+	if (typeof value === 'number') return value;
+	const n = Number(value);
+	return Number.isNaN(n) ? undefined : n;
 }

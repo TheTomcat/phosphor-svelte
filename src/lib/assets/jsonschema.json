@@ -2,6 +2,31 @@
   "$ref": "#/definitions/PhosphorJsonData",
   "$schema": "http://json-schema.org/draft-07/schema#",
   "definitions": {
+    "Comparator": {
+      "enum": [
+        "=",
+        "!=",
+        ">",
+        "<",
+        ">=",
+        "<=",
+        "contains",
+        "not contains",
+        "startswith",
+        "endswith"
+      ],
+      "type": "string"
+    },
+    "Condition": {
+      "anyOf": [
+        {
+          "$ref": "#/definitions/SimpleCondition"
+        },
+        {
+          "$ref": "#/definitions/LogicalCondition"
+        }
+      ]
+    },
     "JsonCommand": {
       "additionalProperties": false,
       "properties": {
@@ -60,6 +85,123 @@
                 "target"
               ],
               "type": "object"
+            },
+            {
+              "$ref": "#/definitions/JsonCommandVariable"
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "condition": {
+                  "$ref": "#/definitions/Condition"
+                },
+                "false": {
+                  "$ref": "#/definitions/alias-1732610263-3013-3063-1732610263-0-42172"
+                },
+                "true": {
+                  "$ref": "#/definitions/alias-1732610263-3013-3063-1732610263-0-42172"
+                },
+                "type": {
+                  "const": "condition",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "type",
+                "condition",
+                "true",
+                "false"
+              ],
+              "type": "object"
+            },
+            {
+              "items": {
+                "anyOf": [
+                  {
+                    "additionalProperties": false,
+                    "properties": {
+                      "target": {
+                        "type": "string"
+                      },
+                      "type": {
+                        "enum": [
+                          "alert",
+                          "dialog"
+                        ],
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "type",
+                      "target"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "additionalProperties": false,
+                    "properties": {
+                      "target": {
+                        "type": "string"
+                      },
+                      "type": {
+                        "const": "link",
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "type",
+                      "target"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "additionalProperties": false,
+                    "properties": {
+                      "target": {
+                        "type": "string"
+                      },
+                      "type": {
+                        "const": "toggle",
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "type",
+                      "target"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "$ref": "#/definitions/JsonCommandVariable"
+                  },
+                  {
+                    "additionalProperties": false,
+                    "properties": {
+                      "condition": {
+                        "$ref": "#/definitions/Condition"
+                      },
+                      "false": {
+                        "$ref": "#/definitions/alias-1732610263-3013-3063-1732610263-0-42172"
+                      },
+                      "true": {
+                        "$ref": "#/definitions/alias-1732610263-3013-3063-1732610263-0-42172"
+                      },
+                      "type": {
+                        "const": "condition",
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "type",
+                      "condition",
+                      "true",
+                      "false"
+                    ],
+                    "type": "object"
+                  }
+                ]
+              },
+              "type": "array"
             }
           ]
         },
@@ -80,6 +222,39 @@
       "required": [
         "command",
         "action"
+      ],
+      "type": "object"
+    },
+    "JsonCommandVariable": {
+      "additionalProperties": false,
+      "properties": {
+        "context": {
+          "additionalProperties": false,
+          "properties": {
+            "action": {
+              "$ref": "#/definitions/PhosphorVariableAction"
+            },
+            "value": {
+              "$ref": "#/definitions/PhosphorVariableType"
+            }
+          },
+          "required": [
+            "action"
+          ],
+          "type": "object"
+        },
+        "target": {
+          "type": "string"
+        },
+        "type": {
+          "const": "variable",
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "target",
+        "context"
       ],
       "type": "object"
     },
@@ -124,6 +299,90 @@
         "shiftKey"
       ],
       "type": "object"
+    },
+    "LogicalCondition": {
+      "anyOf": [
+        {
+          "additionalProperties": false,
+          "properties": {
+            "or": {
+              "items": {
+                "$ref": "#/definitions/Condition"
+              },
+              "type": "array"
+            }
+          },
+          "required": [
+            "or"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "and": {
+              "items": {
+                "$ref": "#/definitions/Condition"
+              },
+              "type": "array"
+            }
+          },
+          "required": [
+            "and"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "not": {
+              "$ref": "#/definitions/Condition"
+            }
+          },
+          "required": [
+            "not"
+          ],
+          "type": "object"
+        }
+      ]
+    },
+    "Operand": {
+      "anyOf": [
+        {
+          "additionalProperties": false,
+          "properties": {
+            "target": {
+              "type": "string"
+            },
+            "type": {
+              "const": "variable",
+              "type": "string"
+            }
+          },
+          "required": [
+            "type",
+            "target"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "const": "value",
+              "type": "string"
+            },
+            "value": {
+              "$ref": "#/definitions/PhosphorVariableType"
+            }
+          },
+          "required": [
+            "type",
+            "value"
+          ],
+          "type": "object"
+        }
+      ]
     },
     "PhosphorDialogType": {
       "enum": [
@@ -193,13 +452,20 @@
             "$ref": "#/definitions/PhosphorJsonScreen"
           },
           "type": "array"
+        },
+        "variables": {
+          "items": {
+            "$ref": "#/definitions/PhosphorJsonVariable"
+          },
+          "type": "array"
         }
       },
       "required": [
         "metadata",
         "config",
         "screens",
-        "dialogs"
+        "dialogs",
+        "variables"
       ],
       "type": "object"
     },
@@ -247,6 +513,31 @@
       ],
       "type": "object"
     },
+    "PhosphorJsonVariable": {
+      "additionalProperties": false,
+      "properties": {
+        "default": {
+          "$ref": "#/definitions/PhosphorVariableType"
+        },
+        "id": {
+          "type": "string"
+        },
+        "type": {
+          "enum": [
+            "number",
+            "boolean",
+            "string"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "type",
+        "default"
+      ],
+      "type": "object"
+    },
     "PhosphorScreenJsonContent": {
       "anyOf": [
         {
@@ -267,6 +558,366 @@
         {
           "additionalProperties": false,
           "properties": {
+            "actions": {
+              "additionalProperties": false,
+              "properties": {
+                "base": {
+                  "anyOf": [
+                    {
+                      "additionalProperties": false,
+                      "properties": {
+                        "target": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "enum": [
+                            "alert",
+                            "dialog"
+                          ],
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "target"
+                      ],
+                      "type": "object"
+                    },
+                    {
+                      "additionalProperties": false,
+                      "properties": {
+                        "target": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "const": "link",
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "target"
+                      ],
+                      "type": "object"
+                    },
+                    {
+                      "additionalProperties": false,
+                      "properties": {
+                        "target": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "const": "toggle",
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "target"
+                      ],
+                      "type": "object"
+                    },
+                    {
+                      "$ref": "#/definitions/JsonCommandVariable"
+                    },
+                    {
+                      "additionalProperties": false,
+                      "properties": {
+                        "condition": {
+                          "$ref": "#/definitions/Condition"
+                        },
+                        "false": {
+                          "$ref": "#/definitions/alias-1732610263-3013-3063-1732610263-0-42172"
+                        },
+                        "true": {
+                          "$ref": "#/definitions/alias-1732610263-3013-3063-1732610263-0-42172"
+                        },
+                        "type": {
+                          "const": "condition",
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "condition",
+                        "true",
+                        "false"
+                      ],
+                      "type": "object"
+                    },
+                    {
+                      "items": {
+                        "anyOf": [
+                          {
+                            "additionalProperties": false,
+                            "properties": {
+                              "target": {
+                                "type": "string"
+                              },
+                              "type": {
+                                "enum": [
+                                  "alert",
+                                  "dialog"
+                                ],
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "type",
+                              "target"
+                            ],
+                            "type": "object"
+                          },
+                          {
+                            "additionalProperties": false,
+                            "properties": {
+                              "target": {
+                                "type": "string"
+                              },
+                              "type": {
+                                "const": "link",
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "type",
+                              "target"
+                            ],
+                            "type": "object"
+                          },
+                          {
+                            "additionalProperties": false,
+                            "properties": {
+                              "target": {
+                                "type": "string"
+                              },
+                              "type": {
+                                "const": "toggle",
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "type",
+                              "target"
+                            ],
+                            "type": "object"
+                          },
+                          {
+                            "$ref": "#/definitions/JsonCommandVariable"
+                          },
+                          {
+                            "additionalProperties": false,
+                            "properties": {
+                              "condition": {
+                                "$ref": "#/definitions/Condition"
+                              },
+                              "false": {
+                                "$ref": "#/definitions/alias-1732610263-3013-3063-1732610263-0-42172"
+                              },
+                              "true": {
+                                "$ref": "#/definitions/alias-1732610263-3013-3063-1732610263-0-42172"
+                              },
+                              "type": {
+                                "const": "condition",
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "type",
+                              "condition",
+                              "true",
+                              "false"
+                            ],
+                            "type": "object"
+                          }
+                        ]
+                      },
+                      "type": "array"
+                    }
+                  ]
+                },
+                "shiftKey": {
+                  "anyOf": [
+                    {
+                      "additionalProperties": false,
+                      "properties": {
+                        "target": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "enum": [
+                            "alert",
+                            "dialog"
+                          ],
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "target"
+                      ],
+                      "type": "object"
+                    },
+                    {
+                      "additionalProperties": false,
+                      "properties": {
+                        "target": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "const": "link",
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "target"
+                      ],
+                      "type": "object"
+                    },
+                    {
+                      "additionalProperties": false,
+                      "properties": {
+                        "target": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "const": "toggle",
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "target"
+                      ],
+                      "type": "object"
+                    },
+                    {
+                      "$ref": "#/definitions/JsonCommandVariable"
+                    },
+                    {
+                      "additionalProperties": false,
+                      "properties": {
+                        "condition": {
+                          "$ref": "#/definitions/Condition"
+                        },
+                        "false": {
+                          "$ref": "#/definitions/alias-1732610263-3013-3063-1732610263-0-42172"
+                        },
+                        "true": {
+                          "$ref": "#/definitions/alias-1732610263-3013-3063-1732610263-0-42172"
+                        },
+                        "type": {
+                          "const": "condition",
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "condition",
+                        "true",
+                        "false"
+                      ],
+                      "type": "object"
+                    },
+                    {
+                      "items": {
+                        "anyOf": [
+                          {
+                            "additionalProperties": false,
+                            "properties": {
+                              "target": {
+                                "type": "string"
+                              },
+                              "type": {
+                                "enum": [
+                                  "alert",
+                                  "dialog"
+                                ],
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "type",
+                              "target"
+                            ],
+                            "type": "object"
+                          },
+                          {
+                            "additionalProperties": false,
+                            "properties": {
+                              "target": {
+                                "type": "string"
+                              },
+                              "type": {
+                                "const": "link",
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "type",
+                              "target"
+                            ],
+                            "type": "object"
+                          },
+                          {
+                            "additionalProperties": false,
+                            "properties": {
+                              "target": {
+                                "type": "string"
+                              },
+                              "type": {
+                                "const": "toggle",
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "type",
+                              "target"
+                            ],
+                            "type": "object"
+                          },
+                          {
+                            "$ref": "#/definitions/JsonCommandVariable"
+                          },
+                          {
+                            "additionalProperties": false,
+                            "properties": {
+                              "condition": {
+                                "$ref": "#/definitions/Condition"
+                              },
+                              "false": {
+                                "$ref": "#/definitions/alias-1732610263-3013-3063-1732610263-0-42172"
+                              },
+                              "true": {
+                                "$ref": "#/definitions/alias-1732610263-3013-3063-1732610263-0-42172"
+                              },
+                              "type": {
+                                "const": "condition",
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "type",
+                              "condition",
+                              "true",
+                              "false"
+                            ],
+                            "type": "object"
+                          }
+                        ]
+                      },
+                      "type": "array"
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "base",
+                "shiftKey"
+              ],
+              "type": "object"
+            },
             "className": {
               "type": "string"
             },
@@ -304,8 +955,7 @@
             }
           },
           "required": [
-            "type",
-            "target"
+            "type"
           ],
           "type": "object"
         },
@@ -485,6 +1135,22 @@
       ],
       "type": "string"
     },
+    "PhosphorVariableAction": {
+      "enum": [
+        "set",
+        "toggle",
+        "increment",
+        "decrement"
+      ],
+      "type": "string"
+    },
+    "PhosphorVariableType": {
+      "type": [
+        "number",
+        "boolean",
+        "string"
+      ]
+    },
     "ScreenDataState": {
       "enum": [
         0,
@@ -493,6 +1159,29 @@
         3
       ],
       "type": "number"
+    },
+    "SimpleCondition": {
+      "additionalProperties": false,
+      "properties": {
+        "caseInsensitive": {
+          "type": "boolean"
+        },
+        "left": {
+          "$ref": "#/definitions/Operand"
+        },
+        "op": {
+          "$ref": "#/definitions/Comparator"
+        },
+        "right": {
+          "$ref": "#/definitions/Operand"
+        }
+      },
+      "required": [
+        "op",
+        "left",
+        "right"
+      ],
+      "type": "object"
     },
     "TextOptions": {
       "additionalProperties": false,
@@ -525,6 +1214,181 @@
         }
       },
       "type": "object"
+    },
+    "alias-1732610263-3013-3063-1732610263-0-42172": {
+      "anyOf": [
+        {
+          "additionalProperties": false,
+          "properties": {
+            "target": {
+              "type": "string"
+            },
+            "type": {
+              "enum": [
+                "alert",
+                "dialog"
+              ],
+              "type": "string"
+            }
+          },
+          "required": [
+            "type",
+            "target"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "target": {
+              "type": "string"
+            },
+            "type": {
+              "const": "link",
+              "type": "string"
+            }
+          },
+          "required": [
+            "type",
+            "target"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "target": {
+              "type": "string"
+            },
+            "type": {
+              "const": "toggle",
+              "type": "string"
+            }
+          },
+          "required": [
+            "type",
+            "target"
+          ],
+          "type": "object"
+        },
+        {
+          "$ref": "#/definitions/JsonCommandVariable"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "condition": {
+              "$ref": "#/definitions/Condition"
+            },
+            "false": {
+              "$ref": "#/definitions/alias-1732610263-3013-3063-1732610263-0-42172"
+            },
+            "true": {
+              "$ref": "#/definitions/alias-1732610263-3013-3063-1732610263-0-42172"
+            },
+            "type": {
+              "const": "condition",
+              "type": "string"
+            }
+          },
+          "required": [
+            "type",
+            "condition",
+            "true",
+            "false"
+          ],
+          "type": "object"
+        },
+        {
+          "items": {
+            "anyOf": [
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "target": {
+                    "type": "string"
+                  },
+                  "type": {
+                    "enum": [
+                      "alert",
+                      "dialog"
+                    ],
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "target"
+                ],
+                "type": "object"
+              },
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "target": {
+                    "type": "string"
+                  },
+                  "type": {
+                    "const": "link",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "target"
+                ],
+                "type": "object"
+              },
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "target": {
+                    "type": "string"
+                  },
+                  "type": {
+                    "const": "toggle",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "target"
+                ],
+                "type": "object"
+              },
+              {
+                "$ref": "#/definitions/JsonCommandVariable"
+              },
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "condition": {
+                    "$ref": "#/definitions/Condition"
+                  },
+                  "false": {
+                    "$ref": "#/definitions/alias-1732610263-3013-3063-1732610263-0-42172"
+                  },
+                  "true": {
+                    "$ref": "#/definitions/alias-1732610263-3013-3063-1732610263-0-42172"
+                  },
+                  "type": {
+                    "const": "condition",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "condition",
+                  "true",
+                  "false"
+                ],
+                "type": "object"
+              }
+            ]
+          },
+          "type": "array"
+        }
+      ]
     }
   }
 }

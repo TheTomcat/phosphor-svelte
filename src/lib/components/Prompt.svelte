@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { Command, TextOptions } from '$lib/PhosphorData';
+	import { setVar } from '$lib/phosphorVariables.svelte';
 	import { onMount } from 'svelte';
 
 	let {
@@ -44,7 +45,9 @@
 
 	const handleCommand = () => {
 		if (!onCommand) return;
+		setVar('_lastCommand', value);
 		const command = matchCommand(value);
+		// console.log(`Found matching command for ${$state.snapshot(value)}`, $state.snapshot(command));
 		if (command) {
 			// console.log(command);
 			onCommand(value, command.action);
@@ -52,7 +55,7 @@
 		} else {
 			invalidCommand = value;
 			value = '';
-			console.log('Invalid command:', invalidCommand);
+			// console.log('Invalid command:', invalidCommand);
 
 			setTimeout(() => {
 				invalidCommand = '';

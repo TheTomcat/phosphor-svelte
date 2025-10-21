@@ -58,7 +58,7 @@ $themes: (
   }
 
   :root {
-    @include theme-vars(map.get($themes, green));
+    @include theme-vars(map.get($themes, amber));
   }
   
   // Generate scopes for each theme, e.g. <html data-theme="green">

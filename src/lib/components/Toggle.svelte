@@ -1,14 +1,17 @@
 <script lang="ts">
 	import type { JsonToggleState } from '$lib/PhosphorData';
+	import { setVar } from '$lib/phosphorVariables.svelte';
 	import { onMount } from 'svelte';
 
 	let {
 		states = $bindable(), // Need to be bindable, because we push changes from Phosphor
+		id,
 		className,
 		onRendered,
 		onClick
 	}: {
 		states: { text: string; active: boolean; delayMs?: number; delayText?: string }[];
+		id?: string;
 		className?: string;
 		onRendered?: () => void;
 		onClick?: () => void;
@@ -108,6 +111,11 @@
 	};
 
 	$effect(handleRendered);
+	$effect(() => {
+		if (!id) return;
+		// console.log(`Setting toggle variable ${id} to ${activeIndex}`);
+		setVar(id, activeIndex);
+	});
 
 	const renderCountdownText = (text: string): string => {
 		if (!oldState || oldState.delayMs === undefined)
