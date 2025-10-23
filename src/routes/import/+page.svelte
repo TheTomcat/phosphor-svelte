@@ -129,10 +129,10 @@
 	</div>
 	<div class="row smaller">
 		<div>
-			<a href={'/src/lib/assets/jsonschema.json'}>Download the JSONSchema reference.</a>
+			<a href={'/data/jsonschema.json'}>Download the JSONSchema reference.</a>
 		</div>
 		<div>
-			<a href={'/src/lib/assets/ypsilon14.json'}>Download my ypsilon14.json file</a>
+			<a href={'/data/ypsilon14.json'}>Download my ypsilon14.json file</a>
 		</div>
 	</div>
 </div>

@@ -96,10 +96,10 @@
                   "$ref": "#/definitions/Condition"
                 },
                 "false": {
-                  "$ref": "#/definitions/alias-1732610263-3027-3077-1732610263-0-7702"
+                  "$ref": "#/definitions/alias-1732610263-3170-3220-1732610263-0-8377"
                 },
                 "true": {
-                  "$ref": "#/definitions/alias-1732610263-3027-3077-1732610263-0-7702"
+                  "$ref": "#/definitions/alias-1732610263-3170-3220-1732610263-0-8377"
                 },
                 "type": {
                   "const": "condition",
@@ -181,10 +181,10 @@
                         "$ref": "#/definitions/Condition"
                       },
                       "false": {
-                        "$ref": "#/definitions/alias-1732610263-3027-3077-1732610263-0-7702"
+                        "$ref": "#/definitions/alias-1732610263-3170-3220-1732610263-0-8377"
                       },
                       "true": {
-                        "$ref": "#/definitions/alias-1732610263-3027-3077-1732610263-0-7702"
+                        "$ref": "#/definitions/alias-1732610263-3170-3220-1732610263-0-8377"
                       },
                       "type": {
                         "const": "condition",
@@ -204,6 +204,9 @@
               "type": "array"
             }
           ]
+        },
+        "allowRegex": {
+          "type": "boolean"
         },
         "command": {
           "anyOf": [
@@ -233,6 +236,9 @@
           "properties": {
             "action": {
               "$ref": "#/definitions/PhosphorVariableAction"
+            },
+            "rule": {
+              "type": "string"
             },
             "value": {
               "$ref": "#/definitions/PhosphorVariableType"
@@ -632,10 +638,10 @@
                           "$ref": "#/definitions/Condition"
                         },
                         "false": {
-                          "$ref": "#/definitions/alias-1732610263-3027-3077-1732610263-0-7702"
+                          "$ref": "#/definitions/alias-1732610263-3170-3220-1732610263-0-8377"
                         },
                         "true": {
-                          "$ref": "#/definitions/alias-1732610263-3027-3077-1732610263-0-7702"
+                          "$ref": "#/definitions/alias-1732610263-3170-3220-1732610263-0-8377"
                         },
                         "type": {
                           "const": "condition",
@@ -717,10 +723,10 @@
                                 "$ref": "#/definitions/Condition"
                               },
                               "false": {
-                                "$ref": "#/definitions/alias-1732610263-3027-3077-1732610263-0-7702"
+                                "$ref": "#/definitions/alias-1732610263-3170-3220-1732610263-0-8377"
                               },
                               "true": {
-                                "$ref": "#/definitions/alias-1732610263-3027-3077-1732610263-0-7702"
+                                "$ref": "#/definitions/alias-1732610263-3170-3220-1732610263-0-8377"
                               },
                               "type": {
                                 "const": "condition",
@@ -807,10 +813,10 @@
                           "$ref": "#/definitions/Condition"
                         },
                         "false": {
-                          "$ref": "#/definitions/alias-1732610263-3027-3077-1732610263-0-7702"
+                          "$ref": "#/definitions/alias-1732610263-3170-3220-1732610263-0-8377"
                         },
                         "true": {
-                          "$ref": "#/definitions/alias-1732610263-3027-3077-1732610263-0-7702"
+                          "$ref": "#/definitions/alias-1732610263-3170-3220-1732610263-0-8377"
                         },
                         "type": {
                           "const": "condition",
@@ -892,10 +898,10 @@
                                 "$ref": "#/definitions/Condition"
                               },
                               "false": {
-                                "$ref": "#/definitions/alias-1732610263-3027-3077-1732610263-0-7702"
+                                "$ref": "#/definitions/alias-1732610263-3170-3220-1732610263-0-8377"
                               },
                               "true": {
-                                "$ref": "#/definitions/alias-1732610263-3027-3077-1732610263-0-7702"
+                                "$ref": "#/definitions/alias-1732610263-3170-3220-1732610263-0-8377"
                               },
                               "type": {
                                 "const": "condition",
@@ -1033,6 +1039,9 @@
         {
           "additionalProperties": false,
           "properties": {
+            "allowMetaCommands": {
+              "type": "boolean"
+            },
             "className": {
               "type": "string"
             },
@@ -1129,6 +1138,45 @@
             "duration"
           ],
           "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "context": {
+              "additionalProperties": false,
+              "properties": {
+                "action": {
+                  "$ref": "#/definitions/PhosphorVariableAction"
+                },
+                "rule": {
+                  "type": "string"
+                },
+                "value": {
+                  "$ref": "#/definitions/PhosphorVariableType"
+                }
+              },
+              "required": [
+                "action"
+              ],
+              "type": "object"
+            },
+            "onLoad": {
+              "type": "boolean"
+            },
+            "target": {
+              "type": "string"
+            },
+            "type": {
+              "const": "variable",
+              "type": "string"
+            }
+          },
+          "required": [
+            "type",
+            "target",
+            "context"
+          ],
+          "type": "object"
         }
       ]
     },
@@ -1207,6 +1255,9 @@
         "isPassword": {
           "type": "boolean"
         },
+        "padChar": {
+          "type": "string"
+        },
         "playSound": {
           "type": "boolean"
         },
@@ -1219,7 +1270,7 @@
       },
       "type": "object"
     },
-    "alias-1732610263-3027-3077-1732610263-0-7702": {
+    "alias-1732610263-3170-3220-1732610263-0-8377": {
       "anyOf": [
         {
           "additionalProperties": false,
@@ -1285,10 +1336,10 @@
               "$ref": "#/definitions/Condition"
             },
             "false": {
-              "$ref": "#/definitions/alias-1732610263-3027-3077-1732610263-0-7702"
+              "$ref": "#/definitions/alias-1732610263-3170-3220-1732610263-0-8377"
             },
             "true": {
-              "$ref": "#/definitions/alias-1732610263-3027-3077-1732610263-0-7702"
+              "$ref": "#/definitions/alias-1732610263-3170-3220-1732610263-0-8377"
             },
             "type": {
               "const": "condition",
@@ -1370,10 +1421,10 @@
                     "$ref": "#/definitions/Condition"
                   },
                   "false": {
-                    "$ref": "#/definitions/alias-1732610263-3027-3077-1732610263-0-7702"
+                    "$ref": "#/definitions/alias-1732610263-3170-3220-1732610263-0-8377"
                   },
                   "true": {
-                    "$ref": "#/definitions/alias-1732610263-3027-3077-1732610263-0-7702"
+                    "$ref": "#/definitions/alias-1732610263-3170-3220-1732610263-0-8377"
                   },
                   "type": {
                     "const": "condition",

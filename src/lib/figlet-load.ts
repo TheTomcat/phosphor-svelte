@@ -1,7 +1,8 @@
 // src/lib/figlet-preload.ts
 import figlet from 'figlet';
+import { asset } from '$app/paths';
 
-export function setFontPath(path: string) {
+export function setFontPath(path: string = asset('/fonts')) {
 	figlet.defaults({ fontPath: path });
 }
 

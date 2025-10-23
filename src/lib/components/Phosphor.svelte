@@ -52,7 +52,7 @@
 		Done
 	}
 	let containerRef: HTMLElement | null = $state(null);
-	const SUPPORTED_FONTS = ['Big Money-se', 'slant'];
+	const SUPPORTED_FONTS = ['bigmoneyse', 'slant']; //['Big Money-se', 'Slant'];
 
 	// State
 	let activeScreenId: string | null = $state(null);
@@ -562,7 +562,7 @@
 	onMount(() => {
 		setScreenWidth();
 		console.log(`Source data loaded for ${data.metadata.title} - v${data.metadata.version}`);
-		figlet.defaults({ fontPath: '/src/lib/assets/fonts' });
+		// figlet.defaults({ fontPath: '/src/lib/assets/fonts' });
 		figlet.preloadFonts(SUPPORTED_FONTS).then(() => {
 			defaultspeed = data.config.speed || 5;
 			screens = parseScreens();
