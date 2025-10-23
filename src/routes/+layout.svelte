@@ -5,6 +5,10 @@
 	import { onMount } from 'svelte';
 	import { page } from '$app/state';
 	import { setTheme, type ThemeType } from '$lib/theme.svelte';
+	import { dev } from '$app/environment';
+	import { injectAnalytics } from '@vercel/analytics/sveltekit';
+
+	injectAnalytics({ mode: dev ? 'development' : 'production' });
 
 	// document.documentElement.dataset.theme = 'green';
 	const suppliedTheme = $derived(page.url.searchParams.get('theme'));
