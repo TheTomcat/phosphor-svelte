@@ -72,6 +72,7 @@ $themes: (
     
   min-height: 100dvh;
   color: rgb(var(--foreground));
+  text-shadow: var(--foreground-glow);
   background: rgb(var(--background));
   background-image: var(--background-gradient);
   }

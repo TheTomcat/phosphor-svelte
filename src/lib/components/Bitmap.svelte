@@ -64,7 +64,7 @@
 		const ctx = canvas.getContext('2d');
 		if (!ctx) return;
 		if (ctx && image) {
-			console.log('Yes');
+			// console.log('Yes');
 			image.onload = () => {
 				if (!image) return;
 				const w = image.width;

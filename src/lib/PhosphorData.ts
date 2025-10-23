@@ -18,6 +18,7 @@ export type TextOptions = {
 	bigFont?: string; // use an ascii-art font size for this text block.
 	fillWidth?: boolean; // repeat this text to fill the width of the screen
 	align?: 'left' | 'center' | 'right'; // text alignment
+	padChar?: string; // character to use for padding when aligning text
 };
 /////////////////////////// JSON DATA TYPES ///////////////////////////////
 
@@ -66,7 +67,8 @@ export type PhosphorScreenJsonContent =
 	| JsonToggle
 	| JsonPrompt
 	| JsonText
-	| JsonCountdown;
+	| JsonCountdown
+	| JsonVariable;
 
 type VoidData = {
 	type: 'void';
@@ -109,6 +111,7 @@ type JsonPrompt = {
 	loadState?: ScreenDataState;
 	onLoad?: boolean;
 	textOpts?: TextOptions;
+	allowMetaCommands?: boolean;
 };
 
 type JsonLink = {
@@ -126,6 +129,7 @@ type JsonLinkAction = { base: JsonAction; shiftKey?: JsonAction };
 export type JsonCommand = {
 	command: string | string[];
 	action: JsonAction;
+	allowRegex?: boolean;
 };
 
 type JsonAction = _JsonAction | _JsonAction[];
@@ -155,6 +159,7 @@ export type JsonCommandVariable = {
 	context: {
 		action: PhosphorVariableAction;
 		value?: PhosphorVariableType;
+		rule?: string;
 	};
 };
 
@@ -216,6 +221,17 @@ type JsonCountdown = {
 	textOpts?: TextOptions;
 };
 
+type JsonVariable = {
+	type: 'variable';
+	target: string;
+	context: {
+		action: PhosphorVariableAction;
+		value?: PhosphorVariableType;
+		rule?: string;
+	};
+	onLoad?: boolean;
+};
+
 /////////////////////////// PARSED DATA TYPES ///////////////////////////////
 
 export type PhosphorData = {
@@ -254,7 +270,8 @@ export type PhosphorScreenContent =
 	| PhosphorToggle
 	| PhosphorPrompt
 	| PhosphorText
-	| PhosphorCountdown;
+	| PhosphorCountdown
+	| PhosphorVariable;
 
 export type PhosphorBitmap = {
 	type: 'bitmap';
@@ -283,6 +300,7 @@ export type PhosphorToggle = {
 export type Command = {
 	command: string;
 	action: Action;
+	allowRegex: boolean;
 };
 
 export type Action = SingleAction | SingleAction[];
@@ -333,6 +351,7 @@ export type PhosphorPrompt = {
 	loadState: ScreenDataState;
 	onLoad?: boolean;
 	textOpts?: TextOptions;
+	allowMetaCommands?: boolean;
 };
 
 export type Link = {
@@ -378,4 +397,17 @@ export type PhosphorCountdown = {
 	textOpts?: TextOptions;
 };
 
-// let d: PhosphorJsonData
+export type PhosphorVariable = {
+	type: 'variable';
+	id: string;
+	target: string;
+	context: {
+		action: PhosphorVariableAction;
+		value?: PhosphorVariableType;
+		rule?: string;
+	};
+	loadState: ScreenDataState;
+	onLoad?: boolean;
+};
+
+// let d: PhosphorJsonData =

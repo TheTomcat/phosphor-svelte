@@ -4,31 +4,34 @@
 		Phosphor is a project originally created by <a href="https://github.com/redhg/phosphor"
 			>@redhg</a
 		>
-		on github.
+		on github. The source code for this version can be found
+		<a href="https://github.com/thetomcat/phosphor-svelte">on my github.</a>
 	</div>
 	<div>
 		It is a retro terminal simulator for tabletop role-playing games. I've rewritten the project in
 		svelte mostly because I'm learning how to use Svelte (and I have no idea how to use React).
 	</div>
 	<div>
-		The inspiration for this little app was <a href="https://www.traaa.sh/the-ypsilon-14-terminal"
-			>Quadra's post</a
-		>
-		about an ersatz terminal for The Haunting of Ypsilon 14, a module written by D G Chapman for the
-		<a href="https://www.mothershiprpg.com/">Mothership tabletop roleplaying game</a>.
+		Credit is ultimately owed to Quadra whose <a href="https://www.traaa.sh/the-ypsilon-14-terminal"
+			>idea</a
+		> spawned the whole thing.
 	</div>
 	<div>
-		Jump right in and use the configuration I've created. Or, if you're feeling adventurous, create
-		your own configuration file!
+		<a href="/default">Jump right in and use the configuration I've created.</a> Or, if you're feeling
+		adventurous, create your own configuration file!
 	</div>
-	<div>All the data is saved to your browser, nothing is shared with a server anywhere.</div>
+	<div>
+		All the data is saved to your browser, nothing is shared with a server anywhere. When I say
+		'upload', all that is happening is the json file specified is validated then stored in
+		localStorage on your own browser.
+	</div>
 	<div>Expect bugs. Lots of bugs. And that's not even counting the game!</div>
 	<div class="hcontainer">
 		<div class="button">
 			<a href="/validate">Try out this (buggy) editor</a>
 		</div>
 		<div class="button">
-			<a href="/import">Edit Settings. Import JSON or change theme.</a>
+			<a href="/import">Settings. 'Upload' JSON or change theme.</a>
 		</div>
 	</div>
 	<div class="hcontainer">
@@ -47,6 +50,7 @@
 		flex-direction: column;
 		gap: 1rem;
 		padding: 1rem;
+		font-size: smaller;
 	}
 	h1 {
 		font-size: larger;

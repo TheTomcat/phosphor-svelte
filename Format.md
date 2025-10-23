@@ -57,10 +57,10 @@ Additionally, the last command typed into a prompt is stored in the `_lastComman
 ### `PhosphorJsonVariable`
 
 | Field     | Type                                | Required | Notes          |
-| --------- | ----------------------------------- | -------- | -------------- | --- | -------------- |
+| --------- | ----------------------------------- | -------- | -------------- |
 | `id`      | string                              | ✅       | Variable name. |
 | `type`    | `"number" \| "boolean" \| "string"` | ✅       | Runtime type.  |
-| `default` | number                              | boolean  | string         | ✅  | Initial value. |
+| `default` | `number \| boolean \| string`       | ✅       | Initial value. |
 
 > Runtime variable actions: **`set`**, **`toggle`**, **`increment`**, **`decrement`**.
 
@@ -219,13 +219,13 @@ An action may be a **single object** or an **array** to run sequentially.
 
 Supported action variants:
 
-| Type               | Shape                                                                    | Purpose                                                             |             |                               |
-| ------------------ | ------------------------------------------------------------------------ | ------------------------------------------------------------------- | ----------- | ----------------------------- | ------- | ----------- | ------------------ |
-| `dialog` / `alert` | `{ "type": "dialog" \| "alert", "target": "dialogId" }`                  | Open a dialog. The runner should **await** close before continuing. |             |                               |
-| `link`             | `{ "type": "link", "target": "screenId" }`                               | Navigate to a screen.                                               |             |                               |
-| `toggle`           | `{ "type": "toggle", "target": "toggleContentId" }`                      | Flip a toggle on the current screen.                                |             |                               |
-| `variable`         | `{ "type": "variable", "target": "<varId>", "context": { "action": "set" | "toggle"                                                            | "increment" | "decrement", "value"?: number | boolean | string } }` | Mutate a variable. |
-| `condition`        | See below.                                                               | Branch on variable values.                                          |             |                               |
+| Type               | Shape                                                                                                                                                                    | Purpose                                                             |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------- |
+| `dialog` / `alert` | `{ "type": "dialog" \| "alert", "target": "dialogId" }`                                                                                                                  | Open a dialog. The runner should **await** close before continuing. |
+| `link`             | `{ "type": "link", "target": "screenId" }`                                                                                                                               | Navigate to a screen.                                               |
+| `toggle`           | `{ "type": "toggle", "target": "toggleContentId" }`                                                                                                                      | Flip a toggle on the current screen.                                |
+| `variable`         | `{ "type": "variable", "target": "<varId>", "context": { "action": "set" \| "toggle"           \| "increment" \| "decrement", "value"?: number \| boolean \| string } }` | Mutate a variable.                                                  |
+| `condition`        | See below.                                                                                                                                                               | Branch on variable values.                                          |
 
 ---
 

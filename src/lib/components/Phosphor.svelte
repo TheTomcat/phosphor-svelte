@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { nanoid } from 'nanoid';
-	import { debounce, formatText, measureMonospaceGrid } from '$lib/utils';
+	import { bigFont, debounce, formatText, measureMonospaceGrid } from '$lib/utils';
 
 	import Prompt from './Prompt.svelte';
 	import Scanlines from './Scanlines.svelte';
@@ -33,7 +33,7 @@
 	import Toggle from './Toggle.svelte';
 	import Link from './Link.svelte';
 	import Countdown from './Countdown.svelte';
-	import figlet from 'figlet';
+	import { figlet } from '$lib/figlet-load';
 	import { applyVariableCommand, evaluateCondition, setVar } from '$lib/phosphorVariables.svelte';
 
 	let { data }: { data: PhosphorJsonData } = $props();
@@ -51,7 +51,8 @@
 		Active,
 		Done
 	}
-	let containerRef: HTMLElement;
+	let containerRef: HTMLElement | null = $state(null);
+	const SUPPORTED_FONTS = ['Big Money-se', 'slant'];
 
 	// State
 	let activeScreenId: string | null = $state(null);
@@ -70,7 +71,7 @@
 	let minCols = data.config.minWidth || 40;
 	const setScreenWidth = () => {
 		const grid = measureMonospaceGrid({ container: containerRef });
-		columns = Math.max(minCols, grid.cols);
+		columns = Math.max(minCols, grid.cols - 1);
 		if (data.config.maxWidth) columns = Math.min(columns, data.config.maxWidth);
 		_columns = grid.cols;
 		console.log('Screen columns set to:', columns);
@@ -140,6 +141,17 @@
 
 	function parseScreenContentElement(element: any): any {
 		if (typeof element === 'string') return element.split('\n');
+		if (element.type === 'text' && SUPPORTED_FONTS.includes(element?.textOpts?.bigFont)) {
+			// console.log(element.textOpts.bigFont);
+			return bigFont(element.text || '', element.textOpts.bigFont)
+				.split('\n')
+				.map((t) => {
+					return {
+						...element,
+						text: t
+					};
+				});
+		}
 		return element;
 	}
 
@@ -147,10 +159,10 @@
 		return commands
 			.map((cmd) => {
 				if (typeof cmd.command === 'string') {
-					return { command: cmd.command, action: cmd.action };
+					return { command: cmd.command, action: cmd.action, allowRegex: cmd?.allowRegex ?? false };
 				} else {
 					return cmd.command.map((command) => {
-						return { command, action: cmd.action };
+						return { command, action: cmd.action, allowRegex: cmd?.allowRegex ?? false };
 					});
 				}
 			})
@@ -176,7 +188,8 @@
 			preserveSpacing: element?.textOpts?.preserveSpacing ?? true,
 			align: element?.textOpts?.align || 'left',
 			bigFont: element?.textOpts?.bigFont || undefined,
-			fillWidth: element?.textOpts?.fillWidth || false
+			fillWidth: element?.textOpts?.fillWidth || false,
+			padChar: element?.textOpts?.padChar || ' '
 		};
 
 		// If the element is a string, create a Text object
@@ -245,7 +258,7 @@
 					type: 'link',
 					text: element.text || '',
 					// target: element.target || '',
-					actions: element.actions || [],
+					actions: element.actions || {},
 					className: element.className || '',
 					loadState: loadState,
 					onLoad,
@@ -260,7 +273,8 @@
 					className: element.className || '',
 					loadState: loadState,
 					onLoad,
-					textOpts
+					textOpts,
+					allowMetaCommands: element.allowMetaCommands || false
 					// isPassword: element.isPassword || false
 				};
 			case 'toggle':
@@ -284,6 +298,22 @@
 					onLoad,
 					textOpts
 				};
+			case 'variable':
+				applyVariableCommand({
+					id,
+					type: 'variable',
+					target: element.target,
+					context: element.context
+				});
+				return undefined;
+			// {
+			// 	id,
+			// 	type: 'variable',
+			// 	target: element.target,
+			// 	context: element.context,
+			// 	loadState: loadState,
+			// 	onLoad
+			// };
 			default:
 				return undefined;
 		}
@@ -310,6 +340,7 @@
 		}
 
 		currentScreen.content[activeIndex].loadState = ScreenDataState.Done;
+		// console.log($state.snapshot(currentScreen.content[activeIndex]));
 		if (activeIndex === currentScreen.content.length - 1) {
 			// last element was just completed
 			// screen is done
@@ -410,7 +441,7 @@
 			// Sequential logic
 			await runActionSequential(command, args);
 		} else {
-			console.log(args);
+			// console.log(args);
 			if (!args || !args.type) {
 				console.error('Something has gone terribly wrong');
 				return;
@@ -432,9 +463,6 @@
 			case 'toggle':
 				action.target && toggleToggle(action.target);
 				break;
-			// case 'console':
-			// 	console.log('Command executed:', command, action);
-			// 	break;
 			case 'variable':
 				applyVariableCommand(action, command);
 				break;
@@ -459,14 +487,14 @@
 	};
 
 	const handleLinkClick = async (action: LinkAction, shiftKey: boolean) => {
-		console.log(shiftKey);
-		console.log($state.snapshot(action));
+		// console.log(shiftKey);
+		// console.log($state.snapshot(action));
 		const branch = shiftKey ? action.shiftKey : action.base;
 		if (Array.isArray(branch)) {
 			// Sequential logic
 			await runActionSequential('', branch);
 		} else {
-			console.log(branch);
+			// console.log(branch);
 			if (!branch || !branch.type) {
 				console.error('Something has gone terribly wrong');
 				return;
@@ -483,9 +511,9 @@
 		}
 
 		const linkTarget = target.find((e) => e.shiftKey == shiftKey);
-		console.log(linkTarget);
+		// console.log(linkTarget);
 		if (linkTarget) {
-			console.log('Found Target');
+			// console.log('Found Target');
 			if (linkTarget.type === 'screen' && linkTarget.target) {
 				changeScreen(linkTarget.target);
 			} else if (linkTarget.type === 'dialog' && linkTarget.target) {
@@ -533,14 +561,20 @@
 
 	onMount(() => {
 		setScreenWidth();
+		console.log(`Source data loaded for ${data.metadata.title} - v${data.metadata.version}`);
 		figlet.defaults({ fontPath: '/src/lib/assets/fonts' });
-		figlet.preloadFonts(['Big Money-se', 'slant']);
-		defaultspeed = data.config.speed || 5;
-		screens = parseScreens();
-		dialogs = parseDialogs();
-		parseVariables();
-		setActiveScreen(0);
-		window.addEventListener('resize', debouncedSetScreenWidth);
+		figlet.preloadFonts(SUPPORTED_FONTS).then(() => {
+			defaultspeed = data.config.speed || 5;
+			screens = parseScreens();
+			dialogs = parseDialogs();
+			parseVariables();
+			setScreenWidth();
+			setActiveScreen(0);
+			window.addEventListener('resize', debouncedSetScreenWidth);
+		});
+		// try {
+		// } finally {
+		// }
 		return () => window.removeEventListener('resize', debouncedSetScreenWidth);
 	});
 </script>
@@ -590,6 +624,7 @@
 								<Countdown
 									prompt={element.prompt || 'T-MINUS '}
 									duration={element.duration || 60}
+									{columns}
 									className={element.className || ''}
 									onComplete={() => activateNextScreenData()}
 									textOpts={element.textOpts ?? {}}
@@ -642,6 +677,7 @@
 									commands={element.commands}
 									onCommand={handlePromptCommand}
 									textOpts={element.textOpts ?? {}}
+									allowMetaCommands={element.allowMetaCommands}
 								/>
 							{:else if element.type === 'toggle'}
 								<Toggle

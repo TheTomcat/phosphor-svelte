@@ -3,14 +3,14 @@
 		"title": "The Haunting of Ypsilon-14",
 		"author": "@redhg, @tom",
 		"comment": "Phosphor content file for the 'Haunting of Ypsilon-14' module for the Mothership tabletop roleplaying game. Visit https://redhg.com/ypsilon14/ to see the compiled application.",
-		"version": "0.5.1"
+		"version": "0.6.0"
 	},
 	"config": {
 		"name": "YPSILON-14",
 		"speed": 1,
-		"footer": "(c) 2154 Nishikawa Heavy Industries Ltd. All rights reserved.",
+		"footer": "(c) 2154 ISHIYAMA Heavy Industries Ltd. All rights reserved.",
 		"minWidth": 60,
-		"maxWidth": 60
+		"maxWidth": 80
 	},
 	"variables": [
 		{
@@ -31,10 +31,56 @@
 		{
 			"id": "ship",
 			"type": "string",
-			"default": "IMV TEMPEST"
+			"default": "LFC 2FAST2FURIOUS"
 		}
 	],
 	"screens": [
+		{
+			"id": "home",
+			"type": "screen",
+			"content": [
+				{
+					"type": "text",
+					"text": " Low-power mode ",
+					"textOpts": { "align": "center", "padChar": "=" }
+				},
+				"",
+				"Type ON to power-on terminal",
+				"",
+				{
+					"type": "link",
+					"text": "> ON",
+					"target": "screen0"
+				},
+				"",
+				{
+					"type": "prompt",
+					"commands": [
+						{
+							"command": ["on", "start", "power on", "poweron"],
+							"action": {
+								"type": "link",
+								"target": "screen0"
+							},
+							"allowRegex": false
+						},
+						{
+							"command": "k",
+							"action": {
+								"type": "link",
+								"target": "activateselfdestruct"
+							}
+						}
+					]
+				},
+				"",
+				{
+					"type": "text",
+					"text": " Low-power mode ",
+					"textOpts": { "align": "center", "padChar": "=" }
+				}
+			]
+		},
 		{
 			"id": "screen0",
 			"type": "screen",
@@ -48,49 +94,49 @@
 					}
 				},
 				{
-					"type": "void",
-					"text": "NISHIKAWA",
-					"textOpts": { "bigFont": "slant", "preserveSpacing": true }
-				},
-				{
 					"type": "text",
 					"textOpts": { "speed": 2, "preserveSpacing": true, "fillWidth": true },
-					"text": "="
+					"text": "=~"
 				},
-				{ "type": "text", "textOpts": { "speed": 2, "preserveSpacing": false }, "text": "" },
+				{ "type": "void", "textOpts": { "speed": 2, "preserveSpacing": false }, "text": "" },
 				{
 					"type": "text",
+					"text": "ISHIYAMA",
+					"textOpts": { "bigFont": "slant", "preserveSpacing": true, "align": "center" }
+				},
+				{
+					"type": "void",
 					"textOpts": { "speed": 2, "preserveSpacing": true },
 					"text": "      _   ___________ __  ________ __ ___ _       _____"
 				},
 				{
-					"type": "text",
+					"type": "void",
 					"textOpts": { "speed": 2, "preserveSpacing": true },
 					"text": "     \/ | \/ \/  _\/ ___\/\/ \/ \/ \/  _\/ \/\/_\/\/   | |     \/ \/   |"
 				},
 				{
-					"type": "text",
+					"type": "void",
 					"textOpts": { "speed": 2, "preserveSpacing": true },
 					"text": "    \/  |\/ \/\/ \/ \\__ \\\/ \/_\/ \/\/ \/\/ ,<  \/ \/| | | \/| \/ \/ \/| |"
 				},
 				{
-					"type": "text",
+					"type": "void",
 					"textOpts": { "speed": 2, "preserveSpacing": true },
 					"text": "   \/ \/|  \/\/ \/ ___\/ \/ __  \/\/ \/\/ \/| |\/ ___ | |\/ |\/ \/ ___ |"
 				},
 				{
-					"type": "text",
+					"type": "void",
 					"textOpts": { "speed": 2, "preserveSpacing": true },
 					"text": "  \/_\/ |_\/___\/\/____\/_\/ \/_\/___\/_\/ |_\/_\/  |_|__\/|__\/_\/  |_|"
 				},
-				{ "type": "text", "textOpts": { "speed": 2, "preserveSpacing": true }, "text": "" },
+				{ "type": "void", "textOpts": { "speed": 2, "preserveSpacing": true }, "text": "" },
 				{
 					"type": "text",
 					"textOpts": { "speed": 2, "preserveSpacing": true, "fillWidth": true },
-					"text": "="
+					"text": "=~"
 				},
 				"",
-				" NISHIKAWA HEAVY INDUSTRIES LTD (R) 2176",
+				" ISHIYAMA HEAVY INDUSTRIES LTD (R) 2176",
 				" HEURISTICALLY ENCRYPTED REAL-TIME OPERATING SYSTEM (R)",
 				"",
 				{ "type": "text", "text": "=", "textOpts": { "fillWidth": true } },
@@ -102,7 +148,7 @@
 				"",
 				{ "type": "text", "text": "=", "textOpts": { "fillWidth": true } },
 				"",
-				" (C) 2154 NISHIKAWA HEAVY INDUSTRIES LTD. ALL RIGHTS RESERVED.",
+				" (C) 2154 ISHIYAMA HEAVY INDUSTRIES LTD. ALL RIGHTS RESERVED.",
 				"",
 				{
 					"text": "> Type ACCEPT to agree with EULA & log in",
@@ -139,26 +185,6 @@
 						}
 					]
 				}
-			]
-		},
-		{
-			"id": "eulanotaccept",
-			"type": "screen",
-			"content": [
-				"===============================================================",
-				"",
-				" EULA NOT ACCEPTED.",
-				"",
-				{
-					"type": "text",
-					"text": "ACCESS TO THIS TERMINAL IS RESTRICTED TO AUTHORIZED PERSONNEL ONLY. UNAUTHORIZED ACCESS OR USE IS A VIOLATION OF COMPANY POLICY #271-A-i. ALL ACTIVITIES ARE LOGGED AND MONITORED. IF YOU DO NOT AGREE TO THE TERMS OF THE END USER LICENSE AGREEMENT",
-					"textOpts": { "preserveSpacing": false }
-				},
-				"",
-				" PLEASE DISCONNECT IMMEDIATELY.",
-				"",
-				"===============================================================",
-				""
 			]
 		},
 		{
@@ -1329,11 +1355,15 @@
 					"states": [
 						{
 							"text": "> MIST HYDRATION SYSTEM :: OFF",
-							"active": true
+							"active": true,
+							"delayMs": 2000,
+							"delayText": "> TURNING ON MIST HYDRATION SYSTEM %"
 						},
 						{
 							"text": "> MIST HYDRATION SYSTEM :: ON",
-							"active": false
+							"active": false,
+							"delayMs": 2000,
+							"delayText": "> TURNING OFF MIST HYDRATION SYSTEM %"
 						}
 					]
 				},
@@ -1391,7 +1421,7 @@
 							"command": ["mist hydration system", "mist"],
 							"action": {
 								"type": "toggle",
-								"target": "greenhouse"
+								"target": "mist"
 							}
 						}
 					]
@@ -1459,23 +1489,27 @@
 				"Life Support",
 				"============",
 				"",
+				{ "text": "=", "type": "text", "textOpts": { "fillWidth": true }, "className": "alert" },
 				{
 					"type": "text",
 					"className": "alert",
-					"text": "WARNING!"
+					"text": " WARNING ",
+					"textOpts": { "align": "center", "padChar": "=" }
 				},
+				{ "text": "=", "type": "text", "textOpts": { "fillWidth": true }, "className": "alert" },
+				"",
 				{
 					"type": "text",
 					"className": "alert",
-					"text": "Disabling life support without the proper authorisation or without"
+					"text": "Disabling life support without the proper authorisation or without following the appropriate safety protocols is in direct violation of company policy #2778-A."
 				},
 				{
-					"type": "text",
+					"type": "void",
 					"className": "alert",
-					"text": "following the appropriate safety protocols is in direct violation"
+					"text": "following the appropriate safety protocols is in direct violation "
 				},
 				{
-					"type": "text",
+					"type": "void",
 					"className": "alert",
 					"text": "of company policy #2778-A."
 				},
@@ -1483,10 +1517,10 @@
 				{
 					"type": "text",
 					"className": "alert",
-					"text": "NISHIKAWA DYNAMICS assumes no responsibilities or liabilities resulting"
+					"text": "ISHIYAMA HEAVY INDUSTRIES assumes no responsibilities or liabilities resulting from the improper use of this feature."
 				},
 				{
-					"type": "text",
+					"type": "void",
 					"className": "alert",
 					"text": "from the improper use of this feature."
 				},
@@ -1551,23 +1585,27 @@
 				"Self-Destruct",
 				"=============",
 				"",
+				{ "text": "=", "type": "text", "textOpts": { "fillWidth": true }, "className": "alert" },
 				{
 					"type": "text",
 					"className": "alert",
-					"text": "WARNING!"
+					"text": " WARNING ",
+					"textOpts": { "align": "center", "padChar": "=" }
 				},
+				{ "text": "=", "type": "text", "textOpts": { "fillWidth": true }, "className": "alert" },
+				"",
 				{
 					"type": "text",
 					"className": "alert",
-					"text": "Destruction of corporate property is a violation of company policy #2778-A."
+					"text": "Destruction of corporate property is a violation of company policy #2778-A. ISHIYAMA DYNAMICS assumes no responsibilities or liabilities resulting from the improper use of this feature"
 				},
 				{
-					"type": "text",
+					"type": "void",
 					"className": "alert",
-					"text": "NISHIKAWA DYNAMICS assumes no responsibilities or liabilities resulting"
+					"text": ""
 				},
 				{
-					"type": "text",
+					"type": "void",
 					"className": "alert",
 					"text": "from the improper use of this feature."
 				},
@@ -1597,7 +1635,12 @@
 							}
 						},
 						{
-							"command": ["activate self destruct", "self destruct", "activate"],
+							"command": [
+								"activate self destruct",
+								"self destruct",
+								"activate",
+								"activate self-destruct"
+							],
 							"action": {
 								"type": "link",
 								"target": "activateselfdestruct"
@@ -1627,8 +1670,29 @@
 				},
 				"",
 				{
+					"type": "text",
+					"className": "alert",
+					"text": "FOR SECURITY REASONS, A PASSPHRASE HAS BEEN GENERATED. PLEASE ENTER THE FOLLOWING PASSPHRASE TO CONTINUE."
+				},
+				{
+					"type": "variable",
+					"target": "passphrase",
+					"context": {
+						"action": "set",
+						"rule": "EEEE-EEEE-EEEE-EEEE"
+					}
+				},
+				"",
+				{
+					"type": "text",
+					"className": "alert",
+					"text": "{{passphrase}}",
+					"textOpts": { "align": "center" }
+				},
+				"",
+				{
 					"type": "prompt",
-					"prompt": "TYPE 'OK' TO BEGIN COUNTDOWN: ",
+					"prompt": "TYPE PASSPHRASE TO BEGIN COUNTDOWN: ",
 					"className": "alert cursor",
 					"commands": [
 						{
@@ -1641,8 +1705,27 @@
 						{
 							"command": ".+",
 							"action": {
-								"type": "link",
-								"target": "selfdestruct"
+								"type": "condition",
+								"condition": {
+									"op": "=",
+									"left": { "type": "variable", "target": "passphrase" },
+									"right": { "type": "variable", "target": "_lastCommand" },
+									"caseInsensitive": true
+								},
+								"true": {
+									"type": "link",
+									"target": "evacuate"
+								},
+								"false": [
+									{
+										"type": "dialog",
+										"target": "invalidPassword"
+									},
+									{
+										"type": "link",
+										"target": "system"
+									}
+								]
 							}
 						}
 					]
@@ -1674,9 +1757,10 @@
 				"",
 				{
 					"type": "countdown",
-					"className": "alert blink",
+					"className": "alert",
 					"prompt": "T-MINUS ",
-					"duration": 600
+					"duration": 600,
+					"textOpts": { "align": "center" }
 				}
 			]
 		}

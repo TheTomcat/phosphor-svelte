@@ -5,7 +5,8 @@ import type {
 	Operand,
 	JsonCommandVariable,
 	PhosphorVariableType,
-	Condition
+	Condition,
+	PhosphorVariable
 } from '$lib/PhosphorData';
 
 export const vars: Record<string, PhosphorVariableType> = $state({}); // global KV store
@@ -20,6 +21,7 @@ export function getVar<T extends PhosphorVariableType = PhosphorVariableType>(
 export function setVar(name: string, value: PhosphorVariableType) {
 	// assignment triggers reactivity for any component reading vars[name]
 	vars[name] = value;
+	// console.log($state.snapshot(vars));
 }
 
 export function toggleVar(name: string) {
@@ -45,13 +47,22 @@ export function decrementVar(name: string, by = 1) {
 }
 
 // Apply one variable command
-export function applyVariableCommand(cmd: JsonCommandVariable, command?: string) {
+export function applyVariableCommand(
+	cmd: JsonCommandVariable | PhosphorVariable,
+	command?: string
+) {
 	const { target, context } = cmd;
-	const { action, value } = context ?? {};
+	const { action, value, rule } = context ?? {};
 	// console.log('Applying variable command:', cmd, context);
 	switch (action) {
 		case 'set':
 			if (value === undefined) {
+				if (rule) {
+					let r = buildRule(rule);
+					// console.log(r);
+					setVar(target, r);
+					return;
+				}
 				setVar(target, command ?? '');
 			} else {
 				setVar(target, value);
@@ -69,7 +80,7 @@ export function applyVariableCommand(cmd: JsonCommandVariable, command?: string)
 		default:
 			throw new Error(`Unknown variable action for "${target}": ${String(action)}`);
 	}
-	console.log(getVar(target));
+	// console.log(getVar(target));
 }
 
 // Apply an array from JSON (ignore non-variable items safely)
@@ -221,4 +232,29 @@ function toNumber(value: PhosphorVariableType): number | undefined {
 	if (typeof value === 'number') return value;
 	const n = Number(value);
 	return Number.isNaN(n) ? undefined : n;
+}
+function buildRule(rule: string): PhosphorVariableType {
+	// Accepts 0,A,X,
+	const RULES = {
+		'0': '0123456789',
+		A: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+		a: 'abcdefghijklmnopqrstuvwxyz',
+		X: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789',
+		h: '0123456789abcdef',
+		E: 'ABCDEFGHKMNPQRSTUVWXYZ23456789', // Exclude confusing chars
+		c: 'IO01lio' // Confusing chars
+	};
+
+	let result: string = '';
+	for (let char of rule) {
+		if (char in RULES) {
+			const chars = RULES[char as keyof typeof RULES];
+			result += chars.charAt(Math.floor(Math.random() * chars.length));
+			continue;
+		} else {
+			result += char;
+			continue;
+		}
+	}
+	return result;
 }

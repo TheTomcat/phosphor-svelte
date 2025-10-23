@@ -8,8 +8,9 @@
 		commands = [],
 		className,
 		disabled,
+		allowMetaCommands = true,
+		//allowRegex = true,
 		textOpts = { isPassword: false },
-		// isPassword = false,
 		onCommand,
 		onEscape,
 		onRendered
@@ -17,9 +18,10 @@
 		prompt?: string;
 		commands?: Command[];
 		className?: string;
+		allowMetaCommands?: boolean;
+		//allowRegex?: boolean;
 		disabled?: boolean;
 		textOpts?: TextOptions;
-		// isPassword?: boolean;
 		onCommand?: (command: Command['command'], action: Command['action']) => void;
 		onEscape?: () => void;
 		onRendered?: () => void;
@@ -40,22 +42,44 @@
 	const matchCommand = (input: string) => {
 		let simpleCommand = commands.find((element) => element.command === input);
 		if (simpleCommand) return simpleCommand;
-		return commands.find((element) => input.match(element.command));
+		return commands.find((element) => input.match(element.command) && element?.allowRegex);
+	};
+
+	const parseMetaCommand = (input: string) => {
+		// Parse input for commands of the form SET VAR=VALUE and update appropriately
+		if (input.startsWith('set')) {
+			const parts = input.slice(3).trim().split('=');
+			if (parts.length === 2) {
+				const varName = parts[0].trim();
+				const varValue = parts[1].trim();
+				setVar(varName, varValue);
+				return true;
+			}
+		}
 	};
 
 	const handleCommand = () => {
 		if (!onCommand) return;
 		setVar('_lastCommand', value);
 		const command = matchCommand(value);
+
 		// console.log(`Found matching command for ${$state.snapshot(value)}`, $state.snapshot(command));
 		if (command) {
 			// console.log(command);
 			onCommand(value, command.action);
 			value = '';
 		} else {
-			invalidCommand = value;
-			value = '';
-			// console.log('Invalid command:', invalidCommand);
+			if (allowMetaCommands) {
+				const handled = parseMetaCommand(value);
+				if (handled) {
+					value = '';
+					invalidCommand = 'OVERRIDE COMMAND ACCEPTED';
+				}
+			} else {
+				invalidCommand = value;
+				value = '';
+				// console.log('Invalid command:', invalidCommand);
+			}
 
 			setTimeout(() => {
 				invalidCommand = '';
@@ -89,7 +113,7 @@
 
 			default:
 				// support alphanumeric, space, and limited puntuation only
-				const re = /[a-z0-9,.<>/?[\]{}'";:*&^%$#@!~]/;
+				const re = /[a-z0-9,.<>/?[\]{}'";:*&^%$#@!~=-]/;
 				if (key.length === 1 && key.match(re)) {
 					e.preventDefault();
 					value = value + key;
@@ -97,6 +121,7 @@
 					e.preventDefault();
 					value = value + ' '; //(isPassword ? ' ' : '&nbsp;');
 				} else {
+					console.warn(`Unrecognised key: ${key}`);
 				}
 				break;
 		}

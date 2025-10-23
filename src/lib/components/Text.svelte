@@ -13,7 +13,6 @@
 		columns: number;
 		className?: string;
 		onRendered?: () => void;
-		// preserveSpacing?: boolean;
 		textOpts?: TextOptions;
 	} = $props();
 

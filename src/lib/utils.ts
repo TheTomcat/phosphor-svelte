@@ -1,4 +1,5 @@
-import figlet from 'figlet';
+// import figlet from 'figlet';
+import { figlet } from '$lib/figlet-load';
 import type { TextOptions } from './PhosphorData';
 import { injectVariables } from './phosphorVariables.svelte';
 
@@ -19,7 +20,7 @@ export function measureMonospaceGrid(opts?: { container?: HTMLElement | null }) 
 
 	// 1) Create a hidden measuring span
 	const span = document.createElement('span');
-	span.textContent = 'M'; // Tall/wide glyph; fine for monospace
+	span.textContent = '='; // Tall/wide glyph; fine for monospace
 	span.style.position = 'absolute';
 	span.style.visibility = 'hidden';
 	span.style.whiteSpace = 'pre'; // preserve exact width
@@ -64,9 +65,8 @@ export function measureMonospaceGrid(opts?: { container?: HTMLElement | null }) 
 	};
 }
 
-const bigFont = (text: string, bigFont: string): string => {
-	console.log(figlet.textSync(text, { font: bigFont }));
-	console.log(figlet.textSync(text, { font: bigFont }).includes('\n'));
+export const bigFont = (text: string, bigFont: string): string => {
+	// console.log(figlet.textSync(text, { font: bigFont }));
 	return figlet.textSync(text, { font: bigFont });
 };
 
@@ -75,13 +75,13 @@ export const formatText = (text: string, columns: number, textOpts?: TextOptions
 		let nRepeat = Math.ceil(columns / text.length);
 		return text.repeat(nRepeat).slice(0, columns);
 	}
-	if (textOpts?.bigFont) {
-		return bigFont(text, textOpts.bigFont);
-	}
+	// if (textOpts?.bigFont) {
+	// 	return bigFont(text, textOpts.bigFont);
+	// }
 	let lines = breakText(text, columns);
 	let output: string[] = [];
 	for (let line of lines) {
-		output.push(alignText(line, columns, textOpts?.align || 'left'));
+		output.push(alignText(line, columns, textOpts?.align || 'left', textOpts?.padChar ?? ' '));
 	}
 
 	// if (textOpts?.preserveSpacing) {
@@ -90,20 +90,29 @@ export const formatText = (text: string, columns: number, textOpts?: TextOptions
 	return injectVariables(output.join('\n'));
 };
 
-const alignText = (text: string, cols: number, align: 'left' | 'center' | 'right'): string => {
+const alignText = (
+	text: string,
+	cols: number,
+	align: 'left' | 'center' | 'right',
+	padChar: string = ' '
+): string => {
 	if (text.length >= cols) return text;
 	let space = cols - text.length;
+	let output: string = '';
 	switch (align) {
 		case 'left':
-			return text;
+			output = text;
+			if (padChar != ' ') output += padChar.repeat(space);
+			return output;
 		case 'center':
-			console.log('TEST');
 			let left = space / 2;
 			let right = Math.floor(space - left);
 			left = Math.floor(left);
-			return ' '.repeat(left) + text; // + ' '.repeat(right);
+			output = padChar.repeat(left) + text;
+			if (padChar != ' ') output += padChar.repeat(right);
+			return output;
 		case 'right':
-			return ' '.repeat(space) + text;
+			return padChar.repeat(space) + text;
 	}
 };
 

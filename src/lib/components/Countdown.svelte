@@ -4,6 +4,7 @@
 	let {
 		prompt,
 		duration,
+		columns,
 		className,
 		onRendered,
 		onComplete,
@@ -11,6 +12,7 @@
 	}: {
 		prompt: string;
 		duration: number;
+		columns: number;
 		className?: string;
 		onRendered?: () => void;
 		onComplete?: () => void;
@@ -21,6 +23,7 @@
 	// NEW: sound props
 	import soundSrc from '$lib/assets/beep.mp3';
 	import type { TextOptions } from '$lib/PhosphorData';
+	import { formatText } from '$lib/utils';
 	// let soundSrc: string | null = ''; // e.g. '/sounds/teletype-loop.mp3'
 	let soundVolume: number = 0.3; // 0..1
 	let soundPlaybackRate: number = 1.0; // optional slight pitch/speed tweak
@@ -60,6 +63,8 @@
 	let renderedTime = $derived.by(() => {
 		return `${duration > 3600 ? h.toString().padStart(2, '0') + ':' : ''}${duration > 60 ? m.toString().padStart(2, '0') + ':' : ''}${s.toString().padStart(2, '0')}`;
 	});
+	let output = $derived(formatText(`${prompt}${renderedTime}`, columns, textOpts));
+	let htmlOutput = $derived(textOpts?.preserveSpacing ? output.replaceAll(' ', '&nbsp;') : output);
 
 	let countdownInterval: ReturnType<typeof setInterval> | null = null;
 	onMount(() => {
@@ -94,8 +99,7 @@
 </script>
 
 <div class={`__text__ ${className ? className : ''}`}>
-	{@html rendered}
-	{renderedTime}
+	{@html htmlOutput}
 </div>
 
 <style lang="scss">
