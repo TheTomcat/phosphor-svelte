@@ -50,7 +50,7 @@
 				{
 					"type": "link",
 					"text": "> ON",
-					"target": "screen0"
+					"target": "eula"
 				},
 				"",
 				{
@@ -60,15 +60,7 @@
 							"command": ["on", "start", "power on", "poweron"],
 							"action": {
 								"type": "link",
-								"target": "screen0"
-							},
-							"allowRegex": false
-						},
-						{
-							"command": "k",
-							"action": {
-								"type": "link",
-								"target": "activateselfdestruct"
+								"target": "eula"
 							}
 						}
 					]
@@ -82,71 +74,36 @@
 			]
 		},
 		{
-			"id": "screen0",
+			"id": "eula",
 			"type": "screen",
 			"content": [
 				{
-					"type": "void",
-					"target": "menu",
-					"text": "=",
-					"textOpts": {
-						"fillWidth": true
-					}
-				},
-				{
 					"type": "text",
-					"textOpts": { "speed": 2, "preserveSpacing": true, "fillWidth": true },
+					"textOpts": { "fillWidth": true },
 					"text": "=~"
 				},
-				{ "type": "void", "textOpts": { "speed": 2, "preserveSpacing": false }, "text": "" },
 				{
 					"type": "text",
 					"text": "ISHIYAMA",
 					"textOpts": { "bigFont": "slant", "preserveSpacing": true, "align": "center" }
 				},
 				{
-					"type": "void",
-					"textOpts": { "speed": 2, "preserveSpacing": true },
-					"text": "      _   ___________ __  ________ __ ___ _       _____"
-				},
-				{
-					"type": "void",
-					"textOpts": { "speed": 2, "preserveSpacing": true },
-					"text": "     \/ | \/ \/  _\/ ___\/\/ \/ \/ \/  _\/ \/\/_\/\/   | |     \/ \/   |"
-				},
-				{
-					"type": "void",
-					"textOpts": { "speed": 2, "preserveSpacing": true },
-					"text": "    \/  |\/ \/\/ \/ \\__ \\\/ \/_\/ \/\/ \/\/ ,<  \/ \/| | | \/| \/ \/ \/| |"
-				},
-				{
-					"type": "void",
-					"textOpts": { "speed": 2, "preserveSpacing": true },
-					"text": "   \/ \/|  \/\/ \/ ___\/ \/ __  \/\/ \/\/ \/| |\/ ___ | |\/ |\/ \/ ___ |"
-				},
-				{
-					"type": "void",
-					"textOpts": { "speed": 2, "preserveSpacing": true },
-					"text": "  \/_\/ |_\/___\/\/____\/_\/ \/_\/___\/_\/ |_\/_\/  |_|__\/|__\/_\/  |_|"
-				},
-				{ "type": "void", "textOpts": { "speed": 2, "preserveSpacing": true }, "text": "" },
-				{
 					"type": "text",
-					"textOpts": { "speed": 2, "preserveSpacing": true, "fillWidth": true },
+					"textOpts": { "fillWidth": true },
 					"text": "=~"
 				},
 				"",
 				" ISHIYAMA HEAVY INDUSTRIES LTD (R) 2176",
 				" HEURISTICALLY ENCRYPTED REAL-TIME OPERATING SYSTEM (R)",
 				"",
-				{ "type": "text", "text": "=", "textOpts": { "fillWidth": true } },
+				{ "type": "text", "text": "-", "textOpts": { "fillWidth": true } },
 				"",
 				" H.E.R.O.S. TERMINAL v4.22.7",
 				" YOU ARE CONNECTED TO < SERVER 26 > < YPSILON-14 STATION >",
 				" SYSTEM ADMINISTRATOR INTEGRATED MESSAGE SYSTEM: [ ACTIVE ]",
 				" SYSTEM ADMINISTRATOR (SYSADM): YUTA NAKAMURA",
 				"",
-				{ "type": "text", "text": "=", "textOpts": { "fillWidth": true } },
+				{ "type": "text", "text": "-", "textOpts": { "fillWidth": true } },
 				"",
 				" (C) 2154 ISHIYAMA HEAVY INDUSTRIES LTD. ALL RIGHTS RESERVED.",
 				"",
@@ -177,10 +134,10 @@
 							]
 						},
 						{
-							"command": "next",
+							"command": ["back", "logout", "exit", "quit", "off", "power off"],
 							"action": {
 								"type": "link",
-								"target": "screen0"
+								"target": "home"
 							}
 						}
 					]
@@ -264,7 +221,7 @@
 				{
 					"text": "< QUIT",
 					"type": "link",
-					"target": "screen0"
+					"target": "eula"
 				},
 				"",
 				{
@@ -329,7 +286,7 @@
 							"command": ["quit", "exit", "logout", "back"],
 							"action": {
 								"type": "link",
-								"target": "screen0"
+								"target": "eula"
 							}
 						}
 					]
@@ -900,6 +857,7 @@
 						},
 						{
 							"command": "[^\\s]+",
+							"allowRegex": true,
 							"action": [
 								{
 									"type": "variable",
@@ -1704,6 +1662,7 @@
 						},
 						{
 							"command": ".+",
+							"allowRegex": true,
 							"action": {
 								"type": "condition",
 								"condition": {

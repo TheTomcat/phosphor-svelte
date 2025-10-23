@@ -581,6 +581,9 @@
 
 {#if columns > 0}
 	{#if _columns < minCols}<div>Screen is too small, content may not display properly</div>{/if}
+	{#if renderScanlines}
+		<Scanlines />
+	{/if}
 	<div class="phosphor">
 		<section class="__main__" bind:this={containerRef}>
 			{#if activeScreenId && columns > 0}
@@ -696,9 +699,7 @@
 			{@const dialog = dialogs.find((d) => d.id === activeDialogId) as PhosphorDialog}
 			<Modal text={dialog.content} onClose={toggleDialog} />
 		{/if}
-		{#if renderScanlines}
-			<Scanlines />
-		{/if}
+
 		{#if data.config.footer}
 			<footer class="__footer__">
 				<Text text={data.config.footer} {columns} />
