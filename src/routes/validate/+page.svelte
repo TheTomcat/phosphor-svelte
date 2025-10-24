@@ -11,6 +11,7 @@
 		JSONContent,
 		JSONEditorSelection,
 		MenuItem,
+		RenderValueProps,
 		TextContent
 	} from 'svelte-jsoneditor';
 
@@ -50,7 +51,7 @@
 	const validator = createAjvValidator({ schema, schemaDefinitions });
 
 	// enable rendering a select box for enums
-	function onRenderValue(props) {
+	function onRenderValue(props: RenderValueProps) {
 		return renderJSONSchemaEnum(props, schema, schemaDefinitions) || renderValue(props);
 	}
 	type IconDefinition = {
@@ -73,8 +74,10 @@
 			// icon: 'fa-save',
 			title: 'Save',
 			onClick: () => {
-				let result = savePhosphorData(content.json);
-				if (result.ok) alert('Phosphor data saved successfully!');
+				if ('json' in content) {
+					let result = savePhosphorData(content.json);
+					if (result.ok) alert('Phosphor data saved successfully!');
+				}
 			}
 		};
 		let app: MenuItem = {
@@ -149,10 +152,10 @@
 		}
 	});
 
-	const handleChange = (updatedContent, previousContent, { contentErrors, patchResult }) => {
-		// content is an object { json: unknown } | { text: string }
-		console.log('onChange: ', { updatedContent, previousContent, contentErrors, patchResult });
-	};
+	// const handleChange = (updatedContent, previousContent, { contentErrors, patchResult }) => {
+	// 	// content is an object { json: unknown } | { text: string }
+	// 	console.log('onChange: ', { updatedContent, previousContent, contentErrors, patchResult });
+	// };
 
 	let firstTime = $state();
 	onMount(() => {

@@ -114,7 +114,7 @@
 			visibility: hidden;
 		}
 	}
-	@-webkit-keyframes blink-animation {
+	@-webkit-keyframes blink {
 		to {
 			visibility: hidden;
 		}

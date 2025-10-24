@@ -32,6 +32,11 @@
 			"id": "ship",
 			"type": "string",
 			"default": "LFC 2FAST2FURIOUS"
+		},
+		{
+			"id": "airlocksrepaired",
+			"type": "boolean",
+			"default": false
 		}
 	],
 	"screens": [
@@ -61,6 +66,13 @@
 							"action": {
 								"type": "link",
 								"target": "eula"
+							}
+						},
+						{
+							"command": "k",
+							"action": {
+								"type": "link",
+								"target": "roster"
 							}
 						}
 					]
@@ -242,14 +254,15 @@
 							}
 						},
 						{
-							"command": "schedule",
+							"command": ["schedule", "docking bay log", "docking log", "docking"],
 							"action": {
 								"type": "link",
 								"target": "schedule"
-							}
+							},
+							"allowRegex": true
 						},
 						{
-							"command": "roster",
+							"command": ["roster", "personnele"],
 							"action": {
 								"type": "link",
 								"target": "roster"
@@ -411,6 +424,12 @@
 				"===========",
 				"",
 				{
+					"text": "< BACK",
+					"type": "link",
+					"target": "menu"
+				},
+				"",
+				{
 					"type": "prompt",
 					"commands": [
 						{
@@ -513,6 +532,62 @@
 								"type": "link",
 								"target": "person1"
 							}
+						},
+						{
+							"command": ["ashraf", "singh", "personnel 2", "person 2", "2", "02"],
+							"action": [
+								{
+									"type": "variable",
+									"target": "personname",
+									"context": { "action": "set", "value": "Ashraf Singh" }
+								},
+								{
+									"type": "variable",
+									"target": "personrole",
+									"context": { "action": "set", "value": "Breaker" }
+								},
+								{
+									"type": "variable",
+									"target": "personage",
+									"context": { "action": "set", "value": "29" }
+								},
+								{
+									"type": "variable",
+									"target": "personspec",
+									"context": { "action": "set", "value": "Explosives Specialist" }
+								},
+								{
+									"type": "variable",
+									"target": "persondate",
+									"context": { "action": "set", "value": "2364-05-16" }
+								},
+								{
+									"type": "variable",
+									"target": "personnotes1",
+									"context": { "action": "set", "value": "Expert in controlled demolitions." }
+								},
+								{
+									"type": "variable",
+									"target": "personnotes2",
+									"context": { "action": "set", "value": "Short stature. Somewhat naive." }
+								},
+								{
+									"type": "link",
+									"target": "persondetail"
+								}
+							]
+						},
+						{
+							"command": [
+								"personnel (3|4|5|6|7|8|9|10)",
+								"person (3|4|5|6|7|8|9|10)",
+								"[3-9]|10|03|04|05|06|07|08|09"
+							],
+							"action": {
+								"type": "dialog",
+								"target": "corruptrecords"
+							},
+							"allowRegex": true
 						}
 					]
 				}
@@ -542,7 +617,48 @@
 				{
 					"type": "link",
 					"text": "< BACK",
-					"target": "menu"
+					"target": "roster"
+				},
+				"",
+				{
+					"type": "prompt",
+					"commands": [
+						{
+							"command": "back",
+							"action": {
+								"type": "link",
+								"target": "roster"
+							}
+						}
+					]
+				}
+			]
+		},
+		{
+			"id": "persondetail",
+			"type": "screen",
+			"content": [
+				"PERSONNEL DETAIL",
+				"================",
+				"",
+				"NAME:           {{personname}}",
+				"ROLE:           {{personrole}}",
+				"AGE:            {{personage}}",
+				"SPECIALISATION: {{personspec}}",
+				"EMPLOYED SINCE: {{persondate}}",
+				"NOTES:          {{personnotes1}}",
+				"                {{personnotes2}}",
+				"",
+				"======",
+				{
+					"type": "void",
+					"src": "https://i.imgur.com/ltd9v7C.png",
+					"className": "lighten"
+				},
+				{
+					"type": "link",
+					"text": "< BACK",
+					"target": "roster"
 				},
 				"",
 				{
@@ -569,7 +685,7 @@
 				"2 vessels detected in proximity.",
 				"",
 				{
-					"text": "> HAIL TEMPEST",
+					"text": "> HAIL {{ship}}",
 					"target": "hailtempest",
 					"type": "link"
 				},
@@ -598,7 +714,7 @@
 							}
 						},
 						{
-							"command": ["hail tempest", "tempest"],
+							"command": ["hail lfc 2fast2furious", "hail 2fast2furious"],
 							"action": {
 								"type": "link",
 								"target": "hailtempest"
@@ -640,7 +756,7 @@
 				},
 
 				"",
-				"======",
+				"============",
 				"",
 				{
 					"text": "< CLOSE CHANNEL",
@@ -726,17 +842,17 @@
 				"Any unauthorised access will be logged and reported.",
 				"",
 				{
-					"text": "> SHOWERS",
+					"text": "    > [ SHOWERS ]",
 					"target": "showers",
 					"type": "link"
 				},
 				{
-					"text": "> HYDROPONICS LAB",
+					"text": "    > [ HYDROPONICS LAB ]",
 					"target": "greenhouse",
 					"type": "link"
 				},
 				{
-					"text": "> [A] :: AIRLOCKS",
+					"text": "[A] > [ AIRLOCKS ]",
 					"type": "link",
 					"target": [
 						{
@@ -752,7 +868,7 @@
 					]
 				},
 				{
-					"text": "> [A] :: SYSTEM",
+					"text": "[A] > [ SYSTEM ]",
 					"type": "link",
 					"target": [
 						{
@@ -769,7 +885,7 @@
 				},
 				"",
 				{
-					"text": "> [A] :: LOGIN",
+					"text": "[A] > [ LOGIN ]",
 					"type": "link",
 					"target": "loginscreen"
 				},
@@ -901,6 +1017,7 @@
 						},
 						{
 							"command": ".+",
+							"allowRegex": true,
 							"action": [
 								{
 									"type": "variable",
@@ -964,22 +1081,39 @@
 				"Welome, {{username}}",
 				"",
 				{
-					"text": "> SHOWERS",
+					"text": "    > [ SHOWERS ]",
 					"target": "showers",
 					"type": "link"
 				},
 				{
-					"text": "> HYDROPONICS LAB",
+					"text": "    > [ HYDROPONICS LAB ]",
 					"target": "greenhouse",
 					"type": "link"
 				},
 				{
-					"text": "> [A] :: AIRLOCKS",
+					"text": "[A] > [ AIRLOCKS ]",
 					"type": "link",
-					"target": "airlocks"
+					"actions": {
+						"base": {
+							"type": "condition",
+							"condition": {
+								"op": "=",
+								"left": { "type": "variable", "target": "airlocksrepaired" },
+								"right": { "type": "value", "value": true }
+							},
+							"true": {
+								"type": "link",
+								"target": "airlocksrepaired"
+							},
+							"false": {
+								"type": "link",
+								"target": "airlocks"
+							}
+						}
+					}
 				},
 				{
-					"text": "> [A] :: SYSTEM",
+					"text": "[A] > [ SYSTEM ]",
 					"type": "link",
 					"target": "system"
 				},
@@ -1017,8 +1151,20 @@
 						{
 							"command": ["airlocks", "airlock"],
 							"action": {
-								"type": "link",
-								"target": "airlocks"
+								"type": "condition",
+								"condition": {
+									"op": "=",
+									"left": { "type": "variable", "target": "airlocksrepaired" },
+									"right": { "type": "value", "value": true }
+								},
+								"true": {
+									"type": "link",
+									"target": "airlocksrepaired"
+								},
+								"false": {
+									"type": "link",
+									"target": "airlocks"
+								}
 							}
 						},
 						{
@@ -1029,13 +1175,36 @@
 							}
 						},
 						{
-							"command": ["login"],
+							"command": ["logout"],
+							"action": [
+								{
+									"type": "variable",
+									"target": "username",
+									"context": {
+										"action": "set",
+										"value": ""
+									}
+								},
+								{
+									"type": "link",
+									"target": "menu"
+								}
+							]
+						},
+						{
+							"command": ["***"],
 							"action": {
-								"type": "link",
-								"target": "loginscreen"
-							}
+								"type": "variable",
+								"target": "airlocksrepaired",
+								"context": {
+									"action": "set",
+									"value": true
+								}
+							},
+							"allowRegex": false
 						}
-					]
+					],
+					"allowMetaCommands": true
 				}
 			]
 		},
@@ -1064,11 +1233,15 @@
 					"states": [
 						{
 							"text": "> DOCKING BAY 2 :: UNLOCKED",
-							"active": true
+							"active": true,
+							"delayMs": 5000,
+							"delayText": "> LOCKING DOCKING BAY 2 AIRLOCK %"
 						},
 						{
 							"text": "> DOCKING BAY 2 :: LOCKED",
-							"active": false
+							"active": false,
+							"delayMs": 5000,
+							"delayText": "> UNLOCKING DOCKING BAY 2 AIRLOCK %"
 						}
 					]
 				},
@@ -1105,6 +1278,104 @@
 							"action": {
 								"type": "dialog",
 								"target": "airlockError"
+							}
+						},
+						{
+							"command": [
+								"dockingbay2",
+								"docking bay 2",
+								"lock docking bay 2",
+								"unlock docking bay 2",
+								"airlock2",
+								"airlock 2",
+								"lock airlock 2",
+								"unlock airlock 2"
+							],
+							"action": {
+								"type": "toggle",
+								"target": "airlock2"
+							}
+						}
+					]
+				}
+			]
+		},
+		{
+			"id": "airlocksrepaired",
+			"type": "screen",
+			"content": [
+				"Airlocks",
+				"========",
+				"",
+				{
+					"type": "toggle",
+					"id": "airlock1",
+					"states": [
+						{
+							"text": "> DOCKING BAY 1 :: UNLOCKED",
+							"active": false,
+							"delayMs": 5000,
+							"delayText": "> LOCKING DOCKING BAY 1 AIRLOCK %"
+						},
+						{
+							"text": "> DOCKING BAY 1 :: LOCKED",
+							"active": true,
+							"delayMs": 5000,
+							"delayText": "> UNLOCKING DOCKING BAY 1 AIRLOCK %"
+						}
+					]
+				},
+				{
+					"type": "toggle",
+					"id": "airlock2",
+					"states": [
+						{
+							"text": "> DOCKING BAY 2 :: UNLOCKED",
+							"active": true,
+							"delayMs": 5000,
+							"delayText": "> LOCKING DOCKING BAY 2 AIRLOCK %"
+						},
+						{
+							"text": "> DOCKING BAY 2 :: LOCKED",
+							"active": false,
+							"delayMs": 5000,
+							"delayText": "> UNLOCKING DOCKING BAY 2 AIRLOCK %"
+						}
+					]
+				},
+				"",
+				"======",
+				"",
+				{
+					"text": "< BACK",
+					"target": "controlsadmin",
+					"type": "link"
+				},
+				"",
+				{
+					"type": "prompt",
+					"commands": [
+						{
+							"command": "back",
+							"action": {
+								"type": "link",
+								"target": "controlsadmin"
+							}
+						},
+						{
+							"command": [
+								"dockingbay1",
+								"docking bay 1",
+								"lock docking bay 1",
+								"unlock docking bay 1",
+								"airlock1",
+								"airlock 1",
+								"lock airlock 1",
+								"unlock airlock 1"
+							],
+							"action": {
+								"type": "toggle",
+								"target": "airlock1"
 							}
 						},
 						{
@@ -1757,6 +2028,11 @@
 			"id": "nomorerecords",
 			"type": "alert",
 			"content": ["WARNING", "", "Additional records archived, unavailable."]
+		},
+		{
+			"id": "corruptrecords",
+			"type": "alert",
+			"content": ["NOTICE", "", "Personnel records unavailable, data corrupted."]
 		},
 		{
 			"id": "invalidPassword",
