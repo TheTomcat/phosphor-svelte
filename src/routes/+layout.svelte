@@ -7,6 +7,7 @@
 	import { setTheme, type ThemeType } from '$lib/theme.svelte';
 	import { dev } from '$app/environment';
 	import { injectAnalytics } from '@vercel/analytics/sveltekit';
+	import { SOUNDS } from '$lib/audio-cache';
 
 	injectAnalytics({ mode: dev ? 'development' : 'production' });
 
@@ -19,6 +20,10 @@
 
 <svelte:head>
 	<link rel="icon" href={favicon} />
+	{#each Object.values(SOUNDS) as sound}
+		<link rel="preload" href={sound} as="audio" />
+		<!-- <link rel="prefetch" href={sound} as="audio"/> -->
+	{/each}
 </svelte:head>
 
 <div class="theme-root" data-theme={theme.theme}>

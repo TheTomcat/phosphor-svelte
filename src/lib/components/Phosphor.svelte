@@ -35,6 +35,7 @@
 	import Countdown from './Countdown.svelte';
 	import { figlet } from '$lib/figlet-load';
 	import { applyVariableCommand, evaluateCondition, setVar } from '$lib/phosphorVariables.svelte';
+	import { preloadAudio } from '$lib/audio-cache';
 
 	let { data }: { data: PhosphorJsonData } = $props();
 
@@ -563,6 +564,7 @@
 		setScreenWidth();
 		console.log(`Source data loaded for ${data.metadata.title} - v${data.metadata.version}`);
 		// figlet.defaults({ fontPath: '/src/lib/assets/fonts' });
+		preloadAudio();
 		figlet.preloadFonts(SUPPORTED_FONTS).then(() => {
 			defaultspeed = data.config.speed || 5;
 			screens = parseScreens();
@@ -710,7 +712,7 @@
 
 <style lang="scss">
 	@import '$lib/assets/fonts';
-	@import '$lib/assets/colours';
+	// @import '$lib/assets/colours';
 
 	.phosphor {
 		padding: $lineheight;

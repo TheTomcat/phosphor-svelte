@@ -8,7 +8,7 @@
 	"config": {
 		"name": "YPSILON-14",
 		"speed": 1,
-		"footer": "(c) 2154 ISHIYAMA Heavy Industries Ltd. All rights reserved.",
+		"footer": "(c) 2154 ISHIYAMA Dynamics Ltd. All rights reserved.",
 		"minWidth": 60,
 		"maxWidth": 80
 	},
@@ -37,6 +37,11 @@
 			"id": "airlocksrepaired",
 			"type": "boolean",
 			"default": false
+		},
+		{
+			"id": "incidentreport",
+			"type": "string",
+			"default": ""
 		}
 	],
 	"screens": [
@@ -54,7 +59,7 @@
 				"",
 				{
 					"type": "link",
-					"text": "> ON",
+					"text": "> [ ON ]",
 					"target": "eula"
 				},
 				"",
@@ -69,10 +74,10 @@
 							}
 						},
 						{
-							"command": "k",
+							"command": "}}",
 							"action": {
 								"type": "link",
-								"target": "roster"
+								"target": "incidents"
 							}
 						}
 					]
@@ -199,6 +204,11 @@
 					"target": "comms"
 				},
 				{
+					"text": "> [ INCIDENT REPORTING ]",
+					"type": "link",
+					"target": "incidents"
+				},
+				{
 					"text": "> [ CONTROLS ]",
 					"type": "link",
 					"actions": {
@@ -231,9 +241,9 @@
 				},
 				"",
 				{
-					"text": "< QUIT",
+					"text": "< POWER OFF",
 					"type": "link",
-					"target": "eula"
+					"target": "home"
 				},
 				"",
 				{
@@ -296,10 +306,17 @@
 							}
 						},
 						{
-							"command": ["quit", "exit", "logout", "back"],
+							"command": ["incident", "incidents", "incident reporting"],
 							"action": {
 								"type": "link",
-								"target": "eula"
+								"target": "incidents"
+							}
+						},
+						{
+							"command": ["quit", "exit", "logout", "back", "power off"],
+							"action": {
+								"type": "link",
+								"target": "home"
 							}
 						}
 					]
@@ -326,7 +343,7 @@
 						{
 							"target": "saveimage",
 							"type": "dialog",
-							"shiftKey": true
+							"shiftKey": false
 						}
 					]
 				},
@@ -682,6 +699,18 @@
 				"COMMS",
 				"=====",
 				"",
+				"Initialising long-range scanners",
+				{
+					"type": "text",
+					"text": "...........",
+					"textOpts": { "speed": 100 }
+				},
+				"Scanning for nearby vessels:",
+				{
+					"type": "text",
+					"text": "...........",
+					"textOpts": { "speed": 100 }
+				},
 				"2 vessels detected in proximity.",
 				"",
 				{
@@ -828,6 +857,150 @@
 							}
 						}
 					]
+				}
+			]
+		},
+		{
+			"id": "incidents",
+			"type": "screen",
+			"content": [
+				"INCIDENT REPORTING",
+				"==================",
+				"",
+				"LOG:",
+				{
+					"type": "text",
+					"text": "{{incidentreport}}",
+					"textOpts": { "preserveSpacing": false }
+				},
+				"2366-06-10: REPORT #4572 :: Crew member Mikhail Radimir reported a malfunctioning airlock in the hydroponics lab. Maintenance scheduled.",
+				"2366-05-22: REPORT #4531 :: Unauthorized access attempt detected in docking bay 2. Security footage reviewed; no further action required.",
+				"2366-05-15: REPORT #4510 :: Minor fire in crew quarters kitchen extinguished. No injuries reported. Fire safety protocols reviewed with staff.",
+				"2366-04-30: REPORT #4487 :: Supply shipment delayed due to meteor shower. Estimated arrival time updated.",
+				"",
+				{
+					"text": "< [ NEW REPORT ]",
+					"type": "link",
+					"actions": {
+						"base": {
+							"type": "condition",
+							"condition": {
+								"op": "=",
+								"left": { "type": "variable", "target": "incidentreport" },
+								"right": { "type": "value", "value": "" },
+								"caseInsensitive": true
+							},
+							"true": {
+								"type": "link",
+								"target": "newincident"
+							},
+							"false": {
+								"type": "dialog",
+								"target": "reportAlreadyLogged"
+							}
+						}
+					}
+				},
+				"",
+				{
+					"text": "< BACK",
+					"target": "menu",
+					"type": "link"
+				},
+				"",
+				{
+					"type": "prompt",
+					"commands": [
+						{
+							"command": "back",
+							"action": {
+								"type": "link",
+								"target": "menu"
+							}
+						},
+						{
+							"command": ["new report", "new incident", "report", "incident", "new"],
+							"action": {
+								"type": "condition",
+								"condition": {
+									"op": "=",
+									"left": { "type": "variable", "target": "incidentreport" },
+									"right": { "type": "value", "value": "" },
+									"caseInsensitive": true
+								},
+								"true": {
+									"type": "link",
+									"target": "newincident"
+								},
+								"false": {
+									"type": "dialog",
+									"target": "reportAlreadyLogged"
+								}
+							}
+						}
+					]
+				}
+			]
+		},
+		{
+			"id": "newincident",
+			"type": "screen",
+			"content": [
+				"NEW INCIDENT REPORT",
+				"===================",
+				"",
+				"Please describe the incident you wish to report below.",
+				"",
+				{
+					"type": "prompt",
+					"prompt": "2366-06-12: REPORT #4603 :: ",
+					"commands": [
+						{
+							"command": "back",
+							"action": {
+								"type": "link",
+								"target": "incidents"
+							}
+						},
+						{
+							"command": ".+",
+							"allowRegex": true,
+							"action": [
+								{
+									"type": "variable",
+									"target": "incidentreport",
+									"context": {
+										"action": "set"
+									}
+								},
+								{
+									"type": "variable",
+									"target": "incidentreport",
+									"context": {
+										"action": "concatenate",
+										"value": "2366-06-12: REPORT #4603 :: ",
+										"rule": "pre"
+									}
+								},
+								{
+									"type": "dialog",
+									"target": "incidentlogged"
+								},
+								{
+									"type": "link",
+									"target": "incidents"
+								}
+							]
+						}
+					]
+				},
+				"",
+				"===================",
+				"",
+				{
+					"text": "< BACK",
+					"target": "incidents",
+					"type": "link"
 				}
 			]
 		},
@@ -1232,16 +1405,16 @@
 					"id": "airlock2",
 					"states": [
 						{
-							"text": "> DOCKING BAY 2 :: UNLOCKED",
+							"text": "> DOCKING BAY 2 :: DISARMED",
 							"active": true,
 							"delayMs": 5000,
-							"delayText": "> LOCKING DOCKING BAY 2 AIRLOCK %"
+							"delayText": "> ARMING DOCKING BAY 2 AIRLOCK %"
 						},
 						{
-							"text": "> DOCKING BAY 2 :: LOCKED",
+							"text": "> DOCKING BAY 2 :: ARMED",
 							"active": false,
 							"delayMs": 5000,
-							"delayText": "> UNLOCKING DOCKING BAY 2 AIRLOCK %"
+							"delayText": "> DISARMING DOCKING BAY 2 AIRLOCK %"
 						}
 					]
 				},
@@ -1284,8 +1457,8 @@
 							"command": [
 								"dockingbay2",
 								"docking bay 2",
-								"lock docking bay 2",
-								"unlock docking bay 2",
+								"arm docking bay 2",
+								"disarm docking bay 2",
 								"airlock2",
 								"airlock 2",
 								"lock airlock 2",
@@ -1312,16 +1485,16 @@
 					"id": "airlock1",
 					"states": [
 						{
-							"text": "> DOCKING BAY 1 :: UNLOCKED",
+							"text": "> DOCKING BAY 1 :: DISARMED",
 							"active": false,
 							"delayMs": 5000,
-							"delayText": "> LOCKING DOCKING BAY 1 AIRLOCK %"
+							"delayText": "> ARMING DOCKING BAY 1 AIRLOCK %"
 						},
 						{
-							"text": "> DOCKING BAY 1 :: LOCKED",
+							"text": "> DOCKING BAY 1 :: ARMED",
 							"active": true,
 							"delayMs": 5000,
-							"delayText": "> UNLOCKING DOCKING BAY 1 AIRLOCK %"
+							"delayText": "> DISARMING DOCKING BAY 1 AIRLOCK %"
 						}
 					]
 				},
@@ -1330,16 +1503,16 @@
 					"id": "airlock2",
 					"states": [
 						{
-							"text": "> DOCKING BAY 2 :: UNLOCKED",
+							"text": "> DOCKING BAY 2 :: DISARMED",
 							"active": true,
 							"delayMs": 5000,
-							"delayText": "> LOCKING DOCKING BAY 2 AIRLOCK %"
+							"delayText": "> ARMING DOCKING BAY 2 AIRLOCK %"
 						},
 						{
-							"text": "> DOCKING BAY 2 :: LOCKED",
+							"text": "> DOCKING BAY 2 :: ARMED",
 							"active": false,
 							"delayMs": 5000,
-							"delayText": "> UNLOCKING DOCKING BAY 2 AIRLOCK %"
+							"delayText": "> DISARMING DOCKING BAY 2 AIRLOCK %"
 						}
 					]
 				},
@@ -2043,6 +2216,20 @@
 			"id": "correctPassword",
 			"type": "alert",
 			"content": ["ACCESS GRANTED", "", "Welcome, Administrator."]
+		},
+		{
+			"id": "incidentlogged",
+			"type": "alert",
+			"content": [
+				"ACTION: Success",
+				"",
+				"Incident reporting in progress. Please wait 2-4 standard hours for transmission and processing."
+			]
+		},
+		{
+			"id": "reportAlreadyLogged",
+			"type": "alert",
+			"content": ["ERROR", "", "Incident reporting unavailable, incident transmission in progress."]
 		}
 	]
 }

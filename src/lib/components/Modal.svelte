@@ -7,6 +7,34 @@
 		onClose
 	}: { text: string | string[]; className?: string; onClose: () => void } = $props();
 
+	let _audioRef: HTMLAudioElement;
+	// NEW: sound props
+	import soundSrc from '$lib/assets/error.mp3';
+	let soundVolume: number = 0.3; // 0..1
+	let soundPlaybackRate: number = 1.0; // optional slight pitch/speed tweak
+
+	function startSound() {
+		if (!soundSrc) return;
+		// if (!textOpts?.playSound) return;
+		if (!_audioRef) {
+			_audioRef = new Audio(soundSrc);
+			_audioRef.loop = false; // loop until stopped
+			_audioRef.volume = Math.min(Math.max(soundVolume, 0), 1);
+			_audioRef.playbackRate = soundPlaybackRate;
+		}
+		// calling play() can reject if user gesture not present; ignore
+		_audioRef.play().catch(() => {
+			/* autoplay blocked; parent can call exposeStart() */
+		});
+	}
+
+	function stopSound() {
+		if (_audioRef) {
+			_audioRef.pause();
+			_audioRef.currentTime = 0; // reset to start for next time
+		}
+	}
+
 	let hasPressed = $state(false);
 	let renderedText = $derived.by(() => {
 		if (typeof text === 'string') return text.replaceAll(' ', '&nbsp;');
@@ -30,6 +58,7 @@
 		}
 	};
 	onMount(() => {
+		startSound();
 		tick().then(() => {
 			document.body.classList.add('static');
 			window.addEventListener('keydown', handleKeyDown);

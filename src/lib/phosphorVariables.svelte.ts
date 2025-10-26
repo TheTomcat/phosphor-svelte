@@ -41,6 +41,10 @@ export function incrementVar(name: string, by = 1) {
 	if (Number.isNaN(n)) throw new Error(`Cannot increment non-numeric var "${name}"`);
 	vars[name] = n + by;
 }
+export function concatenateVar(name: string, value: string, pre?: boolean) {
+	const cur = String(vars[name] ?? '');
+	vars[name] = pre ? value + cur : cur + value;
+}
 
 export function decrementVar(name: string, by = 1) {
 	incrementVar(name, -by);
@@ -76,6 +80,9 @@ export function applyVariableCommand(
 			break;
 		case 'decrement':
 			decrementVar(target, typeof value === 'number' ? value : 1);
+			break;
+		case 'concatenate':
+			concatenateVar(target, `${value}`, rule !== 'post');
 			break;
 		default:
 			throw new Error(`Unknown variable action for "${target}": ${String(action)}`);
