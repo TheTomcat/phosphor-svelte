@@ -1,13 +1,18 @@
-const THEMES = ['bluewhite', 'amber', 'green', 'white'] as const;
-export type ThemeType = (typeof THEMES)[number];
+import { THEMES, type ThemeType } from '$lib/PhosphorData';
 
 export const theme = $state<{ theme: undefined | ThemeType }>({ theme: undefined });
 
-export const setTheme = (t: ThemeType) => {
-	if (theme.theme === t) return;
-	if (THEMES.indexOf(t) === -1) return;
-	localStorage.setItem('theme', t);
-	theme.theme = t;
+export const getTheme = (): ThemeType | undefined => {
+	return theme.theme;
+};
+
+export const setTheme = (t: string) => {
+	if (!t) return;
+	const tLow = t.toLowerCase();
+	if (theme.theme === tLow) return;
+	if (THEMES.indexOf(tLow as any) === -1) return;
+	localStorage.setItem('theme', tLow);
+	theme.theme = tLow as ThemeType;
 };
 export const initTheme = () => {
 	const t = localStorage.getItem('theme') as ThemeType;

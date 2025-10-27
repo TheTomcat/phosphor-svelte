@@ -3,14 +3,17 @@
 		"title": "The Haunting of Ypsilon-14",
 		"author": "@redhg, @tom",
 		"comment": "Phosphor content file for the 'Haunting of Ypsilon-14' module for the Mothership tabletop roleplaying game. Visit https://redhg.com/ypsilon14/ to see the compiled application.",
-		"version": "0.6.0"
+		"version": "0.7.0"
 	},
 	"config": {
 		"name": "YPSILON-14",
 		"speed": 1,
 		"footer": "(c) 2154 ISHIYAMA Dynamics Ltd. All rights reserved.",
 		"minWidth": 60,
-		"maxWidth": 80
+		"maxWidth": 80,
+		"theme": "amber",
+		"screenFlicker": true,
+		"renderScanlines": true
 	},
 	"variables": [
 		{
@@ -31,7 +34,7 @@
 		{
 			"id": "ship",
 			"type": "string",
-			"default": "LFC 2FAST2FURIOUS"
+			"default": "LFC Enter Name"
 		},
 		{
 			"id": "airlocksrepaired",
@@ -55,7 +58,7 @@
 					"textOpts": { "align": "center", "padChar": "=" }
 				},
 				"",
-				"Type ON to power-on terminal",
+				"Type {ok:ON} to power-on terminal",
 				"",
 				{
 					"type": "link",
@@ -74,13 +77,14 @@
 							}
 						},
 						{
-							"command": "}}",
+							"command": ["x"],
 							"action": {
 								"type": "link",
-								"target": "incidents"
+								"target": "activateselfdestruct"
 							}
 						}
-					]
+					],
+					"allowMetaCommands": true
 				},
 				"",
 				{
@@ -117,7 +121,7 @@
 				"",
 				" H.E.R.O.S. TERMINAL v4.22.7",
 				" YOU ARE CONNECTED TO < SERVER 26 > < YPSILON-14 STATION >",
-				" SYSTEM ADMINISTRATOR INTEGRATED MESSAGE SYSTEM: [ ACTIVE ]",
+				" SYSTEM ADMINISTRATOR INTEGRATED MESSAGE SYSTEM: [ {ok:ACTIVE} ]",
 				" SYSTEM ADMINISTRATOR (SYSADM): YUTA NAKAMURA",
 				"",
 				{ "type": "text", "text": "-", "textOpts": { "fillWidth": true } },
@@ -207,6 +211,11 @@
 					"text": "> [ INCIDENT REPORTING ]",
 					"type": "link",
 					"target": "incidents"
+				},
+				{
+					"text": "> [ MAIL ]",
+					"type": "link",
+					"target": "mail"
 				},
 				{
 					"text": "> [ CONTROLS ]",
@@ -392,11 +401,7 @@
 					"text": "................",
 					"textOpts": { "speed": 100 }
 				},
-				{
-					"text": "[OK]",
-					"className": "ok",
-					"type": "text"
-				},
+				"[ {ok:OK} ]",
 				"",
 				"Checking main systems:",
 				{
@@ -404,39 +409,18 @@
 					"text": "................",
 					"textOpts": { "speed": 100 }
 				},
-				{
-					"text": "[OK]",
-					"className": "ok",
-					"type": "text"
-				},
+				"[ {ok:OK} ]",
 				"",
-				{
-					"text": "WARNING: Airflow 82.4%. Check crew quarters vents for blockage.",
-					"className": "alert",
-					"type": "text"
-				},
-				{
-					"text": "WARNING: Shower #5 non-functional as of 1 day(s).",
-					"className": "alert",
-					"type": "text"
-				},
-				"",
-				{
-					"text": "NOTICE: Air filters replaced 455 day(s) ago.",
-					"className": "warn",
-					"type": "text"
-				},
-				{
-					"text": "NOTICE: Mineshaft lift maintained 455 day(s) ago.",
-					"className": "warn",
-					"type": "text"
-				},
-
+				"{alert:[ ALERT ]: Airflow 82.4%. Check crew quarters vents for blockage.}",
+				"{alert:[ ALERT ]: Shower #5 non-functional as of 1 day(s).}",
+				"{warn:[ NOTICE ]: Air filters replaced 455 day(s) ago.}",
+				"{warn:[ NOTICE ]: Mineshaft lift maintained 455 day(s) ago.}",
 				"",
 				"===========",
 				"",
 				"SUMMARY:",
-				"All systems operating within acceptable parameters.",
+				"2 noncritical {alert:ALERTS}, 2 {warn:NOTICES}. Please recitify at earliest convenience.",
+				"All essential systems operating within acceptable parameters.",
 				"",
 				"===========",
 				"",
@@ -481,8 +465,17 @@
 				" 9: 2365-11-11.1223 - Bay 2 : Depart :: MV VASQUEZ XV",
 				"10: 2365-11-10.1604 - Bay 2 : Arrive :: MV VASQUEZ XV",
 				"",
-				"> [ MORE ]",
-				"< BACK",
+				{
+					"type": "link",
+					"text": "> [ MORE ]",
+					"target": [{ "type": "dialog", "target": "nomorerecords", "shiftKey": false }]
+				},
+				"",
+				{
+					"text": "< BACK",
+					"type": "link",
+					"target": "menu"
+				},
 				"",
 				"======",
 				"",
@@ -515,15 +508,15 @@
 				"==========",
 				"",
 				"01. VERHOEVEN, Sonya     :: Admin",
-				"02. SINGH, Ashraf        :: Breaker",
-				"03. DE BEERS, Dana       :: Lead drill",
-				"04. CHATZKEL, Jerome     :: Asst. drill",
-				"05. TOBIN, Rosa          :: Engineer",
-				"06. RADIMIR, Mikhail     :: Lead Engineer",
+				"02. RADIMIR, Mikhail     :: Lead Engineer",
+				"03. TOBIN, Rosa          :: Engineer",
+				"04. SINGH, Ashraf        :: Breaker",
+				"05. DE BEERS, Dana       :: Lead drill",
+				"06. CHATZKEL, Jerome     :: Asst. drill",
 				"07. KANTARO, Kenji       :: Loader",
 				"08. BOWE, Morgan         :: Loader",
 				"09. NEKTARIOS, Ri        :: Loader",
-				"10. n/a",
+				"10. <Position Vacant>",
 				"",
 				"======",
 				"",
@@ -743,7 +736,7 @@
 							}
 						},
 						{
-							"command": ["hail lfc 2fast2furious", "hail 2fast2furious"],
+							"command": ["hail lfc enter name", "hail enter name"],
 							"action": {
 								"type": "link",
 								"target": "hailtempest"
@@ -879,7 +872,7 @@
 				"2366-04-30: REPORT #4487 :: Supply shipment delayed due to meteor shower. Estimated arrival time updated.",
 				"",
 				{
-					"text": "< [ NEW REPORT ]",
+					"text": "> [ NEW REPORT ]",
 					"type": "link",
 					"actions": {
 						"base": {
@@ -1001,6 +994,41 @@
 					"text": "< BACK",
 					"target": "incidents",
 					"type": "link"
+				}
+			]
+		},
+		{
+			"id": "mail",
+			"type": "screen",
+			"content": [
+				"MAIL",
+				"====",
+				"",
+				{ "type": "text", "text": "> OUTGOING", "textOpts": {}, "className": "invert" },
+				"",
+				"{invert:   From:} sonya.verhoeven@ypsilon14.ishiyama.com",
+				"{invert:     To:} @corporate.ishiyama.com",
+				"{invert:   Date:} 01/02/2032",
+				"{invert:Subject:} Substance discoverd during drilling",
+				"======",
+				"",
+				{
+					"text": "< BACK",
+					"target": "menu",
+					"type": "link"
+				},
+				"",
+				{
+					"type": "prompt",
+					"commands": [
+						{
+							"command": "back",
+							"action": {
+								"type": "link",
+								"target": "menu"
+							}
+						}
+					]
 				}
 			]
 		},
@@ -1376,8 +1404,7 @@
 							},
 							"allowRegex": false
 						}
-					],
-					"allowMetaCommands": true
+					]
 				}
 			]
 		},
@@ -1390,7 +1417,7 @@
 				"",
 				{
 					"type": "link",
-					"text": "> DOCKING BAY 1 :: LOCKED — ERROR",
+					"text": "> DOCKING BAY 1 AIRLOCK :: LOCKED — ERROR",
 					"className": "alert",
 					"target": [
 						{
@@ -1405,13 +1432,31 @@
 					"id": "airlock2",
 					"states": [
 						{
-							"text": "> DOCKING BAY 2 :: DISARMED",
+							"text": "> DOCKING BAY 2 AIRLOCK :: DISARMED",
 							"active": true,
 							"delayMs": 5000,
 							"delayText": "> ARMING DOCKING BAY 2 AIRLOCK %"
 						},
 						{
-							"text": "> DOCKING BAY 2 :: ARMED",
+							"text": "> DOCKING BAY 2 AIRLOCK :: ARMED",
+							"active": false,
+							"delayMs": 5000,
+							"delayText": "> DISARMING DOCKING BAY 2 AIRLOCK %"
+						}
+					]
+				},
+				{
+					"type": "toggle",
+					"id": "mineshaftairlock",
+					"states": [
+						{
+							"text": "> MINESHAFT AIRLOCK :: DISARMED",
+							"active": true,
+							"delayMs": 5000,
+							"delayText": "> ARMING MINESHAFT AIRLOCK %"
+						},
+						{
+							"text": "> MINESHAFT AIRLOCK :: ARMED",
 							"active": false,
 							"delayMs": 5000,
 							"delayText": "> DISARMING DOCKING BAY 2 AIRLOCK %"
@@ -1454,19 +1499,48 @@
 							}
 						},
 						{
-							"command": [
-								"dockingbay2",
-								"docking bay 2",
-								"arm docking bay 2",
-								"disarm docking bay 2",
-								"airlock2",
-								"airlock 2",
-								"lock airlock 2",
-								"unlock airlock 2"
-							],
+							"command": ["dockingbay2", "docking bay 2", "airlock2", "airlock 2"],
 							"action": {
 								"type": "toggle",
 								"target": "airlock2"
+							}
+						},
+						{
+							"command": ["arm docking bay 2", "arm docking bay 2 airlock"],
+							"action": {
+								"type": "condition",
+								"condition": {
+									"op": "=",
+									"left": { "type": "variable", "target": "airlock2" },
+									"right": { "type": "value", "value": 0 }
+								},
+								"true": {
+									"type": "toggle",
+									"target": "airlock2"
+								},
+								"false": {
+									"type": "dialog",
+									"target": "invalidcommand"
+								}
+							}
+						},
+						{
+							"command": ["disarm docking bay 2", "disarm docking bay 2 airlock"],
+							"action": {
+								"type": "condition",
+								"condition": {
+									"op": "=",
+									"left": { "type": "variable", "target": "airlock2" },
+									"right": { "type": "value", "value": 1 }
+								},
+								"true": {
+									"type": "toggle",
+									"target": "airlock2"
+								},
+								"false": {
+									"type": "dialog",
+									"target": "invalidcommand"
+								}
 							}
 						}
 					]
@@ -1485,13 +1559,13 @@
 					"id": "airlock1",
 					"states": [
 						{
-							"text": "> DOCKING BAY 1 :: DISARMED",
+							"text": "> DOCKING BAY 1 AIRLOCK :: DISARMED",
 							"active": false,
 							"delayMs": 5000,
 							"delayText": "> ARMING DOCKING BAY 1 AIRLOCK %"
 						},
 						{
-							"text": "> DOCKING BAY 1 :: ARMED",
+							"text": "> DOCKING BAY 1 AIRLOCK :: ARMED",
 							"active": true,
 							"delayMs": 5000,
 							"delayText": "> DISARMING DOCKING BAY 1 AIRLOCK %"
@@ -1503,13 +1577,31 @@
 					"id": "airlock2",
 					"states": [
 						{
-							"text": "> DOCKING BAY 2 :: DISARMED",
+							"text": "> DOCKING BAY 2 AIRLOCK :: DISARMED",
 							"active": true,
 							"delayMs": 5000,
 							"delayText": "> ARMING DOCKING BAY 2 AIRLOCK %"
 						},
 						{
-							"text": "> DOCKING BAY 2 :: ARMED",
+							"text": "> DOCKING BAY 2 AIRLOCK :: ARMED",
+							"active": false,
+							"delayMs": 5000,
+							"delayText": "> DISARMING DOCKING BAY 2 AIRLOCK %"
+						}
+					]
+				},
+				{
+					"type": "toggle",
+					"id": "mineshaftairlock",
+					"states": [
+						{
+							"text": "> MINESHAFT AIRLOCK :: DISARMED",
+							"active": true,
+							"delayMs": 5000,
+							"delayText": "> ARMING MINESHAFT AIRLOCK %"
+						},
+						{
+							"text": "> MINESHAFT AIRLOCK :: ARMED",
 							"active": false,
 							"delayMs": 5000,
 							"delayText": "> DISARMING DOCKING BAY 2 AIRLOCK %"
@@ -1825,6 +1917,54 @@
 								"type": "toggle",
 								"target": "mist"
 							}
+						},
+						{
+							"command": [
+								"turn on mist hydration system",
+								"enable mist hydration system",
+								"turn on mist",
+								"enable mist"
+							],
+							"action": {
+								"type": "condition",
+								"condition": {
+									"op": "=",
+									"left": { "type": "variable", "target": "mist" },
+									"right": { "type": "value", "value": 0 }
+								},
+								"true": {
+									"type": "toggle",
+									"target": "mist"
+								},
+								"false": {
+									"type": "dialog",
+									"target": "invalidcommand"
+								}
+							}
+						},
+						{
+							"command": [
+								"turn off mist hydration system",
+								"disable mist hydration system",
+								"turn off mist",
+								"disable mist"
+							],
+							"action": {
+								"type": "condition",
+								"condition": {
+									"op": "=",
+									"left": { "type": "variable", "target": "mist" },
+									"right": { "type": "value", "value": 1 }
+								},
+								"true": {
+									"type": "toggle",
+									"target": "mist"
+								},
+								"false": {
+									"type": "dialog",
+									"target": "invalidcommand"
+								}
+							}
 						}
 					]
 				}
@@ -1975,6 +2115,44 @@
 								"type": "toggle",
 								"target": "lifesupport"
 							}
+						},
+						{
+							"command": ["enable life support"],
+							"action": {
+								"type": "condition",
+								"condition": {
+									"op": "=",
+									"left": { "type": "variable", "target": "lifesupport" },
+									"right": { "type": "value", "value": 1 }
+								},
+								"true": {
+									"type": "toggle",
+									"target": "lifesupport"
+								},
+								"false": {
+									"type": "dialog",
+									"target": "invalidcommand"
+								}
+							}
+						},
+						{
+							"command": ["disable life support"],
+							"action": {
+								"type": "condition",
+								"condition": {
+									"op": "=",
+									"left": { "type": "variable", "target": "lifesupport" },
+									"right": { "type": "value", "value": 0 }
+								},
+								"true": {
+									"type": "toggle",
+									"target": "lifesupport"
+								},
+								"false": {
+									"type": "dialog",
+									"target": "invalidcommand"
+								}
+							}
 						}
 					]
 				}
@@ -2081,7 +2259,7 @@
 					"target": "passphrase",
 					"context": {
 						"action": "set",
-						"rule": "EEEE-EEEE-EEEE-EEEE"
+						"rule": "%E%E%E%E-%E%E%E%E-%E%E%E%E-%E%E%E%E"
 					}
 				},
 				"",
@@ -2147,16 +2325,10 @@
 			"id": "evacuate",
 			"type": "screen",
 			"content": [
-				{
-					"type": "text",
-					"className": "alert",
-					"text": "SELF-DESTRUCT SEQUENCE INITIATED."
-				},
-				{
-					"type": "text",
-					"className": "alert",
-					"text": "PLEASE EVACUATE AS SOON AS POSSIBLE."
-				},
+				"{alert:SELF-DESTRUCT SEQUENCE INITIATED.}",
+				"{alert:PLEASE EVACUATE AS SOON AS POSSIBLE.}",
+				"",
+				"{alert:EMPLOYEES ARE REMINDED THAT INCIDENT REPORTING IS MANDATORY.}",
 				"",
 				{
 					"type": "countdown",
@@ -2164,7 +2336,8 @@
 					"prompt": "T-MINUS ",
 					"duration": 600,
 					"textOpts": { "align": "center" }
-				}
+				},
+				""
 			]
 		}
 	],
@@ -2229,7 +2402,16 @@
 		{
 			"id": "reportAlreadyLogged",
 			"type": "alert",
-			"content": ["ERROR", "", "Incident reporting unavailable, incident transmission in progress."]
+			"content": [
+				"ERROR",
+				"",
+				"Incident reporting unavailable, subspace relays occupied, incident transmission in progress."
+			]
+		},
+		{
+			"id": "invalidcommand",
+			"type": "alert",
+			"content": ["ERROR", "", "Invalid state."]
 		}
 	]
 }

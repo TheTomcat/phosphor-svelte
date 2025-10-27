@@ -1,6 +1,11 @@
 // import figlet from 'figlet';
 import { figlet } from '$lib/figlet-load';
-import type { TextOptions } from './PhosphorData';
+import type {
+	TextOptions,
+	PhosphorVariableType,
+	PhosphorJsonData,
+	ThemeType
+} from './PhosphorData';
 import { injectVariables } from './phosphorVariables.svelte';
 
 export const debounce = (func: any, delay: number) => {
@@ -65,6 +70,20 @@ export function measureMonospaceGrid(opts?: { container?: HTMLElement | null }) 
 	};
 }
 
+type PhosphorConfiguration = {
+	renderScanlines: boolean;
+	screenFlicker: boolean;
+	theme: ThemeType;
+};
+
+export const extractConfiguration = (data: PhosphorJsonData): PhosphorConfiguration => {
+	return {
+		renderScanlines: data.config?.renderScanlines ?? true,
+		screenFlicker: data.config?.screenFlicker ?? true,
+		theme: data.config?.theme ?? 'amber'
+	};
+};
+
 export const bigFont = (text: string, bigFont: string): string => {
 	// console.log(figlet.textSync(text, { font: bigFont }));
 	return figlet.textSync(text, { font: bigFont });
@@ -75,19 +94,30 @@ export const formatText = (text: string, columns: number, textOpts?: TextOptions
 		let nRepeat = Math.ceil(columns / text.length);
 		return text.repeat(nRepeat).slice(0, columns);
 	}
-	// if (textOpts?.bigFont) {
-	// 	return bigFont(text, textOpts.bigFont);
-	// }
+
 	let lines = breakText(text, columns);
 	let output: string[] = [];
 	for (let line of lines) {
 		output.push(alignText(line, columns, textOpts?.align || 'left', textOpts?.padChar ?? ' '));
 	}
 
-	// if (textOpts?.preserveSpacing) {
-	// 	return output.join('\n').replace(' ', '&nbsp;');
-	// }
-	return injectVariables(output.join('\n'));
+	return output.join('\n');
+	const expanded = injectVariables(output.join('\n'));
+	return expanded;
+};
+
+export const applyTextOpts = (text: string, columns: number, textOpts?: TextOptions): string => {
+	if (textOpts?.fillWidth) {
+		let nRepeat = Math.ceil(columns / text.length);
+		return text.repeat(nRepeat).slice(0, columns);
+	}
+
+	let lines = breakText(text, columns);
+	let output: string[] = [];
+	for (let line of lines) {
+		output.push(alignText(line, columns, textOpts?.align || 'left', textOpts?.padChar ?? ' '));
+	}
+	return output.join('\n');
 };
 
 const alignText = (
@@ -160,3 +190,141 @@ const breakText = (text: string, cols: number): string[] => {
 	}
 	return output;
 };
+
+type Seg = { kind: 'text'; text: string } | { kind: 'fmt'; className: string; text: string };
+
+export interface SliceResult {
+	visibleHtml: string; // HTML for [0..upUntil)
+	cursorChar: string; // the single glyph at [upUntil] (unformatted)
+	hiddenHtml: string; // HTML for (upUntil+1..end], no formatting
+}
+
+export function sliceFormatted(
+	inputString: string,
+	columns: number,
+	textOpts: TextOptions,
+	upUntil?: number
+): SliceResult {
+	const { preserveSpacing = false } = textOpts;
+	let cursorFallback = '.';
+
+	// 1) Expand variables first so visible-length is correct
+	const expanded = applyTextOpts(injectVariables(inputString), columns, textOpts);
+
+	// 2) Parse into flat segments: plain text or {class:content}
+	const segments = parseSegments(expanded);
+
+	// Also build the full "plain" string (what the user would see)
+	const plain = segments.map((s) => (s.kind === 'text' ? s.text : s.text)).join('');
+
+	// Clamp
+	let i: number;
+	if (upUntil !== undefined) {
+		i = Math.max(0, Math.min(upUntil, plain.length));
+	} else {
+		i = plain.length;
+	}
+
+	// 3) Build visible HTML by consuming upUntil visible chars
+	let remaining = i;
+	let visibleHtml = '';
+
+	for (const seg of segments) {
+		if (remaining <= 0) break;
+
+		if (seg.kind === 'text') {
+			const take = seg.text.slice(0, remaining);
+			visibleHtml += escapeHtml(take, preserveSpacing);
+			remaining -= take.length;
+		} else {
+			// fmt
+			const takeInner = seg.text.slice(0, remaining);
+			if (takeInner.length > 0) {
+				visibleHtml += `<span class="${escapeAttr(seg.className)}">${escapeHtml(takeInner, preserveSpacing)}</span>`;
+				remaining -= takeInner.length;
+			}
+		}
+	}
+
+	// 4) Cursor & hidden (no formatting required in the tail)
+	const cursorChar = plain.charAt(i) || cursorFallback;
+	const hiddenRaw = plain.slice(i + 1); // tail after the cursor
+	const hiddenHtml = escapeHtml(hiddenRaw, preserveSpacing);
+
+	return { visibleHtml, cursorChar, hiddenHtml };
+}
+
+/** Parse `{class:content}` tokens (no nesting). Falls back to text if malformed. */
+function parseSegments(s: string): Array<Seg> {
+	const segs: Array<Seg> = [];
+	let i = 0;
+	let buffer = '';
+
+	while (i < s.length) {
+		const open = s.indexOf('{', i);
+		if (open === -1) {
+			buffer += s.slice(i);
+			break;
+		}
+
+		// Add any preceding plain text
+		buffer += s.slice(i, open);
+
+		// Try to parse a {class:content}
+		const close = s.indexOf('}', open + 1);
+		if (close === -1) {
+			// No closing brace; treat the rest as text
+			buffer += s.slice(open);
+			break;
+		}
+
+		const inside = s.slice(open + 1, close);
+		const colon = inside.indexOf(':');
+
+		// Not a valid token -> treat the '{' as literal and continue
+		if (colon === -1) {
+			buffer += s.slice(open, close + 1);
+			i = close + 1;
+			continue;
+		}
+
+		const className = inside.slice(0, colon).trim();
+		const content = inside.slice(colon + 1);
+
+		// If invalid class (empty or contains spaces/quotes), treat as text
+		if (!className || /["'<>]/.test(className)) {
+			buffer += s.slice(open, close + 1);
+			i = close + 1;
+			continue;
+		}
+
+		// Flush accumulated text
+		if (buffer) {
+			segs.push({ kind: 'text', text: buffer });
+			buffer = '';
+		}
+
+		// Push formatted segment
+		segs.push({ kind: 'fmt', className, text: content });
+
+		i = close + 1;
+	}
+
+	if (buffer) segs.push({ kind: 'text', text: buffer });
+	return segs;
+}
+
+function escapeHtml(str: string, preserveSpacing: boolean): string {
+	const escaped = str
+		.replaceAll('&', '&amp;')
+		.replaceAll('<', '&lt;')
+		.replaceAll('>', '&gt;')
+		.replaceAll('"', '&quot;')
+		.replaceAll("'", '&#39;');
+	return preserveSpacing ? escaped.replaceAll(' ', '&nbsp;') : escaped;
+}
+
+function escapeAttr(str: string): string {
+	// Restrict to CSS class-safe characters; drop others
+	return str.replace(/[^\w\- ]+/g, '');
+}

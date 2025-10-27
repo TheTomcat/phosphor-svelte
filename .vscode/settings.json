@@ -1,0 +1,12 @@
+{
+    "json.schemas": [
+    {
+        "fileMatch": [
+            "*ypsilon14.json"
+        ],
+        "url": ".\\src\\lib\\assets\\jsonschema.json"
+        
+    }
+]
+
+}

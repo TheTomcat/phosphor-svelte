@@ -1,6 +1,12 @@
 <script lang="ts">
 	import { nanoid } from 'nanoid';
-	import { bigFont, debounce, formatText, measureMonospaceGrid } from '$lib/utils';
+	import {
+		bigFont,
+		debounce,
+		extractConfiguration,
+		formatText,
+		measureMonospaceGrid
+	} from '$lib/utils';
 
 	import Prompt from './Prompt.svelte';
 	import Scanlines from './Scanlines.svelte';
@@ -36,6 +42,7 @@
 	import { figlet } from '$lib/figlet-load';
 	import { applyVariableCommand, evaluateCondition, setVar } from '$lib/phosphorVariables.svelte';
 	import { preloadAudio } from '$lib/audio-cache';
+	import { setTheme } from '$lib/theme.svelte';
 
 	let { data }: { data: PhosphorJsonData } = $props();
 
@@ -61,7 +68,8 @@
 	let activeDialogId: string | null = $state(null);
 	let loadingQueue: any[] = $state([]);
 	let status: AppStatus = $state(AppStatus.Unset);
-	let renderScanlines = $state(true); // TODO: option to disable
+	let renderScanlines = $state(true);
+	let screenFlicker = $state(true);
 
 	// Options
 	let defaultspeed = $state(5);
@@ -560,10 +568,18 @@
 		});
 	};
 
+	const applyConfiguration = () => {
+		const settings = extractConfiguration(data);
+		renderScanlines = settings.renderScanlines;
+		screenFlicker = settings.screenFlicker;
+		setTheme(settings.theme);
+	};
+
 	onMount(() => {
 		setScreenWidth();
 		console.log(`Source data loaded for ${data.metadata.title} - v${data.metadata.version}`);
 		// figlet.defaults({ fontPath: '/src/lib/assets/fonts' });
+		applyConfiguration();
 		preloadAudio();
 		figlet.preloadFonts(SUPPORTED_FONTS).then(() => {
 			defaultspeed = data.config.speed || 5;
@@ -586,7 +602,7 @@
 	{#if renderScanlines}
 		<Scanlines />
 	{/if}
-	<div class="phosphor">
+	<div class={`phosphor ${screenFlicker ? 'flicker' : ''}`}>
 		<section class="__main__" bind:this={containerRef}>
 			{#if activeScreenId && columns > 0}
 				{#if getScreen(activeScreenId)}
@@ -688,6 +704,7 @@
 								<Toggle
 									id={element.id}
 									className={element.className || ''}
+									{columns}
 									bind:states={element.states}
 								/>
 							{/if}

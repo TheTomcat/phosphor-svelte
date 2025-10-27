@@ -37,22 +37,24 @@ The metadata helps to identify the json file currently loaded. It has no mechani
 
 ### `config`
 
-| Field      | Type   | Required | Notes                                                    |
-| ---------- | ------ | -------- | -------------------------------------------------------- |
-| `name`     | string | ✅       | Display name.                                            |
-| `speed`    | number | ✅       | Default typing speed (ms/char).                          |
-| `footer`   | string | ❌       | Footer text. If `undefined` then no footer will be shown |
-| `minWidth` | number | ✅       | Minimum layout width (in characters).                    |
-| `maxWidth` | number | ❌       | Maximum layout width (in characters).                    |
+| Field             | Type                                            | Required | Notes                                                                |
+| ----------------- | ----------------------------------------------- | -------- | -------------------------------------------------------------------- |
+| `name`            | string                                          | ✅       | Display name.                                                        |
+| `speed`           | number                                          | ✅       | Default typing speed (ms/char).                                      |
+| `footer`          | string                                          | ❌       | Footer text. If `undefined` then no footer will be shown             |
+| `minWidth`        | number                                          | ✅       | Minimum layout width (in characters).                                |
+| `maxWidth`        | number                                          | ❌       | Maximum layout width (in characters).                                |
+| `renderScanlines` | boolean                                         | ❌       | Display (or not) the tracklines that old CRT monitors sometimes had. |
+| `screenFlicker`   | boolean                                         | ❌       | Enable an annoying screen flicker                                    |
+| `theme`           | `'amber' \| 'white'  \| 'green' \| 'whiteblue'` | ❌       | Set the theme.                                                       |
 
 ---
 
 ## Variables
 
 Declare global variables that actions/conditions can use. In addition to these variables,
-all `toggle` objects get a numeric variable corresponding to the index of the currently-activated
-state. NOTE that altering this is NOT REACTIVE. Consider this a read only variable, for the moment.
-Additionally, the last command typed into a prompt is stored in the `_lastCommand` variable.
+all `JsonToggle` get a numeric variable corresponding to the index of the currently-activated
+state. NOTE that altering this is NOT REACTIVE. Consider this a read only variable (at least, for the moment).
 
 ### `PhosphorJsonVariable`
 
@@ -62,7 +64,7 @@ Additionally, the last command typed into a prompt is stored in the `_lastComman
 | `type`    | `"number" \| "boolean" \| "string"` | ✅       | Runtime type.  |
 | `default` | `number \| boolean \| string`       | ✅       | Initial value. |
 
-> Runtime variable actions: **`set`**, **`toggle`**, **`increment`**, **`decrement`**.
+> Runtime variable actions: **`set`**, **`toggle`**, **`increment`**, **`decrement`**, **`concatenate`**.
 
 ---
 
@@ -73,7 +75,7 @@ Additionally, the last command typed into a prompt is stored in the `_lastComman
 | Field     | Type                               | Required | Notes                                            |
 | --------- | ---------------------------------- | -------- | ------------------------------------------------ |
 | `id`      | string                             | ✅       | Dialog identifier.                               |
-| `type`    | `"alert" \| "dialog" \| "confirm"` | ✅       | Presentation kind. Currently this had no effect. |
+| `type`    | `"alert" \| "dialog" \| "confirm"` | ✅       | Presentation kind. Currently this has no effect. |
 | `content` | `string[]`                         | ✅       | Lines shown in the dialog.                       |
 
 ---
@@ -99,21 +101,21 @@ A content item is one of:
 - `JsonPrompt` — typed command prompt.
 - `JsonToggle` — on/off (or multi) state indicator.
 - `JsonCountdown` — countdown prompt.
-- `VoidData` — `{ "type": "void", ... }` placeholder for extensions.
+- `VoidData` — `{ "type": "void", ... }` placeholder for quickly commenting out content.
 
 Common optional fields (on object forms): `id`, `className`, `loadState`, `onLoad`, `textOpts`.
 
 #### `TextOptions`
 
-| Field             | Type                            | Notes                                         |
-| ----------------- | ------------------------------- | --------------------------------------------- |
-| `speed`           | number                          | Override typing speed.                        |
-| `isPassword`      | boolean                         | Render as `*`.                                |
-| `playSound`       | boolean                         | Enable/disable teletype SFX.                  |
-| `preserveSpacing` | boolean                         | Use `&nbsp;` for spaces (disables word wrap). |
-| `bigFont`         | string                          | ASCII-art font id.                            |
-| `fillWidth`       | boolean                         | Repeat text to fill width.                    |
-| `align`           | `"left" \| "center" \| "right"` | Alignment.                                    |
+| Field             | Type                            | Notes                                                           |
+| ----------------- | ------------------------------- | --------------------------------------------------------------- |
+| `speed`           | number                          | Override typing speed.                                          |
+| `isPassword`      | boolean                         | Render as `*`.                                                  |
+| `playSound`       | boolean                         | Enable/disable teletype SFX.                                    |
+| `preserveSpacing` | boolean                         | Use `&nbsp;` for spaces (disables word wrap).                   |
+| `bigFont`         | string                          | ASCII-art font id. Currently support `slant` and `big money-se` |
+| `fillWidth`       | boolean                         | Repeat text to fill width.                                      |
+| `align`           | `"left" \| "center" \| "right"` | Alignment.                                                      |
 
 ---
 
@@ -155,14 +157,56 @@ Common optional fields (on object forms): `id`, `className`, `loadState`, `onLoa
 
 `JsonToggleState` fields: `text` (string, ✅), `active` (boolean, ✅), `delayMs?` (number), `delayText?` (string).
 
+If delayMs and delayText is provided (both need to be provided to be valid), then an interim `loading state` will be displayed for `displayMs` after activation of the toggle. If `%` is included, then render a progress bar. (Todo: Configuration options)
+
 #### `JsonPrompt`
 
 A Prompt provides the user a place to type arbitrary commands. When a command is entered, the prompt
 goes through each of the provided prompt options and activates the first command matching the inputted text.
-Regex is supported. If no prompt matches, a short error is shown (TODO: provide option to disable this.)
+Regex is supported via the `allowRegex` tag. If no prompt matches, a short error is shown (TODO: provide option to disable this.)
 As a workaround, you can disable by including an empty command at the end with the command: `.+` (Regex matching any characters)
 
 Note that you should only have one prompt per screen, due to how these are implemented.
+
+Additionally, the last command typed into a prompt is stored in the `_lastCommand` variable.
+
+| Field               | Required | Type                             | Notes                                                          |
+| ------------------- | -------- | -------------------------------- | -------------------------------------------------------------- |
+| `type`              | ✅       | `"prompt"`                       |                                                                |
+| `prompt`            | ✅       | `string`                         | The text prompting the user for information                    |
+| `commands`          | ✅       | `JsonCommand` \| `JsonCommand[]` | Single or multiple JsonCommands (see below)                    |
+| `className`         | ❌       | `string`                         | Optional `className` for formatting.                           |
+| `id`                | ❌       | `string`                         | ID of this prompt. Will be set automatically if none provided. |
+| `allowMetaCommands` | ❌       | `boolean` (default `false`)      | Allow this prompt to use metacommands.                         |
+
+Metacommands are commands that modify the behaviour of the terminal. They are minimally supported at present. To allow them, you must enable `allowMetaCommands` in the prompt object. If you have a global regex capture, then it will consume the command. For now, you can do:
+
+- `set theme=THEME` (where THEME is a valid theme)
+- To follow: `set renderScanlines=true/false` and `set screenFlicker=true/false` (not yet implemented)
+
+Example Metacommand
+
+```json
+{
+	"type": "prompt",
+	"commands": [
+		{
+			"command": "simplecommand",
+			"action": {
+				"type": "link",
+				"target": "incidents"
+			}
+		}
+		// This command, if present, would consume the metacommand! Don't include it!!
+		// {
+		// 	"command": ".+",
+		// 	"action": [],
+		// 	"allowRegex": true
+		// }
+	],
+	"allowMetaCommands": true
+}
+```
 
 ```json
 {
@@ -172,6 +216,16 @@ Note that you should only have one prompt per screen, due to how these are imple
 	"className": "alert cursor"
 }
 ```
+
+##### `JsonCommand`
+
+| Field        | Required | Type                           | Notes                                                           |
+| ------------ | -------- | ------------------------------ | --------------------------------------------------------------- |
+| `command`    | ✅       | `string` \| `string[]`         | A single string or list of strings to match. May contain regex. |
+| `action`     | ✅       | `JsonAction` \| `JsonAction[]` | A single or list of actions to be performed                     |
+| `allowRegex` | ❌       | `boolean` (default `false`)    | Allow regex in this prompt                                      |
+
+An indepth explanation of JsonAction is at the bottom of this file.
 
 #### `JsonLink`
 
@@ -235,42 +289,41 @@ Supported action variants:
 {
 	"type": "condition",
 	"condition": {
+		// This condition checks score >= 100
 		"op": ">=",
 		"left": { "type": "variable", "target": "score" },
 		"right": { "type": "value", "value": 100 }
 	},
-	"true": { "type": "link", "target": "victory" },
-	"false": { "type": "dialog", "target": "tryAgain" }
+	"true": { "type": "link", "target": "victory" }, // Navigate to victory screen if true
+	"false": { "type": "dialog", "target": "tryAgain" } // Display tryAgain dialog if false
 }
 ```
 
-- Branches `true`/`false` accept a single action or an array (sequence).
+Note: `true`/`false` accept a `JsonAction` or `JsonAction[]`.
 
 ### Condition model
 
 **Simple** comparison:
 
-| Field             | Type       | Required | Notes                      |
-| ----------------- | ---------- | -------- | -------------------------- |
-| `op`              | Comparator | ✅       | See below.                 |
-| `left`            | Operand    | ✅       | Variable or literal value. |
-| `right`           | Operand    | ✅       | Variable or literal value. |
-| `caseInsensitive` | boolean    | ❌       | For string comparisons.    |
+| Field             | Type         | Required | Notes                      |
+| ----------------- | ------------ | -------- | -------------------------- |
+| `op`              | `Comparator` | ✅       | See below.                 |
+| `left`            | `Operand`    | ✅       | Variable or literal value. |
+| `right`           | `Operand`    | ✅       | Variable or literal value. |
+| `caseInsensitive` | `boolean`    | ❌       | For string comparisons.    |
 
 **Comparators**: `=`, `!=`, `>`, `<`, `>=`, `<=`, `contains`, `not contains`, `startswith`, `endswith`.
 
 **Operand**:
 
-- Variable reference: `{ "type": "variable", "target": "varName" }`
-- Literal value: `{ "type": "value", "value": number|boolean|string }`
+- Variable reference: `{ "type": "variable", "target": "varName" }` will resolve to the value of the variable
+- Literal value: `{ "type": "value", "value": number|boolean|string }` will resolve to the literal value specified.
 
 **Logical** composition:
 
 - `{"and": [Condition, ...]}`
 - `{"or":  [Condition, ...]}`
 - `{"not": Condition}`
-
----
 
 ## Example: Minimal pack
 
@@ -312,3 +365,153 @@ Supported action variants:
 	]
 }
 ```
+
+# `JsonAction`
+
+A `JsonAction` describes **what happens** when a command fires. It’s one of:
+
+- `JsonCommandDialog` – open a dialog (wait until user closes dialog to continue)
+- `JsonCommandLink` – navigate to a screen
+- `JsonCommandToggle` – flip a toggle element by id (wait until toggle is finished any delays to continue)
+- `JsonCommandVariable` – change a variable
+- `JsonCommandConditional` – branch and run other action(s) based on a condition
+
+`JsonAction` can always be a single action object or an array of actions.
+
+## `JsonCommandDialog`
+
+```json
+{ "type": "dialog", "target": "lockedDialog" }
+```
+
+- **type**: `"alert"` or `"dialog"`
+- **target**: dialog id to show
+
+**Behavior:** Show the dialog. Wait for the dialog to close before allowing the sequence to progress.
+
+## `JsonCommandLink`
+
+```json
+{ "type": "link", "target": "controls" }
+```
+
+- **type**: `"link"`
+- **target**: destination screen id
+
+**Behavior:** Change the active screen. Note that this should be the last item in the array.
+
+## `JsonCommandToggle`
+
+```json
+{ "type": "toggle", "target": "airlockToggle1" }
+```
+
+- **type**: `"toggle"`
+- **target**: the content id of a toggle on the current screen
+
+**Behavior:** Switch to the next state in that toggle’s `states[]` (wrap-around).
+
+## `JsonCommandVariable`
+
+```json
+{
+	"type": "variable",
+	"target": "score",
+	"context": { "action": "increment", "value": 10 }
+}
+```
+
+- **type**: `"variable"`
+- **target**: variable id
+- **context**:
+  - **action**: `"set" | "toggle" | "increment" | "decrement" | "concatenate"`
+  - **value**: optional number/boolean/string used by the action
+  - **rule**: rule is used for two purposes only (see below)
+
+**Behavior:** Mutates a declared variable.
+Examples:
+
+- `set` with `value`
+- `toggle` for booleans (true↔false)
+- `increment`/`decrement` (uses `value` as step, default 1)
+
+1. If rule is given in a `concatenate` action, the valid options are `pre` and `post`. These will determine whether the text is prepended or appended.
+2. If rule is given in a `set` action, then provide a template to generate random stuff. The rules are below:
+
+### `Rule` from within a `set` context.
+
+Generate a value (number, boolean, or string) from a compact **rule string**.
+
+Depending on the syntax of `rule`, the function returns:
+
+- a **number** randomly chosen from an integer range,
+- a **boolean** produced by a probability,
+- or a **string** generated from a simple pattern alphabet.
+
+#### Syntax summary
+
+1. Integer range
+
+- Examples: `[1,5]`, `[3,9)`, `(2,10]`
+- Returns an integer uniformly sampled from the range.
+- Brackets control inclusivity:
+  - `[` / `]` = inclusive
+  - `(` / `)` = exclusive
+- **Details:** The function parses `start` and `end` as floats, then converts to an **integer range** by:
+  - `min = inclusiveStart ? start : start + 1`
+  - `max = inclusiveEnd   ? end   : end - 1`
+  - Note: Because of the `+1`/`-1` adjustment, non-integer bounds like `(1.2, 3.8)` are effectively treated as integers `(2,3)`. If `min > max` after adjustment, an error is thrown.
+
+2. Probability — plain number string `p` where `0 <= p <= 1`
+
+- Example: `"0.3"`, `"1"`, `"0"`
+- Returns a `boolean` that is `true` with probability `p`.
+- Validation: string must round-trip via `parseFloat(rule).toString() === rule`.
+
+3. Pattern string — any other characters
+
+- Returns a `string` by expanding symbolic placeholders; any non-symbol chars are copied as-is. Escaping the placeholders will (eventually) be supported.
+
+| Symbol | Alphabet used                          | Notes                                   |
+| -----: | -------------------------------------- | --------------------------------------- |
+|    `0` | `0123456789`                           | digits                                  |
+|    `A` | `ABCDEFGHIJKLMNOPQRSTUVWXYZ`           | uppercase letters                       |
+|    `a` | `abcdefghijklmnopqrstuvwxyz`           | lowercase letters                       |
+|    `X` | `ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789` | upper alnum                             |
+|    `h` | `0123456789abcdef`                     | hexadecimal lowercase                   |
+|    `E` | `ABCDEFGHKMNPQRSTUVWXYZ23456789`       | easy set (no confusing chars)           |
+|    `c` | `IO01lio`                              | confusing chars only (because, why not) |
+
+**Example:**
+Rule: `"AA-0000"` → could yield `"QZ-4831"`
+
+## `JsonCommandConditional`
+
+```json
+{
+	"type": "condition",
+	"condition": {
+		"op": ">=",
+		"left": { "type": "variable", "target": "score" },
+		"right": { "type": "value", "value": 100 }
+	},
+	"true": { "type": "link", "target": "victory" },
+	"false": [
+		{ "type": "dialog", "target": "tryAgain" },
+		{ "type": "link", "target": "menu" }
+	]
+}
+```
+
+<!--
+- **type**: `"condition"`
+- **condition**: compares operands or composes them logically (see `Condition`, `Comparator`, `Operand`)
+- **true** / **false**: action or list of actions to run depending on the result
+
+**Behavior:** Evaluate, then run the matching branch. Each branch can be a single action or a sequence.
+
+- **Sequencing:** When an action list is used, they are run **in order**.
+- **Conditions:**
+  - **Comparators:** `=`, `!=`, `>`, `<`, `>=`, `<=`, `contains`, `not contains`, `startswith`, `endswith`
+  - **Operands:** variable (`{type:'variable', target:'name'}`) or literal value (`{type:'value', value:...}`)
+  - **Logic:** `{"and":[...]}`, `{"or":[...]}`, `{"not": ...}` -->

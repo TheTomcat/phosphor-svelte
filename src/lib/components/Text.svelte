@@ -1,13 +1,13 @@
 <script lang="ts">
 	import type { TextOptions } from '$lib/PhosphorData';
-	import { formatText } from '$lib/utils';
+	import { formatText, sliceFormatted } from '$lib/utils';
 
 	let {
 		text,
 		columns,
 		className,
 		onRendered,
-		textOpts
+		textOpts = {}
 	}: {
 		text: string;
 		columns: number;
@@ -16,10 +16,11 @@
 		textOpts?: TextOptions;
 	} = $props();
 
-	let formatted = $derived(formatText(text, columns, textOpts));
-	let rendered = $derived(
-		textOpts?.preserveSpacing ? formatted.replaceAll(' ', '&nbsp;') : formatted
-	);
+	// let formatted = $derived(formatText(text, columns, textOpts));
+	// let rendered = $derived(
+	// 	textOpts?.preserveSpacing ? formatted.replaceAll(' ', '&nbsp;') : formatted
+	// );
+	let output = $derived(sliceFormatted(text, columns, textOpts));
 
 	const handleRendered = () => {
 		onRendered && onRendered();
@@ -31,7 +32,7 @@
 	{#if text == '\\'}
 		<br />
 	{:else}
-		{@html rendered}
+		{@html output.visibleHtml}
 	{/if}
 </div>
 

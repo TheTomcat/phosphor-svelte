@@ -103,7 +103,7 @@
 </div>
 
 <style lang="scss">
-	@import '$lib/assets/colours';
+	// @import '$lib/assets/colours';
 
 	.blink {
 		animation: blink 1s steps(5, start) infinite;

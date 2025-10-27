@@ -15,6 +15,7 @@ export function getVar<T extends PhosphorVariableType = PhosphorVariableType>(
 	name: string,
 	fallback?: T
 ): T {
+	console.log(`Getting var "${name}":`, vars[name]);
 	return (name in vars ? vars[name] : fallback) as T;
 }
 
@@ -49,6 +50,18 @@ export function concatenateVar(name: string, value: string, pre?: boolean) {
 export function decrementVar(name: string, by = 1) {
 	incrementVar(name, -by);
 }
+
+// export function pushVar(name: string, value: string) {
+// 	const cur = vars[name];
+// 	if (Array.isArray(cur)) {
+// 		cur.push(value);
+// 		vars[name] = cur; // re-assign to trigger reactivity
+// 	} else if (cur === undefined) {
+// 		vars[name] = [value];
+// 	} else {
+// 		throw new Error(`Cannot push to non-array var "${name}"`);
+// 	}
+// }
 
 // Apply one variable command
 export function applyVariableCommand(
@@ -241,6 +254,32 @@ function toNumber(value: PhosphorVariableType): number | undefined {
 	return Number.isNaN(n) ? undefined : n;
 }
 function buildRule(rule: string): PhosphorVariableType {
+	if (
+		(rule.startsWith('[') || rule.startsWith('(')) &&
+		(rule.endsWith(']') || rule.endsWith(')'))
+	) {
+		// Range rule
+		const inclusiveStart = rule.startsWith('[');
+		const inclusiveEnd = rule.endsWith(']');
+		const parts = rule.slice(1, -1).split(',');
+		if (parts.length !== 2) throw new Error(`Invalid range rule: ${rule}`);
+		const start = parseFloat(parts[0]);
+		const end = parseFloat(parts[1]);
+		if (isNaN(start) || isNaN(end)) throw new Error(`Invalid range numbers in rule: ${rule}`);
+		let min = inclusiveStart ? start : start + 1;
+		let max = inclusiveEnd ? end : end - 1;
+		if (min > max) throw new Error(`Invalid range: start greater than end in rule: ${rule}`);
+		const result = Math.floor(Math.random() * (max - min + 1)) + min;
+		return result;
+	}
+	if (parseFloat(rule).toString() === rule) {
+		//we're given a number here.
+		// return a boolean with rule probability of being true
+		const prob = parseFloat(rule);
+		if (isNaN(prob) || prob < 0 || prob > 1)
+			throw new Error(`Invalid probability number in rule: ${rule}`);
+		return Math.random() < prob;
+	}
 	// Accepts 0,A,X,
 	const RULES = {
 		'0': '0123456789',
@@ -248,20 +287,49 @@ function buildRule(rule: string): PhosphorVariableType {
 		a: 'abcdefghijklmnopqrstuvwxyz',
 		X: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789',
 		h: '0123456789abcdef',
-		E: 'ABCDEFGHKMNPQRSTUVWXYZ23456789', // Exclude confusing chars
-		c: 'IO01lio' // Confusing chars
+		E: 'ACDEFGHKMNPQRSTUVWXY345679', // Exclude confusing chars
+		C: 'IO0Q1B8Z2' // Confusing chars
 	};
 
 	let result: string = '';
-	for (let char of rule) {
-		if (char in RULES) {
-			const chars = RULES[char as keyof typeof RULES];
-			result += chars.charAt(Math.floor(Math.random() * chars.length));
-			continue;
+	let i = 0;
+	while (i < rule.length) {
+		let char = rule.charAt(i);
+		if (char === '%') {
+			// escape next char
+			i++;
+			let nextChar = rule.charAt(i);
+			console.log(nextChar);
+			if (!nextChar) break;
+			if (nextChar === '%') {
+				result += '%';
+				i++;
+				continue;
+			}
+			if (nextChar in RULES) {
+				const chars = RULES[nextChar as keyof typeof RULES];
+				result += chars.charAt(Math.floor(Math.random() * chars.length));
+				i++;
+				continue;
+			}
 		} else {
 			result += char;
+			i++;
 			continue;
 		}
 	}
+	// for (let char of rule) {
+	// 	if (char in RULES) {
+	// 		const chars = RULES[char as keyof typeof RULES];
+	// 		result += chars.charAt(Math.floor(Math.random() * chars.length));
+	// 		continue;
+	// 	} else if (char === '\\') {
+	// 		// escape next char (TODO)
+	// 		continue;
+	// 	} else {
+	// 		result += char;
+	// 		continue;
+	// 	}
+	// }
 	return result;
 }

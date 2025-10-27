@@ -1,6 +1,13 @@
 <script lang="ts">
-	import type { Command, TextOptions } from '$lib/PhosphorData';
+	import {
+		THEMES,
+		type Command,
+		type PhosphorVariableType,
+		type TextOptions,
+		type ThemeType
+	} from '$lib/PhosphorData';
 	import { setVar } from '$lib/phosphorVariables.svelte';
+	import { setTheme } from '$lib/theme.svelte';
 	import { onMount } from 'svelte';
 
 	let {
@@ -47,22 +54,41 @@
 
 	const parseMetaCommand = (input: string) => {
 		// Parse input for commands of the form SET VAR=VALUE and update appropriately
-		if (input.startsWith('set')) {
-			const parts = input.slice(3).trim().split('=');
+		if (input.toLowerCase().startsWith('set')) {
+			const parts = input.toLowerCase().slice(3).trim().split('=');
 			if (parts.length === 2) {
 				const varName = parts[0].trim();
 				const varValue = parts[1].trim();
-				setVar(varName, varValue);
-				return true;
+				if (varName == 'theme' || varName == 'renderscanlines' || varName == 'screenflicker') {
+					if (varName == 'theme' && THEMES.includes(varValue as any)) {
+						setTheme(varValue as ThemeType);
+						return `Theme set to ${varValue}`;
+					}
+					if (varValue === 'true' || varValue === 'false') {
+						const newValue = varValue === 'true' ? true : false;
+						// not supported yet. TODO: Move renderScanlines and screenFlicker into theme and export into Phosphor.svelte.
+						return `Not yet supported.`;
+					}
+					return false;
+				} else {
+					// Normal command. Treat as such
+					let newValue: PhosphorVariableType = varValue;
+					if (varValue === 'true') newValue = true;
+					if (varValue === 'false') newValue = false;
+					if (parseInt(varValue).toString() === varValue) newValue = parseInt(varValue);
+					setVar(varName, newValue);
+					return `Command accepted`;
+				}
 			}
 		}
+		return false;
 	};
 
 	const handleCommand = () => {
 		if (!onCommand) return;
 		setVar('_lastCommand', value);
 		const command = matchCommand(value);
-
+		invalidCommand = '';
 		// console.log(`Found matching command for ${$state.snapshot(value)}`, $state.snapshot(command));
 		if (command) {
 			// console.log(command);
@@ -73,10 +99,11 @@
 				const handled = parseMetaCommand(value);
 				if (handled) {
 					value = '';
-					invalidCommand = 'OVERRIDE COMMAND ACCEPTED';
+					invalidCommand = handled; //'OVERRIDE COMMAND ACCEPTED';
+					// return;
 				}
 			} else {
-				invalidCommand = value;
+				invalidCommand = `No such command: ${value}`;
 				value = '';
 				// console.log('Invalid command:', invalidCommand);
 			}
@@ -145,7 +172,9 @@
 		>{@html isPassword ? '*'.repeat(value.length) : displayValue}<span class="cursor">|</span>
 	</span>
 </div>
-{#if invalidCommand}<div class="blink alert">No such command: {invalidCommand}</div>{/if}
+{#if invalidCommand}<span class="alert"
+		><!-- {@html '&nbsp;'.repeat(Math.max(10 - value.length, 0))} -->{invalidCommand}</span
+	>{/if}
 
 <style lang="scss">
 	@import '$lib/assets/colours';

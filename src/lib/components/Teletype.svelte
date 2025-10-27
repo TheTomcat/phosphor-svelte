@@ -39,7 +39,8 @@
 	// NEW: sound props
 	import soundSrc from '$lib/assets/teletype1.mp3';
 	import type { TextOptions } from '$lib/PhosphorData';
-	import { formatText } from '$lib/utils';
+	import { applyTextOpts, formatText, sliceFormatted } from '$lib/utils';
+	import { injectVariables } from '$lib/phosphorVariables.svelte';
 	// let soundSrc: string | null = ''; // e.g. '/sounds/teletype-loop.mp3'
 	let soundVolume: number = 0.3; // 0..1
 	let soundPlaybackRate: number = 1.0; // optional slight pitch/speed tweak
@@ -67,21 +68,22 @@
 	}
 
 	const processedText = $derived.by(() => {
-		// console.log(text, textOpts);
-		return formatText(text, columns, textOpts);
-	});
+		return applyTextOpts(text, columns, textOpts);
+	}); // calculate this once, so that we know how long the text is.
 
-	const visible = $derived(
-		textOpts.preserveSpacing
-			? processedText.substr(0, char).replaceAll(' ', '&nbsp;')
-			: processedText.substr(0, char)
-	);
-	const cursor = $derived(processedText.substr(char, 1) || '.');
-	const hidden = $derived(
-		textOpts.preserveSpacing
-			? processedText.substr(char + 1).replaceAll(' ', '&nbsp;')
-			: processedText.substr(char + 1)
-	);
+	// const visible = $derived(
+	// 	textOpts.preserveSpacing
+	// 		? processedText.substr(0, char).replaceAll(' ', '&nbsp;')
+	// 		: processedText.substr(0, char)
+	// );
+	// const cursor = $derived(processedText.substr(char, 1) || '.');
+	// const hidden = $derived(
+	// 	textOpts.preserveSpacing
+	// 		? processedText.substr(char + 1).replaceAll(' ', '&nbsp;')
+	// 		: processedText.substr(char + 1)
+	// );
+	const filledText = $derived(injectVariables(text)); // split this up to avoid fetching variables for every tick.
+	const sliced = $derived(sliceFormatted(filledText, columns, textOpts, char));
 
 	const clearAnimateTimer = () => {
 		if (animateTimerId) {
@@ -165,9 +167,14 @@
 </script>
 
 <div class={`__teletype__ ${className ? className : ''}`}>
-	<span class="visible">{@html visible}</span>
+	<span class="visible">{@html sliced.visibleHtml}</span>
+	<span class="cursor" bind:this={_cursorRef}
+		>{sliced.cursorChar === ' ' ? '.' : sliced.cursorChar}</span
+	>
+	<span class="hidden">{@html sliced.hiddenHtml}</span>
+	<!-- <span class="visible">{@html visible}</span>
 	<span class="cursor" bind:this={_cursorRef}>{cursor === ' ' ? '.' : cursor}</span>
-	<span class="hidden">{@html hidden}</span>
+	<span class="hidden">{@html hidden}</span> -->
 </div>
 
 <style lang="scss">

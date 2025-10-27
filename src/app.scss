@@ -64,4 +64,36 @@ body {
 		color: rgb(var(--foreground)); //$foreground;
 		background-color: rgb(var(--foreground) / 0.75); //rgba($foreground, 0.75);
 	}
+
+}
+.blink {
+	animation: blink 1s steps(5, start) infinite;
+}
+
+@keyframes blink {
+	to {
+		visibility: hidden;
+	}
+}
+@-webkit-keyframes blink {
+	to {
+		visibility: hidden;
+	}
+}
+	
+@keyframes textflicker {
+	from {
+		text-shadow: 1px 0 0 #ea36af, -2px 0 0 #75fa69;
+	}
+	to {
+		text-shadow: 2px 0.5px 2px #ea36af, -1px -0.5px 2px #75fa69;
+	}
+}
+
+.flicker {
+	text-shadow: 0.06rem 0 0.06rem #ea36af, -0.125rem 0 0.06rem #75fa69;
+	animation-duration: 0.01s;
+	animation-name: textflicker;
+	animation-iteration-count: infinite;
+	animation-direction: alternate;
 }

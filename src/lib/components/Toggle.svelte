@@ -1,18 +1,21 @@
 <script lang="ts">
 	import type { JsonToggleState } from '$lib/PhosphorData';
 	import { setVar } from '$lib/phosphorVariables.svelte';
+	import { sliceFormatted } from '$lib/utils';
 	import { onMount } from 'svelte';
 
 	let {
 		states = $bindable(), // Need to be bindable, because we push changes from Phosphor
 		id,
 		className,
+		columns,
 		onRendered,
 		onClick
 	}: {
 		states: { text: string; active: boolean; delayMs?: number; delayText?: string }[];
 		id?: string;
 		className?: string;
+		columns: number;
 		onRendered?: () => void;
 		onClick?: () => void;
 	} = $props();
@@ -30,6 +33,8 @@
 		)
 	);
 	let active = $derived(states[activeIndex]);
+
+	let displayText = $derived(sliceFormatted(active.text, columns, {}));
 
 	onMount(() => {
 		oldState = active;
@@ -134,7 +139,7 @@
 >
 	{#if disabledTimer > 0 && oldState}{@html renderCountdownText(
 			oldState.delayText || '%'
-		)}{:else}{active.text}{/if}
+		)}{:else}{@html displayText.visibleHtml}{/if}
 </div>
 
 <style lang="scss">

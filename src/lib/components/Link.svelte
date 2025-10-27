@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { Action, LinkAction, LinkTarget, TextOptions } from '$lib/PhosphorData';
-	import { formatText } from '$lib/utils';
+	import { formatText, sliceFormatted } from '$lib/utils';
 
 	let {
 		text,
@@ -22,10 +22,12 @@
 		textOpts?: TextOptions;
 	} = $props();
 
-	let renderedText = $derived(formatText(text, columns, textOpts));
-	let htmlOutput = $derived(
-		textOpts?.preserveSpacing ? renderedText.replaceAll(' ', '&nbsp;') : renderedText
-	);
+	// let renderedText = $derived(formatText(text, columns, textOpts));
+	// let htmlOutput = $derived(
+	// 	textOpts?.preserveSpacing ? renderedText.replaceAll(' ', '&nbsp;') : renderedText
+	// );
+
+	let displayText = $derived(sliceFormatted(text, columns, {}));
 
 	let touches = $state(0);
 	const handleTouchStart = (e: TouchEvent) => {
@@ -54,7 +56,7 @@
 	ontouchstart={handleTouchStart}
 	ontouchend={handleTouchEnd}
 >
-	{@html htmlOutput}
+	{@html displayText.visibleHtml}
 </span>
 
 <style lang="scss">
