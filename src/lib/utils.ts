@@ -106,7 +106,7 @@ export const formatText = (text: string, columns: number, textOpts?: TextOptions
 	return expanded;
 };
 
-export const applyTextOpts = (text: string, columns: number, textOpts?: TextOptions): string => {
+export const applyTextOpts2 = (text: string, columns: number, textOpts?: TextOptions): string => {
 	if (textOpts?.fillWidth) {
 		let nRepeat = Math.ceil(columns / text.length);
 		return text.repeat(nRepeat).slice(0, columns);
@@ -120,11 +120,58 @@ export const applyTextOpts = (text: string, columns: number, textOpts?: TextOpti
 	return output.join('\n');
 };
 
+export const applyTextOpts = (text: string, columns: number, textOpts?: TextOptions): string => {
+	const margin = Math.max(0, textOpts?.margin ?? 0);
+	const padding = Math.max(0, textOpts?.padding ?? 0);
+	const padChar = textOpts?.padChar?.slice(0, 1) || ' ';
+	const borderChar = textOpts?.borderChar?.slice(0, 1); // undefined => no border
+	const fillChar = (textOpts?.fillChar || ' ').slice(0, 1);
+	const marginChar = textOpts?.marginChar?.slice(0, 1) ?? ' ';
+	const align = textOpts?.align ?? 'left';
+
+	// total non-content width (per line)
+	const borderWidth = borderChar ? 2 : 0; // one at each end
+	const sidePadding = padding * 2;
+	const sideMargins = margin * 2;
+
+	const innerWidth = columns - sideMargins - borderWidth - sidePadding;
+	if (innerWidth <= 0) {
+		// Nothing fits; return a blank line sized to columns
+		return ' '.repeat(Math.max(0, columns));
+	}
+
+	const leftMargin = marginChar.repeat(margin);
+	const rightMargin = leftMargin;
+	const leftBorder = borderChar ?? '';
+	const rightBorder = borderChar ?? '';
+	const leftPadding = padChar.repeat(padding);
+	const rightPadding = leftPadding;
+
+	let lines: string[];
+	if (textOpts?.fillWidth) {
+		let nRepeat = Math.ceil(innerWidth / Math.max(1, text.length));
+		lines = [text.repeat(nRepeat).slice(0, innerWidth)];
+	} else {
+		lines = breakText(text, innerWidth);
+	}
+
+	let output: string[] = [];
+	for (let line of lines) {
+		const fillLine = (rightBorder + rightMargin + rightPadding).length > 0;
+		const aligned = alignText(line, innerWidth, align, fillChar, fillLine);
+		output.push(
+			leftMargin + leftBorder + leftPadding + aligned + rightPadding + rightBorder + rightMargin
+		);
+	}
+	return output.join('\n');
+};
+
 const alignText = (
 	text: string,
 	cols: number,
 	align: 'left' | 'center' | 'right',
-	padChar: string = ' '
+	fillChar: string = ' ',
+	fillLine: boolean = false
 ): string => {
 	if (text.length >= cols) return text;
 	let space = cols - text.length;
@@ -132,17 +179,17 @@ const alignText = (
 	switch (align) {
 		case 'left':
 			output = text;
-			if (padChar != ' ') output += padChar.repeat(space);
+			if (fillChar != ' ' || fillLine) output += fillChar.repeat(space);
 			return output;
 		case 'center':
 			let left = space / 2;
 			let right = Math.floor(space - left);
 			left = Math.floor(left);
-			output = padChar.repeat(left) + text;
-			if (padChar != ' ') output += padChar.repeat(right);
+			output = fillChar.repeat(left) + text;
+			if (fillChar != ' ' || fillLine) output += fillChar.repeat(right);
 			return output;
 		case 'right':
-			return padChar.repeat(space) + text;
+			return fillChar.repeat(space) + text;
 	}
 };
 

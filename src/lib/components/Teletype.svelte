@@ -12,7 +12,8 @@
 			playSound: true
 		},
 		onComplete,
-		onNewLine
+		onNewLine,
+		displayOpts = {}
 	}: {
 		text: string; // Text to animate
 		columns: number;
@@ -20,6 +21,7 @@
 		autostart?: boolean; // start animating immediately? default=True
 		autocomplete?: boolean; // skip animating and instead fully render? default = false
 		textOpts: TextOptions;
+		displayOpts?: DisplayOptions;
 		onComplete?: () => void;
 		onNewLine?: () => void;
 	} = $props();
@@ -38,7 +40,7 @@
 
 	// NEW: sound props
 	import soundSrc from '$lib/assets/teletype1.mp3';
-	import type { TextOptions } from '$lib/PhosphorData';
+	import type { DisplayOptions, TextOptions } from '$lib/PhosphorData';
 	import { applyTextOpts, formatText, sliceFormatted } from '$lib/utils';
 	import { injectVariables } from '$lib/phosphorVariables.svelte';
 	// let soundSrc: string | null = ''; // e.g. '/sounds/teletype-loop.mp3'
@@ -134,14 +136,30 @@
 		animate();
 	};
 
+	const handleComplete = () => {
+		if (displayOpts?.delayAfterMs) {
+			stopSound();
+			setTimeout(() => {
+				clearAnimateTimer();
+				onComplete && onComplete();
+			}, displayOpts.delayAfterMs);
+		} else {
+			clearAnimateTimer();
+			onComplete && onComplete();
+			stopSound();
+		}
+	};
+
 	onMount(() => {
 		done = !!autocomplete;
 		paused = autocomplete === false;
 		_cursorInterval = textOpts?.speed ?? _cursorInterval;
 		if (done) {
-			onComplete && onComplete();
-			stopSound();
+			handleComplete();
 			return;
+			// onComplete && onComplete();
+			// stopSound();
+			// return;
 		}
 		// if (!paused) {
 		// console.log('mounted');
@@ -153,10 +171,12 @@
 
 	$effect(() => {
 		if (done) {
-			clearAnimateTimer();
-			stopSound();
-			onComplete && onComplete();
+			handleComplete();
 			return;
+			// clearAnimateTimer();
+			// stopSound();
+			// onComplete && onComplete();
+			// return;
 		}
 	});
 

@@ -22,7 +22,16 @@ export type TextOptions = {
 	bigFont?: string; // use an ascii-art font size for this text block.
 	fillWidth?: boolean; // repeat this text to fill the width of the screen
 	align?: 'left' | 'center' | 'right'; // text alignment
-	padChar?: string; // character to use for padding when aligning text
+	fillChar?: string; // character to use for padding when aligning text
+	padChar?: string; // character to use for padding around the borders
+	borderChar?: string; // character to use for the start/end of lines (e.g. for tables)
+	marginChar?: string; // character to use outside of the border
+	margin?: number;
+	padding?: number;
+};
+
+export type DisplayOptions = {
+	delayAfterMs?: number; // The delay after rendering and before declaring that rendering is completed
 };
 
 /////////////////////////// JSON DATA TYPES ///////////////////////////////
@@ -91,6 +100,7 @@ type JsonBitmap = {
 	id?: string;
 	loadState?: ScreenDataState;
 	onLoad?: boolean;
+	displayOpts?: DisplayOptions;
 };
 
 type JsonToggle = {
@@ -101,6 +111,8 @@ type JsonToggle = {
 	loadState?: ScreenDataState;
 	onLoad?: boolean;
 	textOpts?: TextOptions;
+
+	displayOpts?: DisplayOptions;
 };
 
 export type JsonToggleState = {
@@ -120,6 +132,8 @@ type JsonPrompt = {
 	onLoad?: boolean;
 	textOpts?: TextOptions;
 	allowMetaCommands?: boolean;
+
+	displayOpts?: DisplayOptions;
 };
 
 type JsonLink = {
@@ -132,6 +146,7 @@ type JsonLink = {
 	loadState?: ScreenDataState;
 	onLoad?: boolean;
 	textOpts?: TextOptions;
+	displayOpts?: DisplayOptions;
 };
 type JsonLinkAction = { base: JsonAction; shiftKey?: JsonAction };
 export type JsonCommand = {
@@ -218,6 +233,8 @@ type JsonText = {
 	onLoad?: boolean;
 	className?: string;
 	textOpts?: TextOptions;
+
+	displayOpts?: DisplayOptions;
 };
 
 type JsonCountdown = {
@@ -227,6 +244,8 @@ type JsonCountdown = {
 	className?: string;
 	id?: string;
 	textOpts?: TextOptions;
+
+	displayOpts?: DisplayOptions;
 };
 
 type JsonVariable = {
@@ -289,6 +308,8 @@ export type PhosphorBitmap = {
 	id: string;
 	loadState: ScreenDataState;
 	onLoad?: boolean;
+
+	displayOpts?: DisplayOptions;
 };
 
 export type PhosphorToggle = {
@@ -303,6 +324,8 @@ export type PhosphorToggle = {
 	onLoad?: boolean;
 	// speed: number;
 	textOpts?: TextOptions;
+
+	displayOpts?: DisplayOptions;
 };
 
 export type Command = {
@@ -360,6 +383,8 @@ export type PhosphorPrompt = {
 	onLoad?: boolean;
 	textOpts?: TextOptions;
 	allowMetaCommands?: boolean;
+
+	displayOpts?: DisplayOptions;
 };
 
 export type Link = {
@@ -372,6 +397,7 @@ export type Link = {
 	loadState: ScreenDataState;
 	onLoad?: boolean;
 	textOpts?: TextOptions;
+	displayOpts?: DisplayOptions;
 };
 
 export type LinkAction = { base: Action; shiftKey: Action };
@@ -392,6 +418,8 @@ export type PhosphorText = {
 	onLoad?: boolean;
 	className?: string;
 	textOpts?: TextOptions;
+
+	displayOpts?: DisplayOptions;
 };
 
 export type PhosphorCountdown = {
@@ -403,6 +431,8 @@ export type PhosphorCountdown = {
 	duration: number;
 	className?: string;
 	textOpts?: TextOptions;
+
+	displayOpts?: DisplayOptions;
 };
 
 export type PhosphorVariable = {

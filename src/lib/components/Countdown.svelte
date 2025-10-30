@@ -22,7 +22,7 @@
 	let _audioRef: HTMLAudioElement;
 	// NEW: sound props
 	import soundSrc from '$lib/assets/beep.mp3';
-	import type { TextOptions } from '$lib/PhosphorData';
+	import type { DisplayOptions, TextOptions } from '$lib/PhosphorData';
 	import { formatText } from '$lib/utils';
 	// let soundSrc: string | null = ''; // e.g. '/sounds/teletype-loop.mp3'
 	let soundVolume: number = 0.3; // 0..1

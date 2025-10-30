@@ -1,4 +1,5 @@
 <script lang="ts">
+	import type { DisplayOptions } from '$lib/PhosphorData';
 	import { onMount } from 'svelte';
 
 	let {
@@ -76,6 +77,7 @@
 					animate();
 				} else {
 					ctx.drawImage(image, 0, 0);
+					ctx.scale(0.5, 0.5);
 					onComplete && onComplete();
 				}
 			};
@@ -107,6 +109,7 @@
 
 		canvas {
 			max-width: 100%;
+			max-height: 50vh;
 		}
 
 		&.monochrome {

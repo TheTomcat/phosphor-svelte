@@ -123,7 +123,7 @@ Common optional fields (on object forms): `id`, `className`, `loadState`, `onLoa
 
 #### `JsonText`
 
-```json
+```jsonc
 {
 	"type": "text",
 	"text": "Welcome to YPSILON-14.",
@@ -134,7 +134,7 @@ Common optional fields (on object forms): `id`, `className`, `loadState`, `onLoa
 
 #### `JsonBitmap`
 
-```json
+```jsonc
 {
 	"type": "bitmap",
 	"src": "https://example.com/map.png",
@@ -145,7 +145,7 @@ Common optional fields (on object forms): `id`, `className`, `loadState`, `onLoa
 
 #### `JsonToggle`
 
-```json
+```jsonc
 {
 	"type": "toggle",
 	"states": [
@@ -186,7 +186,7 @@ Metacommands are commands that modify the behaviour of the terminal. They are mi
 
 Example Metacommand
 
-```json
+```jsonc
 {
 	"type": "prompt",
 	"commands": [
@@ -208,7 +208,7 @@ Example Metacommand
 }
 ```
 
-```json
+```jsonc
 {
 	"type": "prompt",
 	"prompt": "TYPE 'OK' TO CONTINUE: ",
@@ -231,13 +231,13 @@ An indepth explanation of JsonAction is at the bottom of this file.
 
 A link does exactly what it sounds like. Links can be clicked to perform actions.
 
-```json
+```jsonc
 { "type": "link", "text": "> CONTROLS", "target": "controls" }
 ```
 
 Advanced (separate actions for base/shift):
 
-```json
+```jsonc
 {
 	"type": "link",
 	"text": "> AIRLOCKS [A]",
@@ -250,7 +250,7 @@ Advanced (separate actions for base/shift):
 
 #### `JsonCountdown`
 
-```json
+```jsonc
 { "type": "countdown", "prompt": "SELF-DESTRUCT IN: ", "duration": 600, "className": "alert" }
 ```
 
@@ -285,7 +285,7 @@ Supported action variants:
 
 ## Conditional actions
 
-```json
+```jsonc
 {
 	"type": "condition",
 	"condition": {
@@ -327,7 +327,7 @@ Note: `true`/`false` accept a `JsonAction` or `JsonAction[]`.
 
 ## Example: Minimal pack
 
-```json
+```jsonc
 {
 	"metadata": { "description": "Demo", "author": "You", "comment": "Sample" },
 	"config": { "name": "My App", "speed": 5, "minWidth": 60 },
@@ -380,7 +380,7 @@ A `JsonAction` describes **what happens** when a command fires. It’s one of:
 
 ## `JsonCommandDialog`
 
-```json
+```jsonc
 { "type": "dialog", "target": "lockedDialog" }
 ```
 
@@ -391,7 +391,7 @@ A `JsonAction` describes **what happens** when a command fires. It’s one of:
 
 ## `JsonCommandLink`
 
-```json
+```jsonc
 { "type": "link", "target": "controls" }
 ```
 
@@ -402,7 +402,7 @@ A `JsonAction` describes **what happens** when a command fires. It’s one of:
 
 ## `JsonCommandToggle`
 
-```json
+```jsonc
 { "type": "toggle", "target": "airlockToggle1" }
 ```
 
@@ -413,7 +413,7 @@ A `JsonAction` describes **what happens** when a command fires. It’s one of:
 
 ## `JsonCommandVariable`
 
-```json
+```jsonc
 {
 	"type": "variable",
 	"target": "score",
@@ -487,7 +487,7 @@ Rule: `"AA-0000"` → could yield `"QZ-4831"`
 
 ## `JsonCommandConditional`
 
-```json
+```jsonc
 {
 	"type": "condition",
 	"condition": {

@@ -18,6 +18,7 @@
 	import type {
 		Action,
 		Command,
+		DisplayOptions,
 		JsonCommand,
 		LinkAction,
 		LinkTarget,
@@ -198,7 +199,15 @@
 			align: element?.textOpts?.align || 'left',
 			bigFont: element?.textOpts?.bigFont || undefined,
 			fillWidth: element?.textOpts?.fillWidth || false,
-			padChar: element?.textOpts?.padChar || ' '
+			padChar: element?.textOpts?.padChar || '',
+			borderChar: element?.textOpts?.borderChar || '',
+			marginChar: element?.textOpts?.marginChar || '',
+			fillChar: element?.textOpts?.fillChar || ' ',
+			padding: element?.textOpts?.padding || 0,
+			margin: element?.textOpts?.margin || 0
+		};
+		const displayOpts: DisplayOptions = {
+			delayAfterMs: element.displayOpts?.delayAfterMs || undefined
 		};
 
 		// If the element is a string, create a Text object
@@ -228,7 +237,8 @@
 					alt: element.alt || '',
 					className: element.className || '',
 					loadState: loadState,
-					onLoad
+					onLoad,
+					displayOpts
 				};
 			case 'text':
 				return {
@@ -238,7 +248,8 @@
 					className: element.className || '',
 					loadState: loadState,
 					onLoad,
-					textOpts
+					textOpts,
+					displayOpts
 				};
 			case 'link':
 				if (element.target) {
@@ -271,7 +282,8 @@
 					className: element.className || '',
 					loadState: loadState,
 					onLoad,
-					textOpts
+					textOpts,
+					displayOpts
 				};
 			case 'prompt':
 				return {
@@ -283,7 +295,8 @@
 					loadState: loadState,
 					onLoad,
 					textOpts,
-					allowMetaCommands: element.allowMetaCommands || false
+					allowMetaCommands: element.allowMetaCommands || false,
+					displayOpts
 					// isPassword: element.isPassword || false
 				};
 			case 'toggle':
@@ -294,7 +307,8 @@
 					className: element.className || '',
 					loadState: loadState,
 					onLoad,
-					textOpts
+					textOpts,
+					displayOpts
 				};
 			case 'countdown':
 				return {
@@ -305,7 +319,8 @@
 					className: element.className || '',
 					loadState: loadState,
 					onLoad,
-					textOpts
+					textOpts,
+					displayOpts
 				};
 			case 'variable':
 				applyVariableCommand({
@@ -622,6 +637,7 @@
 									onComplete={() => activateNextScreenData()}
 									onNewLine={handleTeletypeNewLine}
 									textOpts={element.textOpts ?? {}}
+									displayOpts={element.displayOpts}
 								/>
 							{:else if element.type === 'toggle'}
 								{@const t = element.states.find((item: any) => item.active === true)?.text}
@@ -633,6 +649,7 @@
 									onComplete={() => activateNextScreenData()}
 									onNewLine={handleTeletypeNewLine}
 									textOpts={element.textOpts ?? {}}
+									displayOpts={element.displayOpts}
 								/>
 							{:else if element.type === 'bitmap'}
 								<Bitmap

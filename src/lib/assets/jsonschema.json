@@ -27,6 +27,15 @@
         }
       ]
     },
+    "DisplayOptions": {
+      "additionalProperties": false,
+      "properties": {
+        "delayAfterMs": {
+          "type": "number"
+        }
+      },
+      "type": "object"
+    },
     "JsonCommand": {
       "additionalProperties": false,
       "properties": {
@@ -96,10 +105,10 @@
                   "$ref": "#/definitions/Condition"
                 },
                 "false": {
-                  "$ref": "#/definitions/alias-1732610263-3407-3457-1732610263-0-8614"
+                  "$ref": "#/definitions/alias-1732610263-3958-4008-1732610263-0-9414"
                 },
                 "true": {
-                  "$ref": "#/definitions/alias-1732610263-3407-3457-1732610263-0-8614"
+                  "$ref": "#/definitions/alias-1732610263-3958-4008-1732610263-0-9414"
                 },
                 "type": {
                   "const": "condition",
@@ -181,10 +190,10 @@
                         "$ref": "#/definitions/Condition"
                       },
                       "false": {
-                        "$ref": "#/definitions/alias-1732610263-3407-3457-1732610263-0-8614"
+                        "$ref": "#/definitions/alias-1732610263-3958-4008-1732610263-0-9414"
                       },
                       "true": {
-                        "$ref": "#/definitions/alias-1732610263-3407-3457-1732610263-0-8614"
+                        "$ref": "#/definitions/alias-1732610263-3958-4008-1732610263-0-9414"
                       },
                       "type": {
                         "const": "condition",
@@ -647,10 +656,10 @@
                           "$ref": "#/definitions/Condition"
                         },
                         "false": {
-                          "$ref": "#/definitions/alias-1732610263-3407-3457-1732610263-0-8614"
+                          "$ref": "#/definitions/alias-1732610263-3958-4008-1732610263-0-9414"
                         },
                         "true": {
-                          "$ref": "#/definitions/alias-1732610263-3407-3457-1732610263-0-8614"
+                          "$ref": "#/definitions/alias-1732610263-3958-4008-1732610263-0-9414"
                         },
                         "type": {
                           "const": "condition",
@@ -732,10 +741,10 @@
                                 "$ref": "#/definitions/Condition"
                               },
                               "false": {
-                                "$ref": "#/definitions/alias-1732610263-3407-3457-1732610263-0-8614"
+                                "$ref": "#/definitions/alias-1732610263-3958-4008-1732610263-0-9414"
                               },
                               "true": {
-                                "$ref": "#/definitions/alias-1732610263-3407-3457-1732610263-0-8614"
+                                "$ref": "#/definitions/alias-1732610263-3958-4008-1732610263-0-9414"
                               },
                               "type": {
                                 "const": "condition",
@@ -822,10 +831,10 @@
                           "$ref": "#/definitions/Condition"
                         },
                         "false": {
-                          "$ref": "#/definitions/alias-1732610263-3407-3457-1732610263-0-8614"
+                          "$ref": "#/definitions/alias-1732610263-3958-4008-1732610263-0-9414"
                         },
                         "true": {
-                          "$ref": "#/definitions/alias-1732610263-3407-3457-1732610263-0-8614"
+                          "$ref": "#/definitions/alias-1732610263-3958-4008-1732610263-0-9414"
                         },
                         "type": {
                           "const": "condition",
@@ -907,10 +916,10 @@
                                 "$ref": "#/definitions/Condition"
                               },
                               "false": {
-                                "$ref": "#/definitions/alias-1732610263-3407-3457-1732610263-0-8614"
+                                "$ref": "#/definitions/alias-1732610263-3958-4008-1732610263-0-9414"
                               },
                               "true": {
-                                "$ref": "#/definitions/alias-1732610263-3407-3457-1732610263-0-8614"
+                                "$ref": "#/definitions/alias-1732610263-3958-4008-1732610263-0-9414"
                               },
                               "type": {
                                 "const": "condition",
@@ -939,6 +948,9 @@
             },
             "className": {
               "type": "string"
+            },
+            "displayOpts": {
+              "$ref": "#/definitions/DisplayOptions"
             },
             "id": {
               "type": "string"
@@ -987,6 +999,9 @@
             "className": {
               "type": "string"
             },
+            "displayOpts": {
+              "$ref": "#/definitions/DisplayOptions"
+            },
             "id": {
               "type": "string"
             },
@@ -1015,6 +1030,9 @@
           "properties": {
             "className": {
               "type": "string"
+            },
+            "displayOpts": {
+              "$ref": "#/definitions/DisplayOptions"
             },
             "id": {
               "type": "string"
@@ -1060,6 +1078,9 @@
               },
               "type": "array"
             },
+            "displayOpts": {
+              "$ref": "#/definitions/DisplayOptions"
+            },
             "id": {
               "type": "string"
             },
@@ -1092,6 +1113,9 @@
             "className": {
               "type": "string"
             },
+            "displayOpts": {
+              "$ref": "#/definitions/DisplayOptions"
+            },
             "id": {
               "type": "string"
             },
@@ -1123,6 +1147,9 @@
           "properties": {
             "className": {
               "type": "string"
+            },
+            "displayOpts": {
+              "$ref": "#/definitions/DisplayOptions"
             },
             "duration": {
               "type": "number"
@@ -1259,14 +1286,29 @@
         "bigFont": {
           "type": "string"
         },
+        "borderChar": {
+          "type": "string"
+        },
+        "fillChar": {
+          "type": "string"
+        },
         "fillWidth": {
           "type": "boolean"
         },
         "isPassword": {
           "type": "boolean"
         },
+        "margin": {
+          "type": "number"
+        },
+        "marginChar": {
+          "type": "string"
+        },
         "padChar": {
           "type": "string"
+        },
+        "padding": {
+          "type": "number"
         },
         "playSound": {
           "type": "boolean"
@@ -1290,7 +1332,7 @@
       ],
       "type": "string"
     },
-    "alias-1732610263-3407-3457-1732610263-0-8614": {
+    "alias-1732610263-3958-4008-1732610263-0-9414": {
       "anyOf": [
         {
           "additionalProperties": false,
@@ -1356,10 +1398,10 @@
               "$ref": "#/definitions/Condition"
             },
             "false": {
-              "$ref": "#/definitions/alias-1732610263-3407-3457-1732610263-0-8614"
+              "$ref": "#/definitions/alias-1732610263-3958-4008-1732610263-0-9414"
             },
             "true": {
-              "$ref": "#/definitions/alias-1732610263-3407-3457-1732610263-0-8614"
+              "$ref": "#/definitions/alias-1732610263-3958-4008-1732610263-0-9414"
             },
             "type": {
               "const": "condition",
@@ -1441,10 +1483,10 @@
                     "$ref": "#/definitions/Condition"
                   },
                   "false": {
-                    "$ref": "#/definitions/alias-1732610263-3407-3457-1732610263-0-8614"
+                    "$ref": "#/definitions/alias-1732610263-3958-4008-1732610263-0-9414"
                   },
                   "true": {
-                    "$ref": "#/definitions/alias-1732610263-3407-3457-1732610263-0-8614"
+                    "$ref": "#/definitions/alias-1732610263-3958-4008-1732610263-0-9414"
                   },
                   "type": {
                     "const": "condition",
