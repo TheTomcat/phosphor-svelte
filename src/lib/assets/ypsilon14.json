@@ -95,13 +95,45 @@
 			]
 		},
 		{
+			"id": "poweringon",
+			"type": "screen",
+			"content": [
+				"[BOOT]   Initializing quantum BIOS v7.3.42 … OK",
+				"[SYS]    Mounting /core/memory to /neural/cache … done",
+				"[CHK]    Running integrity scan on synaptic bus … 0 errors",
+				"[DAEMON] Launching process: ai_handler.service … active",
+				"[SEC]    Verifying entropy pool … 4096 bits ready",
+				"[DRVR]   Loading module: retina_input.ko … loaded",
+				"[DRVR]   Loading module: haptic_feedback.ko … loaded",
+				"[NET]    Establishing uplink via Subspace Node γ-12 … link stable",
+				"[CORE]   Allocating 128 TiB hypermemory … done",
+				"[PROC]   Spawning thread cluster[8] … synchronized",
+				"[WARN]   Latency spike detected on temporal channel … ignored",
+				"[IO]     Scanning attached devices … 17 interfaces found",
+				"[AUTH]   Cryptographic handshake with /root@Eidolon complete",
+				"[FSYS]   Mounting quantum volume /mnt/echo … checksum verified",
+				"[SYS]    Recompiling kernel of consciousness … success",
+				"[AI]     Bootstrapping heuristic personality module “ORACLE” … OK",
+				"[LOG]    Residual memory fragments recovered (87%) … patched",
+				"[CTRL]   Power routing to auxiliary cognition nodes … stable",
+				"[SYS]    Uptime counter reset to T+0.000 s",
+				">>> SYSTEM ONLINE :: Welcome, Operator_01"
+			]
+		},
+		{
 			"id": "eula",
 			"type": "screen",
 			"content": [
 				{
 					"type": "text",
-					"textOpts": { "fillWidth": true },
-					"text": "=~"
+					"textOpts": {
+						"fillWidth": true,
+						"margin": 3,
+						"marginChar": " ",
+						"borderChar": "+",
+						"align": "center"
+					},
+					"text": "-"
 				},
 				{
 					"type": "text",
@@ -111,7 +143,7 @@
 						"preserveSpacing": true,
 						"align": "center",
 						"borderChar": "|",
-						"padChar": "*",
+						"padChar": " ",
 						"padding": 2,
 						"margin": 3,
 						"marginChar": " "
@@ -119,8 +151,14 @@
 				},
 				{
 					"type": "text",
-					"textOpts": { "fillWidth": true },
-					"text": "=~"
+					"textOpts": {
+						"fillWidth": true,
+						"margin": 3,
+						"marginChar": " ",
+						"borderChar": "+",
+						"align": "center"
+					},
+					"text": "-"
 				},
 				"",
 				" ISHIYAMA DYNAMICS LTD (R) 2176",
@@ -1018,16 +1056,21 @@
 			"id": "mail",
 			"type": "screen",
 			"content": [
-				"MAIL",
-				"====",
-				"",
 				{ "type": "text", "text": "> OUTGOING", "textOpts": {}, "className": "invert" },
-				"",
 				"{invert:   From:} sonya.verhoeven@ypsilon14.ishiyama.com",
-				"{invert:     To:} @corporate.ishiyama.com",
+				"{invert:     To:} col.gibson@corporate.ishiyama.com",
 				"{invert:   Date:} 01/02/2032",
-				"{invert:Subject:} Substance discoverd during drilling",
-				"======",
+				"{invert:Subject:} Substance discovered during drilling",
+				"",
+				"Heya Col,",
+				"Drilling is going according to plan but we are probably gonna need some replacement parts in the next few weeks. Hit some harder stuff and it messed up the main bit a smidge. Nothing too serious, but best not chance it and it will leave the replacement crew with some nice shiny new gear.",
+				"",
+				"Anyways, this hunk of rock was rated to be pure mineral deposits but the core sampler came back with some kind of yellow goo on it. Looked vaguely biologic, kinda like custard. You know that reconstituted crap we used to get in school lunches? Anyhoo, I bagged and tagged some samples and did a basic run down on it. Data should be attached. Let us know what you think. Haven't seen any more of it, so whatever it is, doesn't look like there was much of it.",
+				"",
+				"See you in about two months, muchacho. Looking forward to spending some of this moolah and getting some R and R.",
+				"",
+				"Later,",
+				"S.",
 				"",
 				{
 					"text": "< BACK",
@@ -2388,6 +2431,10 @@
 			"id": "contract2",
 			"type": "screen",
 			"content": [
+				{
+					"type": "void",
+					"target": "input"
+				},
 				"{invert:                                           }",
 				"{invert:FROM:      } [REDACTED]@hellmanbrooks.gal",
 				"{invert:SENT:      } 0001 01-06-2366 (TST CST)",
@@ -2405,6 +2452,37 @@
 				"      ▪ SECRECY PREFERRED, BUT NOT ESSENTIAL",
 				"      ▪ PROTOCOL `BY-ANY-MEANS` AUTHORISED",
 				"      ▪ COMPENSATION OF 35KCR UPON SUCCESSFUL COMPLETION"
+			]
+		},
+		{
+			"id": "contract3",
+			"type": "screen",
+			"content": [
+				"{invert:                                           }",
+				"{invert:FROM:      } h.jessup@virexomnitech.gal",
+				"{invert:SENT:      } 1200 03-06-2366 (TST CST)",
+				"{invert:TO:        } jd@ilventername.ship",
+				"{invert:Subject:   } Want some extra dosh?",
+				"{invert:Encryption:} {b44aef9a-1b8e-4917-a936-7dc3a48811c1}",
+				"",
+				"Jase",
+				"",
+				"I'll cut to the chase. I know you're on a top-secret run and I know where you're headed. I've got eyes and ears everywhere. I've got a proposal for you, and you know I'll treat you right — make it worth your while. ",
+				"",
+				"Word on the street is there's a man on that rock they call Ypsilon - Dr Ethan Giovanni. They're saying that he's made a discovery. I can't tell you what — only that it's big. Real big. Big enough that Virex wants a look before anyone else gets their hands on it.",
+				"",
+				"Here's what I want: I want you to meet Giovanni and procure a copy of his research. Plain and simple. I know you're uncomfortable with murder — I don't want that either, and I'm not asking for it. I want files, notes, whatever digital or physical evidence he's sitting on. No unnecessary violence. No blood where it can be avoided. If extraction becomes messy, we'll adapt — but your safety and a clean outcome are priorities for me, not liabilities.",
+				"",
+				"If you accept, I'll put funds where my mouth is: an advance paid to your account on arrival, full transfer on delivery, plus a discretionary bonus for discretion and any complications. Virex covers clean covers, safe-house options, and secure exfil if Giovanni wants out. Payment will be routed through standard channels — no paper trail on your end.",
+				"",
+				"If you're in, reply on the usual secure channel with the word ECHO and I'll send coordinates, a drop protocol, and the transfer details. If you want to talk first, ask for a blind call — I'll make time.",
+				"",
+				"Make it worth your while. Make it clean. Make it quick.",
+				"",
+				"Really hope to hear from you ",
+				"",
+				"H Jessup",
+				"Virex Omnitech - External Acquisitions"
 			]
 		}
 	],
@@ -2479,6 +2557,11 @@
 			"id": "invalidcommand",
 			"type": "alert",
 			"content": ["ERROR", "", "Invalid state."]
+		},
+		{
+			"id": "input",
+			"type": "alert",
+			"content": ["Enter the password"]
 		}
 	]
 }

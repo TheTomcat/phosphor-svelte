@@ -324,6 +324,14 @@
 					textOpts,
 					displayOpts
 				};
+			// case 'dialog':
+			// 	return {
+			// 		id,
+			// 		type: 'dialog',
+			// 		target: element.target,
+			// 		loadState: loadState,
+			// 		onLoad
+			// 	};
 			case 'variable':
 				applyVariableCommand({
 					id,
@@ -593,14 +601,10 @@
 				: fallback;
 		};
 		const settings = extractConfiguration(data);
+
 		renderScanlines = getParam('renderScanlines', settings.renderScanlines);
 		screenFlicker = getParam('screenFlicker', settings.screenFlicker);
 		showFooter = getParam('showFooter', settings.showFooter);
-		// page.url.searchParams.get('screenFlicker') != null
-		// 	? TRUTHY.includes((page.url.searchParams.get('screenFlicker') || '').toLowerCase())
-		// 	: settings.screenFlicker;
-		//!!(Boolean(page.url.searchParams.get('renderScanlines') ?? settings.renderScanlines);
-		//screenFlicker = !!(page.url.searchParams.get('screenFlicker') ?? settings.screenFlicker);
 		setTheme(settings.theme);
 	};
 
@@ -688,6 +692,8 @@
 									onComplete={() => activateNextScreenData()}
 									textOpts={element.textOpts ?? {}}
 								/>
+								<!-- {:else if element.type === 'dialog'}
+								{@const a = await showDialogAndWait(element.target)} -->
 							{:else}
 								{@const a = activateNextScreenData()}
 							{/if}

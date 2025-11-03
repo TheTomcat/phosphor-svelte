@@ -15,6 +15,11 @@ const config = {
 		alias: {
 			'$static': 'static'
 		}
+	},
+	compilerOptions: {
+		experimental: {
+			async: true
+		}
 	}
 };
 

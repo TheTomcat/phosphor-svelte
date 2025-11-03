@@ -8,7 +8,7 @@ export enum ScreenDataState {
 	Done
 }
 
-export type PhosphorDialogType = 'alert' | 'dialog' | 'confirm';
+export type PhosphorDialogType = 'alert' | 'dialog' | 'confirm' | 'password';
 export type PhosphorScreenType = 'screen' | 'static';
 export type PhosphorVariableType = number | boolean | string;
 export type PhosphorVariableAction = 'set' | 'toggle' | 'increment' | 'decrement' | 'concatenate';
@@ -86,6 +86,7 @@ export type PhosphorScreenJsonContent =
 	| JsonText
 	| JsonCountdown
 	| JsonVariable;
+// | JsonDialog;
 
 type VoidData = {
 	type: 'void';
@@ -102,6 +103,11 @@ type JsonBitmap = {
 	onLoad?: boolean;
 	displayOpts?: DisplayOptions;
 };
+
+// type JsonDialog = {
+// 	type: 'dialog';
+// 	target: string;
+// };
 
 type JsonToggle = {
 	type: 'toggle';
@@ -299,6 +305,7 @@ export type PhosphorScreenContent =
 	| PhosphorText
 	| PhosphorCountdown
 	| PhosphorVariable;
+// | PhosphorShowDialog;
 
 export type PhosphorBitmap = {
 	type: 'bitmap';
@@ -312,6 +319,14 @@ export type PhosphorBitmap = {
 	displayOpts?: DisplayOptions;
 };
 
+// export type PhosphorShowDialog = {
+// 	type: 'dialog';
+// 	id: string;
+// 	target: string;
+// 	loadState: ScreenDataState;
+// 	onLoad?: boolean;
+// };
+
 export type PhosphorToggle = {
 	type: 'toggle';
 	states: {
@@ -324,7 +339,6 @@ export type PhosphorToggle = {
 	onLoad?: boolean;
 	// speed: number;
 	textOpts?: TextOptions;
-
 	displayOpts?: DisplayOptions;
 };
 
