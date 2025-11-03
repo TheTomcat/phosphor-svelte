@@ -74,13 +74,15 @@ type PhosphorConfiguration = {
 	renderScanlines: boolean;
 	screenFlicker: boolean;
 	theme: ThemeType;
+	showFooter: boolean;
 };
 
 export const extractConfiguration = (data: PhosphorJsonData): PhosphorConfiguration => {
 	return {
 		renderScanlines: data.config?.renderScanlines ?? true,
 		screenFlicker: data.config?.screenFlicker ?? true,
-		theme: data.config?.theme ?? 'amber'
+		theme: data.config?.theme ?? 'amber',
+		showFooter: !!data.config.footer
 	};
 };
 

@@ -44,6 +44,7 @@
 	import { applyVariableCommand, evaluateCondition, setVar } from '$lib/phosphorVariables.svelte';
 	import { preloadAudio } from '$lib/audio-cache';
 	import { setTheme } from '$lib/theme.svelte';
+	import { page } from '$app/state';
 
 	let { data }: { data: PhosphorJsonData } = $props();
 
@@ -71,6 +72,7 @@
 	let status: AppStatus = $state(AppStatus.Unset);
 	let renderScanlines = $state(true);
 	let screenFlicker = $state(true);
+	let showFooter = $state(true);
 
 	// Options
 	let defaultspeed = $state(5);
@@ -584,10 +586,29 @@
 	};
 
 	const applyConfiguration = () => {
+		const getParam = (param: string, fallback: boolean): boolean => {
+			const TRUTHY = ['yes', 'on', 'true', 'show'];
+			return page.url.searchParams.get(param) != null
+				? TRUTHY.includes((page.url.searchParams.get(param) || '').toLowerCase())
+				: fallback;
+		};
 		const settings = extractConfiguration(data);
-		renderScanlines = settings.renderScanlines;
-		screenFlicker = settings.screenFlicker;
+		renderScanlines = getParam('renderScanlines', settings.renderScanlines);
+		screenFlicker = getParam('screenFlicker', settings.screenFlicker);
+		showFooter = getParam('showFooter', settings.showFooter);
+		// page.url.searchParams.get('screenFlicker') != null
+		// 	? TRUTHY.includes((page.url.searchParams.get('screenFlicker') || '').toLowerCase())
+		// 	: settings.screenFlicker;
+		//!!(Boolean(page.url.searchParams.get('renderScanlines') ?? settings.renderScanlines);
+		//screenFlicker = !!(page.url.searchParams.get('screenFlicker') ?? settings.screenFlicker);
 		setTheme(settings.theme);
+	};
+
+	const getStartScreen = () => {
+		let initialId = page.url.searchParams.get('screen');
+		let screenIdx = -1;
+		if (initialId) screenIdx = getScreenIndex(initialId);
+		return screenIdx >= 0 ? screenIdx : 0;
 	};
 
 	onMount(() => {
@@ -602,7 +623,7 @@
 			dialogs = parseDialogs();
 			parseVariables();
 			setScreenWidth();
-			setActiveScreen(0);
+			setActiveScreen(getStartScreen());
 			window.addEventListener('resize', debouncedSetScreenWidth);
 		});
 		// try {
@@ -736,7 +757,7 @@
 			<Modal text={dialog.content} onClose={toggleDialog} />
 		{/if}
 
-		{#if data.config.footer}
+		{#if showFooter && data.config.footer}
 			<footer class="__footer__">
 				<Text text={data.config.footer} {columns} />
 			</footer>

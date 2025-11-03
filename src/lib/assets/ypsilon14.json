@@ -2356,6 +2356,56 @@
 				},
 				""
 			]
+		},
+		{
+			"id": "contract1",
+			"type": "screen",
+			"content": [
+				"{invert:INCOMING MAIL                                              }",
+				"{invert:FROM:      } [REDACTED]",
+				"{invert:SENT:      } 0400 02-06-2366 (TST CST)",
+				"{invert:TO:        } dason.jerulo@iise.earth.gal",
+				"{invert:Subject:   } URGENT::IMPORTANT::TOP SECRET::RE. YPSILON-14",
+				"{invert:Encryption:} {407066dd-5d34-459b-89bc-a840faaeb762}",
+				"Sgt Jerulo.",
+				"",
+				"News has reached the company that there is a potential union organiser on Ypsilon-14. Obviously, this is a completely unacceptable situation which should be rectified at the soonest opportunity.",
+				"",
+				"The company is aware of your upcoming mission to Ypsilon-14. If you are able to provide us with intelligence on the identity of this organiser, I am authorised to give you a credit bonus of 10kcr. ",
+				"",
+				"Further to this, if you are able to deal with the organiser and neutralise the unionisation threat, that bonus will be increased to 50kcr. We have no preference on your methods of neutralisation and leave it up to your professional discretion. ",
+				"",
+				"We trust you will be discreet with this matter. I need not remind you of the consequences of a breach of confidentiality.",
+				"",
+				"AUTHORISATION FROM",
+				"[REDACTED][IDENTITY CONFIRMED]",
+				"",
+				"AUTHORISATION CODE",
+				"[REDACTED][AUTHORISATION CONFIRMED]"
+			]
+		},
+		{
+			"id": "contract2",
+			"type": "screen",
+			"content": [
+				"{invert:                                           }",
+				"{invert:FROM:      } [REDACTED]@hellmanbrooks.gal",
+				"{invert:SENT:      } 0001 01-06-2366 (TST CST)",
+				"{invert:TO:        } a721.1103.b@cybernetics.ishiyama.gal",
+				"{invert:Subject:   } URGENT::IMPORTANT::TOP SECRET::RE. YPSILON-14",
+				"{invert:Encryption:} {602d102c-9610-4f69-9957-eead0b6fcc72}",
+				"",
+				"FORCED MISSION UPDATE: AUTHORISATION CODE GAMMA 2 ALPHA ",
+				"",
+				"UPDATE TO MISSION PARAMETERS (V1.5.2 -> V2.0)",
+				"  ▪ MAINTAIN ORIGINAL OBJECTIVES ABOARD `IMV ENTER NAME`",
+				"  ▪ MODIFY SCOPE AND PARAMETERS:",
+				"      ▪ IT IS IMPERATIVE THAT THE BREACH DOES NOT SPREAD",
+				"      ▪ CONTAIN AT ALL COSTS",
+				"      ▪ SECRECY PREFERRED, BUT NOT ESSENTIAL",
+				"      ▪ PROTOCOL `BY-ANY-MEANS` AUTHORISED",
+				"      ▪ COMPENSATION OF 35KCR UPON SUCCESSFUL COMPLETION"
+			]
 		}
 	],
 	"dialogs": [
