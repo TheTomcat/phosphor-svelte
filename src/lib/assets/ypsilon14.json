@@ -34,7 +34,7 @@
 		{
 			"id": "ship",
 			"type": "string",
-			"default": "LFC Enter Name"
+			"default": "ILV Enter Name"
 		},
 		{
 			"id": "airlocksrepaired",
@@ -343,6 +343,13 @@
 							"action": {
 								"type": "link",
 								"target": "comms"
+							}
+						},
+						{
+							"command": "mail",
+							"action": {
+								"type": "link",
+								"target": "mail"
 							}
 						},
 						{
@@ -791,7 +798,7 @@
 							}
 						},
 						{
-							"command": ["hail lfc enter name", "hail enter name"],
+							"command": ["hail ilv enter name", "hail enter name"],
 							"action": {
 								"type": "link",
 								"target": "hailtempest"
@@ -2445,7 +2452,7 @@
 				"FORCED MISSION UPDATE: AUTHORISATION CODE GAMMA 2 ALPHA ",
 				"",
 				"UPDATE TO MISSION PARAMETERS (V1.5.2 -> V2.0)",
-				"  ▪ MAINTAIN ORIGINAL OBJECTIVES ABOARD `IMV ENTER NAME`",
+				"  ▪ MAINTAIN ORIGINAL OBJECTIVES ABOARD `ILV ENTER NAME`",
 				"  ▪ MODIFY SCOPE AND PARAMETERS:",
 				"      ▪ IT IS IMPERATIVE THAT THE BREACH DOES NOT SPREAD",
 				"      ▪ CONTAIN AT ALL COSTS",

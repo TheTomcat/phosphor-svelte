@@ -32,7 +32,14 @@
 	{#if text == '\\'}
 		<br />
 	{:else}
-		{@html output.visibleHtml}
+		{@const lines = output.visibleHtml.split('\n')}
+		{#each lines as e, i}
+			{@html e}
+			{#if i < lines.length}
+				<br />
+			{/if}
+		{/each}
+		<!-- {@html output.visibleHtml} -->
 	{/if}
 </div>
 

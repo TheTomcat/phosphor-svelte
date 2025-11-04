@@ -187,7 +187,10 @@
 </script>
 
 <div class={`__teletype__ ${className ? className : ''}`}>
-	<span class="visible">{@html sliced.visibleHtml}</span>
+	<span class="visible"
+		>{#each sliced.visibleHtml.split('\n') as e, i}{@html e}{#if i < sliced.visibleHtml.split('\n').length - 1}<br
+				/>{/if}{/each}</span
+	>
 	<span class="cursor" bind:this={_cursorRef}
 		>{sliced.cursorChar === ' ' ? '.' : sliced.cursorChar}</span
 	>
